@@ -90,6 +90,10 @@
   </div>
 </template>
 <script setup>
+definePageMeta({
+  layout: 'admin-layout'
+})
+
 import { ref, onMounted, reactive } from 'vue'
 import ShippingServiceForm from './ShippingServiceForm.vue'
 import { getEnumLabel } from '../../../../constants/enums.js'

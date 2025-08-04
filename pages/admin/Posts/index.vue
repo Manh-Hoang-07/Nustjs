@@ -189,6 +189,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin-layout'
+})
+
 import { ref, onMounted } from 'vue';
 import Actions from '../../../components/Core/Actions.vue';
 

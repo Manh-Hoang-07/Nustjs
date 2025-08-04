@@ -8,6 +8,7 @@
 <script setup>
 // Simple promotions page
 definePageMeta({
+  layout: 'admin-layout',
   title: 'Promotions Management',
   description: 'Manage promotions and discounts'
 })

@@ -6,6 +6,10 @@
   </div>
 </template>
 <script setup>
+definePageMeta({
+  layout: 'admin-layout'
+})
+
 // Nếu có form cấu hình delivery, import api và endpoints như sau:
 // import api from '../../../../api/apiClient.js'
 // import endpoints from '../../../../api/endpoints.js'

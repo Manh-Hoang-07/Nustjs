@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
   menuItems: { type: Array, required: true },
@@ -151,6 +151,8 @@ const currentSubmenu = computed(() => {
 if (currentSubmenu.value && !expandedMenus.value.includes(currentSubmenu.value)) {
   expandedMenus.value.push(currentSubmenu.value)
 }
+
+
 </script>
 
 <style scoped>

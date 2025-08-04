@@ -315,6 +315,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin-layout'
+})
+
 import { ref, computed, onMounted } from 'vue'
 import { 
   ArrowPathIcon,

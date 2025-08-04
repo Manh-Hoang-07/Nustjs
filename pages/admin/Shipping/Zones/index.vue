@@ -104,6 +104,10 @@
   </div>
 </template>
 <script setup>
+definePageMeta({
+  layout: 'admin-layout'
+})
+
 import { ref, onMounted, computed, reactive } from 'vue'
 import api from '../../../../api/apiClient.js'
 import endpoints from '../../../../api/endpoints.js'

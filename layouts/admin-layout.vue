@@ -1,5 +1,7 @@
 <template>
   <div class="flex min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden">
+
+    
     <!-- Sidebar -->
     <SidebarMenu
       :menu-items="menuItems"
@@ -57,9 +59,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import HeaderBar from '~/components/Layout/HeaderBar.vue';
-import SidebarMenu from '~/components/Layout/SidebarMenu.vue';
+import { ref, computed, onMounted } from 'vue';
+import HeaderBar from '../components/Layout/HeaderBar.vue';
+import SidebarMenu from '../components/Layout/SidebarMenu.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -109,20 +111,32 @@ const menuItems = [
     icon: '📋'
   },
   {
-    name: 'Người dùng',
-    path: '/admin/users',
-    icon: '👥'
+    name: 'Tài khoản',
+    icon: '👥',
+    children: [
+      {
+        name: 'Danh sách người dùng',
+        path: '/admin/users',
+        icon: '👤'
+      },
+      {
+        name: 'Thêm người dùng',
+        path: '/admin/users/create',
+        icon: '➕'
+      },
+      {
+        name: 'Phân quyền',
+        path: '/admin/roles',
+        icon: '🔑'
+      }
+    ]
   },
   {
     name: 'Quyền',
     path: '/admin/permissions',
     icon: '🔑'
   },
-  {
-    name: 'Quản lý vai trò',
-    path: '/admin/roles',
-    icon: '👤'
-  },
+
   {
     name: 'Kho hàng',
     path: '/admin/warehouses',

@@ -7,6 +7,7 @@
 
 <script setup>
 definePageMeta({
+  layout: 'admin-layout',
   title: 'Shipping Management',
   description: 'Manage shipping zones and settings'
 })

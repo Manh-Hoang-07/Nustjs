@@ -122,6 +122,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin-layout'
+})
+
 import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { useDataTable } from '/composables/useDataTable.js'
 import { useToast } from '/composables/useToast.js'

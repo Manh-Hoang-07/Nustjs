@@ -118,6 +118,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin-layout'
+})
+
 import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
 import { getEnumSync, getEnumLabel } from '../../../constants/enums.js'
 import { useDataTable } from '/composables/useDataTable.js'

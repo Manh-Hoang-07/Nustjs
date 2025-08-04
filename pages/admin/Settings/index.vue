@@ -207,6 +207,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin-layout'
+})
+
 import { ref, onMounted } from 'vue';
 
 const generalSettings = ref({
