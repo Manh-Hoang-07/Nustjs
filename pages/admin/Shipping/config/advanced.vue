@@ -1,0 +1,88 @@
+<template>
+  <div class="container mx-auto p-4">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">Cấu hình vận chuyển nâng cao</h1>
+    </div>
+
+    <div class="bg-white shadow-md rounded-lg p-6">
+      <div class="space-y-6">
+        <!-- Cấu hình chung -->
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Cấu hình chung</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Thời gian xử lý đơn hàng (giờ)</label>
+              <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="0" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Thời gian giao hàng tối đa (ngày)</label>
+              <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-md" min="1" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Cấu hình kho hàng -->
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Cấu hình kho hàng</h2>
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <input type="checkbox" id="auto-assign-warehouse" class="mr-2" />
+              <label for="auto-assign-warehouse">Tự động phân bổ kho hàng</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="multi-warehouse" class="mr-2" />
+              <label for="multi-warehouse">Cho phép đơn hàng từ nhiều kho</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cấu hình vận chuyển -->
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Cấu hình vận chuyển</h2>
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <input type="checkbox" id="real-time-tracking" class="mr-2" />
+              <label for="real-time-tracking">Theo dõi vận chuyển thời gian thực</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="auto-calculate-shipping" class="mr-2" />
+              <label for="auto-calculate-shipping">Tự động tính phí vận chuyển</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cấu hình thông báo -->
+        <div>
+          <h2 class="text-lg font-semibold mb-4">Cấu hình thông báo</h2>
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <input type="checkbox" id="email-notification" class="mr-2" />
+              <label for="email-notification">Thông báo qua email</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="sms-notification" class="mr-2" />
+              <label for="sms-notification">Thông báo qua SMS</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end space-x-3 pt-6">
+          <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+            Huỷ
+          </button>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+            Lưu cấu hình
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+definePageMeta({
+  layout: 'admin',
+  middleware: ['auth']
+})
+</script> 

@@ -1,0 +1,12 @@
+<template>
+  <div>
+    <h1>Test Page</h1>
+    <p>This is a test page.</p>
+  </div>
+</template>
+
+<script setup>
+definePageMeta({
+  title: 'Test Page'
+})
+</script> 
