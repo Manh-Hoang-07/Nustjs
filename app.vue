@@ -65,9 +65,9 @@
     </nav>
 
     <!-- Main Content -->
-    <main>
+    <NuxtLayout>
       <NuxtPage />
-    </main>
+    </NuxtLayout>
   </div>
 </template>
 

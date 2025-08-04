@@ -183,7 +183,7 @@
 <script setup>
 // Page meta
 definePageMeta({
-  layout: 'admin',
+  layout: 'AdminLayout',
   title: 'Dashboard',
   description: 'Admin Dashboard - Tổng quan hệ thống'
 })

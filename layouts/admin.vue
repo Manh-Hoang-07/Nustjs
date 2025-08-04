@@ -1,9 +1,20 @@
 <template>
   <div class="min-h-screen bg-gray-100">
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg">
-      <div class="flex items-center justify-center h-16 bg-gray-800">
+    <div :class="[
+      'fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out',
+      sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+    ]">
+      <div class="flex items-center justify-between h-16 bg-gray-800 px-4">
         <h1 class="text-xl font-bold text-white">Admin Panel</h1>
+        <button 
+          @click="sidebarOpen = false"
+          class="lg:hidden p-1 rounded-md text-gray-300 hover:text-white hover:bg-gray-700"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
       </div>
       
       <nav class="mt-8">
@@ -223,12 +234,28 @@
       </nav>
     </div>
 
+    <!-- Mobile overlay -->
+    <div 
+      v-if="sidebarOpen" 
+      @click="sidebarOpen = false"
+      class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+    ></div>
+
     <!-- Main Content -->
-    <div class="pl-64">
+    <div :class="['transition-all duration-300', sidebarOpen ? 'pl-64' : 'pl-0 lg:pl-64']">
       <!-- Top Navigation -->
       <div class="bg-white shadow-sm border-b">
         <div class="flex justify-between items-center px-6 py-4">
           <div class="flex items-center">
+            <!-- Mobile menu button -->
+            <button 
+              @click="toggleSidebar"
+              class="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 mr-4"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+            </button>
             <h2 class="text-lg font-semibold text-gray-900">{{ pageTitle }}</h2>
           </div>
           
@@ -283,13 +310,14 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '~/stores/auth'
 
 // Auth store
 const authStore = useAuthStore()
 
 // Data
 const showUserMenu = ref(false)
+const sidebarOpen = ref(true)
 
 // Computed
 const pageTitle = computed(() => {
@@ -316,21 +344,46 @@ const toggleUserMenu = () => {
   showUserMenu.value = !showUserMenu.value
 }
 
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value
+}
+
 const handleLogout = async () => {
   await authStore.logout()
   await navigateTo('/login')
 }
 
-// Lifecycle
-onMounted(() => {
-  // Check authentication
-  authStore.checkAuth()
-  
-  // Close user menu when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.relative')) {
-      showUserMenu.value = false
+  // Lifecycle
+  onMounted(() => {
+    // Check authentication
+    authStore.checkAuth()
+    
+    // Close user menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.relative')) {
+        showUserMenu.value = false
+      }
+    })
+    
+    // Auto-hide sidebar on mobile on page load
+    if (window.innerWidth < 1024) {
+      sidebarOpen.value = false
     }
   })
-})
-</script> 
+</script>
+
+<style scoped>
+/* Ensure sidebar is visible on desktop */
+@media (min-width: 1024px) {
+  .sidebar-open {
+    transform: translateX(0) !important;
+  }
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+</style> 

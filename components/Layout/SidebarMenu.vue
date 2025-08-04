@@ -44,7 +44,7 @@
           ]"
         >
           <div class="flex items-center w-full truncate">
-            <component :is="item.icon" class="w-5 h-5 mr-3 transition-transform duration-200" />
+            <span class="w-5 h-5 mr-3 transition-transform duration-200 text-center">{{ item.icon }}</span>
             <span class="truncate" :title="item.name">{{ item.name }}</span>
           </div>
           <svg 
@@ -65,7 +65,7 @@
           v-show="expandedMenus.includes(item.name)"
           class="ml-6 space-y-1 transition-all duration-200"
         >
-          <router-link 
+          <NuxtLink 
             v-for="child in item.children" 
             :key="child.path"
             :to="child.path" 
@@ -74,18 +74,18 @@
               'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
               'hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 hover:text-white',
               'hover:shadow-md hover:scale-105',
-              activePath === child.path 
-                ? 'bg-gradient-to-r from-blue-500/80 to-purple-600/80 text-white shadow-md scale-105' 
-                : 'text-slate-400'
+                           route.path === child.path 
+               ? 'bg-gradient-to-r from-blue-500/80 to-purple-600/80 text-white shadow-md scale-105' 
+               : 'text-slate-400'
             ]"
           >
-            <component :is="child.icon" class="w-4 h-4 mr-3 transition-transform duration-200" />
+            <span class="w-4 h-4 mr-3 transition-transform duration-200 text-center">{{ child.icon }}</span>
             <span class="truncate" :title="child.name">{{ child.name }}</span>
-            <div v-if="activePath === child.path" class="ml-auto w-2 h-2 bg-white rounded-full animate-pulse"></div>
-          </router-link>
+                         <div v-if="route.path === child.path" class="ml-auto w-2 h-2 bg-white rounded-full animate-pulse"></div>
+           </NuxtLink>
         </div>
         <!-- Menu without children -->
-        <router-link 
+        <NuxtLink 
           v-else
           :to="item.path" 
           @click="$emit('select', item)"
@@ -93,15 +93,15 @@
             'group flex items-center w-full px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 min-h-[48px]',
             'hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 hover:text-white',
             'hover:shadow-lg hover:scale-105',
-            activePath === item.path 
-              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg scale-105' 
-              : 'text-slate-300'
+                         route.path === item.path 
+               ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg scale-105' 
+               : 'text-slate-300'
           ]"
         >
-          <component :is="item.icon" class="w-5 h-5 mr-3 transition-transform duration-200" />
+          <span class="w-5 h-5 mr-3 transition-transform duration-200 text-center">{{ item.icon }}</span>
           <span class="truncate" :title="item.name">{{ item.name }}</span>
-          <div v-if="activePath === item.path" class="ml-auto w-2 h-2 bg-white rounded-full animate-pulse"></div>
-        </router-link>
+                     <div v-if="route.path === item.path" class="ml-auto w-2 h-2 bg-white rounded-full animate-pulse"></div>
+         </NuxtLink>
       </div>
     </nav>
     <div class="p-4 border-t border-slate-700">
@@ -119,6 +119,8 @@ const props = defineProps({
   sidebarOpen: { type: Boolean, default: true }
 })
 
+const route = useRoute()
+
 const expandedMenus = ref([])
 
 const toggleSubmenu = (menuName) => {
@@ -132,13 +134,13 @@ const toggleSubmenu = (menuName) => {
 
 const isSubmenuActive = (item) => {
   if (!item.children) return false
-  return item.children.some(child => child.path === props.activePath)
+  return item.children.some(child => child.path === route.path)
 }
 
 // Auto-expand submenu if current path is in it
 const currentSubmenu = computed(() => {
   for (const item of props.menuItems) {
-    if (item.children && item.children.some(child => child.path === props.activePath)) {
+    if (item.children && item.children.some(child => child.path === route.path)) {
       return item.name
     }
   }
