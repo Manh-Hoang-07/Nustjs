@@ -1,5 +1,7 @@
 <template>
   <div class="flex min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden">
+
+    
     <!-- Sidebar -->
     <SidebarMenu
       :menu-items="menuItems"
@@ -134,6 +136,7 @@ const menuItems = [
     path: '/admin/permissions',
     icon: '🔑'
   },
+
   {
     name: 'Kho hàng',
     path: '/admin/warehouses',
@@ -213,11 +216,22 @@ const logout = () => {
 </script>
 
 <style scoped>
-/* Ensure sidebar is visible on desktop */
-@media (min-width: 1024px) {
-  .sidebar-open {
-    transform: translateX(0) !important;
-  }
+/* Custom scrollbar for sidebar */
+aside::-webkit-scrollbar {
+  width: 4px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Smooth transitions */

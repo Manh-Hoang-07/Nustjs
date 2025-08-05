@@ -153,6 +153,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin'
+})
+
 import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
 import ConfirmModal from '../../../components/Core/ConfirmModal.vue'
 import Actions from '../../../components/Core/Actions.vue'
