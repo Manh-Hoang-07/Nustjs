@@ -1,49 +1,68 @@
 <template>
-  <AdminFilter @apply="applyFilters" @reset="resetFilters">
-    <AdminFilterItem
-      id="search"
-      label="Tìm kiếm"
-      type="text"
-      v-model="filters.search"
-      placeholder="Tìm theo tên sản phẩm, mô tả, SKU"
-      @input="debouncedSearch"
-    />
-    <AdminFilterItem
-      id="status"
-      label="Trạng thái"
-      type="select"
-      v-model="filters.status"
-      placeholder="Tất cả trạng thái"
-      :options="statusOptions"
-    />
-    <AdminFilterItem
-      id="brand_id"
-      label="Thương hiệu"
-      type="select"
-      v-model="filters.brand_id"
-      placeholder="Tất cả thương hiệu"
-      :options="brandOptions"
-    />
-    <AdminFilterItem
-      id="category_id"
-      label="Danh mục"
-      type="select"
-      v-model="filters.category_id"
-      placeholder="Tất cả danh mục"
-      :options="categoryOptions"
-    />
-    <AdminFilterItem
-      id="sort_by"
-      label="Sắp xếp theo"
-      type="select"
-      v-model="filters.sort_by"
-      :options="sortOptions"
-    />
-  </AdminFilter>
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <form @submit.prevent="applyFilters">
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <AdminFilterItem
+          id="search"
+          label="Tìm kiếm"
+          type="text"
+          v-model="filters.search"
+          placeholder="Tìm theo tên sản phẩm, mô tả, SKU"
+          @input="debouncedSearch"
+        />
+        <AdminFilterItem
+          id="status"
+          label="Trạng thái"
+          type="select"
+          v-model="filters.status"
+          placeholder="Tất cả trạng thái"
+          :options="statusOptions"
+        />
+        <AdminFilterItem
+          id="brand_id"
+          label="Thương hiệu"
+          type="select"
+          v-model="filters.brand_id"
+          placeholder="Tất cả thương hiệu"
+          :options="brandOptions"
+        />
+        <AdminFilterItem
+          id="category_id"
+          label="Danh mục"
+          type="select"
+          v-model="filters.category_id"
+          placeholder="Tất cả danh mục"
+          :options="categoryOptions"
+        />
+        <AdminFilterItem
+          id="sort_by"
+          label="Sắp xếp theo"
+          type="select"
+          v-model="filters.sort_by"
+          :options="sortOptions"
+        />
+        
+        <div class="flex items-end space-x-2">
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+          >
+            Lọc
+          </button>
+          <button
+            type="button"
+            @click="resetFilters"
+            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none"
+          >
+            Đặt lại
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </template>
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
-import AdminFilter from '/components/Admin/AdminFilter.vue'
 import AdminFilterItem from '/components/Admin/AdminFilterItem.vue'
 import endpoints from '../../../api/endpoints.js'
 

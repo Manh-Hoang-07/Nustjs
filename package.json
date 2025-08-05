@@ -7,7 +7,11 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "build:analyze": "nuxt build --analyze",
+    "build:prod": "NODE_ENV=production nuxt build",
+    "bundle:analyze": "npx @nuxt/bundle-analyzer",
+    "lighthouse": "npx lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-decoupled-document": "^41.4.2",
@@ -23,6 +27,7 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "@nuxt/bundle-analyzer": "^0.1.0"
   }
 }

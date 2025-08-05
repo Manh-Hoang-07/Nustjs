@@ -1,21 +1,116 @@
-<template>
-  <div class="flex flex-wrap items-center gap-1 bg-white border border-gray-200 rounded px-2 py-1">
-    <div class="flex items-center">
-      <MagnifyingGlassIcon class="w-3 h-3 text-gray-400 mr-1" />
-      <input
-        v-model="filters.search"
-        @input="$emit('update:filters', { ...filters })"
-        class="h-6 px-1 text-xs border-none focus:ring-0 outline-none bg-transparent"
-        placeholder="Tìm kiếm khu vực vận chuyển"
-      />
-    </div>
-    <button @click="$emit('clear')" class="h-6 px-2 text-xs rounded bg-gray-100 hover:bg-gray-200">Xóa lọc</button>
+﻿<template>
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <form @submit.prevent="applyFilters">
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Tìm kiếm -->
+        <AdminFilterItem
+          id="search"
+          label="Tìm kiếm"
+          type="text"
+          v-model="filters.search"
+          placeholder="Tìm kiếm khu vực vận chuyển"
+          @input="debounceSearch"
+        />
+        
+        <!-- Trạng thái -->
+        <AdminFilterItem
+          id="status"
+          label="Trạng thái"
+          type="select"
+          v-model="filters.status"
+          placeholder="Tất cả trạng thái"
+          :options="statusOptions"
+        />
+        
+        <!-- Sắp xếp -->
+        <AdminFilterItem
+          id="sort_by"
+          label="Sắp xếp theo"
+          type="select"
+          v-model="filters.sort_by"
+          :options="sortOptions"
+        />
+        
+        <div class="flex items-end space-x-2">
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+          >
+            Lọc
+          </button>
+          <button
+            type="button"
+            @click="resetFilters"
+            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none"
+          >
+            Đặt lại
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
 </template>
 
 <script setup>
-import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
+import { reactive, computed } from 'vue'
+import AdminFilterItem from '/components/Admin/AdminFilterItem.vue'
+import { debounce } from '../../../utils/debounce.js'
+import { getEnumSync } from '../../../constants/enums.js'
+
 const props = defineProps({
-  filters: Object
+  initialFilters: {
+    type: Object,
+    default: () => ({})
+  }
 })
+
+const emit = defineEmits(['update:filters'])
+
+const filters = reactive({
+  search: props.initialFilters.search || '',
+  status: props.initialFilters.status || '',
+  sort_by: props.initialFilters.sort_by || 'created_at_desc',
+})
+
+// Các tùy chọn cho select
+const statusOptions = computed(() => {
+  const enumData = getEnumSync('basic_status')
+  const options = [{ value: '', label: 'Tất cả trạng thái' }]
+  
+  if (Array.isArray(enumData)) {
+    options.push(...enumData.map(item => ({
+      value: item.value,
+      label: item.label
+    })))
+  }
+  
+  return options
+})
+
+const sortOptions = [
+  { value: 'created_at_desc', label: 'Mới nhất' },
+  { value: 'created_at_asc', label: 'Cũ nhất' },
+  { value: 'name_asc', label: 'Tên (A-Z)' },
+  { value: 'name_desc', label: 'Tên (Z-A)' }
+]
+
+// Debounce search
+const debounceSearch = debounce(() => {
+  applyFilters()
+}, 300)
+
+// Áp dụng bộ lọc
+function applyFilters() {
+  emit('update:filters', { ...filters })
+}
+
+// Đặt lại bộ lọc
+function resetFilters() {
+  Object.keys(filters).forEach(key => {
+    filters[key] = ''
+  })
+  filters.sort_by = 'created_at_desc'
+  emit('update:filters', { ...filters })
+}
 </script> 
+

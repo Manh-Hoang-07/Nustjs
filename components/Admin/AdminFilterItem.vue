@@ -2,14 +2,16 @@
   <div class="flex flex-col">
     <label :for="id" class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
     
-    <!-- Input text -->
+    <!-- Input text with debouncing -->
     <input
       v-if="type === 'text'"
       :id="id"
-      v-model="modelValue"
+      v-model="inputValue"
       type="text"
       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
       :placeholder="placeholder"
+      @input="handleTextInput"
+      @blur="handleBlur"
     />
     
     <!-- Select -->
@@ -87,7 +89,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
+import { debounce } from '../../utils/debounce.js'
 
 const props = defineProps({
   modelValue: {
@@ -130,17 +133,68 @@ const props = defineProps({
   checkboxLabel: {
     type: String,
     default: ''
+  },
+  // New props for debouncing
+  debounceMs: {
+    type: Number,
+    default: 300
+  },
+  minLength: {
+    type: Number,
+    default: 2
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'input'])
+
+// Separate input value for text inputs to handle debouncing
+const inputValue = ref(props.modelValue)
+
+// Debounced emit function
+const debouncedEmit = debounce((value) => {
+  emit('update:modelValue', value)
+  emit('input', value)
+}, props.debounceMs)
+
+// Handle text input with debouncing
+const handleTextInput = () => {
+  if (props.type === 'text') {
+    debouncedEmit(inputValue.value)
+  }
+}
+
+// Handle blur to ensure value is emitted
+const handleBlur = () => {
+  if (props.type === 'text') {
+    debouncedEmit.flush() // Force emit current value
+  }
+}
 
 const modelValue = computed({
   get() {
     return props.modelValue
   },
   set(value) {
-    emit('update:modelValue', value)
+    if (props.type === 'text') {
+      inputValue.value = value
+      debouncedEmit(value)
+    } else {
+      emit('update:modelValue', value)
+    }
+  }
+})
+
+// Watch for external changes to modelValue
+watch(() => props.modelValue, (newValue) => {
+  if (props.type === 'text') {
+    inputValue.value = newValue
+  }
+}, { immediate: true })
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (debouncedEmit.cancel) {
+    debouncedEmit.cancel()
   }
 })
 </script> 

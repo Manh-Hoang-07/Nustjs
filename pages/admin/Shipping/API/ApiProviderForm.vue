@@ -1,6 +1,6 @@
 <template>
   <Modal v-model="modalVisible" :title="formTitle">
-    <FormLayout @submit="validateAndSubmit" @cancel="onClose">
+    <form @submit.prevent="validateAndSubmit" class="space-y-4">
       <div class="space-y-4">
         <!-- Tên Provider -->
         <div>
@@ -67,13 +67,31 @@
           </select>
         </div>
       </div>
-    </FormLayout>
+      
+      <!-- Form Actions -->
+      <div class="flex justify-end gap-2 pt-4">
+        <button 
+          type="button" 
+          @click="onClose" 
+          class="px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200"
+        >
+          Hủy
+        </button>
+        <button 
+          type="submit" 
+          :disabled="isSubmitting"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50"
+        >
+          {{ isSubmitting ? 'Đang lưu...' : 'Lưu' }}
+        </button>
+      </div>
+    </form>
   </Modal>
 </template>
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
 import Modal from '../../../components/Core/Modal.vue'
-import FormLayout from '../../../components/Core/FormLayout.vue'
+
 
 const props = defineProps({
   show: Boolean,

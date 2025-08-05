@@ -85,7 +85,15 @@
           Đang tải danh sách quyền...
         </div>
         <div v-else>
-          <Multiselect
+          <div v-if="!multiselectLoaded" class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
+            <div class="text-center">
+              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p class="text-gray-600 text-sm">Đang tải component...</p>
+            </div>
+          </div>
+          <component
+            v-else
+            :is="Multiselect"
             v-model="formData.permissions"
             :options="permissionOptions"
             :multiple="true"
@@ -129,11 +137,25 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue'
 import Modal from '../../../components/Core/Modal.vue'
-import Multiselect from 'vue-multiselect'
 import endpoints from '../../../api/endpoints.js'
 
-
 const api = useApiClient()
+const { $loadMultiselect } = useNuxtApp()
+
+// Lazy load Multiselect component
+const Multiselect = ref(null)
+const multiselectLoaded = ref(false)
+
+const loadMultiselectComponent = async () => {
+  if (!multiselectLoaded.value) {
+    try {
+      Multiselect.value = await $loadMultiselect()
+      multiselectLoaded.value = true
+    } catch (error) {
+      console.error('Failed to load Multiselect:', error)
+    }
+  }
+}
 
 const props = defineProps({
   show: Boolean,
@@ -196,7 +218,8 @@ const fetchPermissions = async () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await loadMultiselectComponent()
   fetchParentOptions()
   fetchPermissions()
 })

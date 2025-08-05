@@ -1,38 +1,57 @@
-<template>
-  <AdminFilter @apply="applyFilters" @reset="resetFilters">
-    <!-- Tìm kiếm theo tên -->
-    <AdminFilterItem
-      id="search"
-      label="Tìm kiếm"
-      type="text"
-      v-model="filters.search"
-      placeholder="Tìm theo tên thương hiệu"
-    />
-    
-    <!-- Lọc theo trạng thái -->
-    <AdminFilterItem
-      id="status"
-      label="Trạng thái"
-      type="select"
-      v-model="filters.status"
-      placeholder="Tất cả trạng thái"
-      :options="statusOptions"
-    />
-    
-    <!-- Sắp xếp theo -->
-    <AdminFilterItem
-      id="sort_by"
-      label="Sắp xếp theo"
-      type="select"
-      v-model="filters.sort_by"
-      :options="sortOptions"
-    />
-  </AdminFilter>
+﻿<template>
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <form @submit.prevent="applyFilters">
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Tìm kiếm theo tên -->
+        <AdminFilterItem
+          id="search"
+          label="Tìm kiếm"
+          type="text"
+          v-model="filters.search"
+          placeholder="Tìm theo tên thương hiệu"
+        />
+        
+        <!-- Lọc theo trạng thái -->
+        <AdminFilterItem
+          id="status"
+          label="Trạng thái"
+          type="select"
+          v-model="filters.status"
+          placeholder="Tất cả trạng thái"
+          :options="statusOptions"
+        />
+        
+        <!-- Sắp xếp theo -->
+        <AdminFilterItem
+          id="sort_by"
+          label="Sắp xếp theo"
+          type="select"
+          v-model="filters.sort_by"
+          :options="sortOptions"
+        />
+        
+        <div class="flex items-end space-x-2">
+          <button
+            type="submit"
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+          >
+            Lọc
+          </button>
+          <button
+            type="button"
+            @click="resetFilters"
+            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none"
+          >
+            Đặt lại
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script setup>
 import { reactive, computed } from 'vue'
-import AdminFilter from '/components/Admin/AdminFilter.vue'
 import AdminFilterItem from '/components/Admin/AdminFilterItem.vue'
 import { getEnumSync } from '../../../constants/enums.js'
 
@@ -87,3 +106,4 @@ function resetFilters() {
   emit('update:filters', { ...filters })
 }
 </script> 
+

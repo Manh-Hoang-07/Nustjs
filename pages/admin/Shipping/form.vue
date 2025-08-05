@@ -1,5 +1,5 @@
 <template>
-  <FormLayout @submit="onSubmit" @cancel="$emit('cancel')">
+  <form @submit.prevent="onSubmit" class="space-y-4">
     <div>
       <label class="block text-sm font-medium mb-1">Tên khu vực</label>
       <input v-model="form.name" type="text" class="w-full px-4 py-2 border rounded-xl" maxlength="100" required />
@@ -27,11 +27,28 @@
         <option value="inactive">Không hoạt động</option>
       </select>
     </div>
-  </FormLayout>
+    
+    <!-- Form Actions -->
+    <div class="flex justify-end gap-2 pt-4">
+      <button 
+        type="button" 
+        @click="$emit('cancel')" 
+        class="px-4 py-2 bg-gray-100 rounded-xl hover:bg-gray-200"
+      >
+        Hủy
+      </button>
+      <button 
+        type="submit" 
+        class="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700"
+      >
+        Lưu
+      </button>
+    </div>
+  </form>
 </template>
 <script setup>
 import { ref, watch } from 'vue'
-import FormLayout from '../../../components/Core/FormLayout.vue'
+
 const props = defineProps({
   shippingZone: Object,
   mode: String
