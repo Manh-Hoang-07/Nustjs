@@ -175,7 +175,6 @@ onMounted(async () => {
 
 function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
-  fetchData({ page: 1 })
 }
 
 function fetchEnums() {

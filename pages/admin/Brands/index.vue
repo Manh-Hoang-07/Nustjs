@@ -163,7 +163,6 @@ onMounted(async () => {
 // Filter handlers
 function handleFilterChange(newFilters) {
   updateFilters(newFilters)
-  fetchData({ page: 1 })
 }
 
 // Modal handlers

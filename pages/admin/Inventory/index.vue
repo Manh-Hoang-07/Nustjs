@@ -260,7 +260,6 @@ async function loadFilterOptions() {
 
 function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
-  fetchData({ page: 1 })
 }
 
 // Modal handlers
