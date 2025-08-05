@@ -50,7 +50,7 @@
 
 <script setup>
 import { reactive, computed } from 'vue'
-import AdminFilterItem from '/components/Admin/AdminFilterItem.vue'
+import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
 import { getEnumSync } from '../../../constants/enums.js'
 
 const props = defineProps({

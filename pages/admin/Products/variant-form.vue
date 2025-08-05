@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal v-model="modalVisible" :title="formTitle">
     <form @submit.prevent="validateAndSubmit" class="space-y-4">
       <!-- SKU -->
@@ -90,7 +90,7 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue'
 import { getEnumSync } from '../../../constants/enums.js'
-import Modal from '../../../components/Core/Modal.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
 import endpoints from '../../../api/endpoints.js'
 
 
@@ -252,3 +252,4 @@ function onClose() {
   emit('cancel')
 }
 </script> 
+

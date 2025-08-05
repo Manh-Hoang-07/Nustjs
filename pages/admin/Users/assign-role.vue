@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal v-model="modalVisible" title="Phân quyền người dùng">
     <FormWrapper
       :default-values="defaultValues"
@@ -35,9 +35,9 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-import Modal from '../../../components/Core/Modal.vue'
-import FormWrapper from '../../../components/Core/FormWrapper.vue'
-import MultipleSelect from '../../../components/Core/MultipleSelect.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
+import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
+import MultipleSelect from '../../../components/Core/Select/MultipleSelect.vue'
 import endpoints from '../../../api/endpoints.js'
 import { useApiFormSubmit } from '../../../utils/useApiFormSubmit.js'
 import apiClient from '../../../api/apiClient.js'
@@ -142,3 +142,4 @@ function onClose() {
   emit('role-assigned')
 }
 </script> 
+

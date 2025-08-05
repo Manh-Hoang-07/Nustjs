@@ -53,7 +53,7 @@
 
 <script setup>
 import { reactive, computed } from 'vue'
-import AdminFilterItem from '/components/Admin/AdminFilterItem.vue'
+import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
 import { debounce } from '../../../utils/debounce.js'
 import { getEnumSync } from '../../../constants/enums.js'
 
@@ -113,4 +113,5 @@ function resetFilters() {
   emit('update:filters', { ...filters })
 }
 </script> 
+
 

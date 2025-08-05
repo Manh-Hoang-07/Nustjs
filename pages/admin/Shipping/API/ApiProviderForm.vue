@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal v-model="modalVisible" :title="formTitle">
     <form @submit.prevent="validateAndSubmit" class="space-y-4">
       <div class="space-y-4">
@@ -90,7 +90,7 @@
 </template>
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
-import Modal from '../../../components/Core/Modal.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
 
 
 const props = defineProps({
@@ -200,3 +200,4 @@ function onClose() {
   emit('cancel')
 }
 </script> 
+

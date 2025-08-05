@@ -100,7 +100,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import Actions from '../Core/Actions.vue'
+import Actions from '../../Core/Actions/Actions.vue'
 
 const props = defineProps({
   // Dữ liệu

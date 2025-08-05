@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <CustomSection title="Pricing Rules" description="Quản lý quy tắc tính phí vận chuyển">
     <!-- Markup Settings -->
     <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
@@ -172,8 +172,8 @@ import { ref, onMounted } from 'vue'
 import api from '../../../../api/apiClient.js'
 import endpoints from '../../../../api/endpoints.js'
 import PricingRuleForm from './PricingRuleForm.vue'
-import CustomSection from '/components/Layout/CustomSection.vue'
-import Modal from '../../../components/Core/Modal.vue'
+import CustomSection from '/components/Layout/Sections/CustomSection.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
 
 const showEditPricing = ref(false)
 const serviceId = ref('')
@@ -233,3 +233,4 @@ async function handleSubmit() {
   }
 }
 </script> 
+

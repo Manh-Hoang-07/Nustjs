@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal v-model="modalVisible" :title="formTitle">
     <FormWrapper
       :default-values="defaultValues"
@@ -159,10 +159,10 @@
 
 <script setup>
 import { computed } from 'vue'
-import Modal from '../../../components/Core/Modal.vue'
-import FormWrapper from '../../../components/Core/FormWrapper.vue'
-import FormField from '../../../components/Core/FormField.vue'
-import ImageUploader from '../../../components/Core/ImageUploader.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
+import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
+import FormField from '../../../components/Core/Form/FormField.vue'
+import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
 import { useFormDefaults } from '../../../utils/useFormDefaults.js'
 import { useUrl } from '../../../utils/useUrl.js'
 
@@ -284,3 +284,4 @@ function onClose() {
   emit('cancel')
 }
 </script> 
+

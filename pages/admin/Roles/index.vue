@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Quản lý vai trò</h1>
@@ -126,9 +126,9 @@ import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
 import { getEnumSync, getEnumLabel } from '../../../constants/enums.js'
 import { useDataTable } from '/composables/useDataTable.js'
 import { useToast } from '/composables/useToast.js'
-import SkeletonLoader from '../../../components/Core/SkeletonLoader.vue'
-import ConfirmModal from '../../../components/Core/ConfirmModal.vue'
-import Actions from '../../../components/Core/Actions.vue'
+import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
+import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
+import Actions from '../../../components/Core/Actions/Actions.vue'
 import endpoints from '../../../api/endpoints.js'
 
 // Lazy load components
@@ -273,3 +273,4 @@ function getParentName(parent_id) {
   overflow-x: auto;
 }
 </style> 
+

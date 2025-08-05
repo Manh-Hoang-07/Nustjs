@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal v-model="modalVisible" :title="formTitle" size="7xl">
     <FormWrapper
       :default-values="defaultValues"
@@ -512,16 +512,16 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue'
 import { getEnumSync } from '../../../constants/enums.js'
-import Modal from '../../../components/Core/Modal.vue'
-import FormWrapper from '../../../components/Core/FormWrapper.vue'
-import FormField from '../../../components/Core/FormField.vue'
-import MultipleSelect from '../../../components/Core/MultipleSelect.vue'
-import SearchableSelect from '../../../components/Core/SearchableSelect.vue'
-import SearchableMultiSelect from '../../../components/Core/SearchableMultiSelect.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
+import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
+import FormField from '../../../components/Core/Form/FormField.vue'
+import MultipleSelect from '../../../components/Core/Select/MultipleSelect.vue'
+import SearchableSelect from '../../../components/Core/Select/SearchableSelect.vue'
+import SearchableMultiSelect from '../../../components/Core/Select/SearchableMultiSelect.vue'
 import endpoints from '../../../api/endpoints.js'
 import apiClient from '../../../api/apiClient.js'
 import { useFormDefaults } from '../../../utils/useFormDefaults.js'
-import ImageUploader from '../../../components/Core/ImageUploader.vue'
+import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
 
 const props = defineProps({
   show: Boolean,
@@ -985,3 +985,4 @@ function onClose() {
   emit('cancel')
 }
 </script> 
+

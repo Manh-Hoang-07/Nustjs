@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="bg-white p-4 rounded-lg shadow mb-6">
     <form @submit.prevent="applyFilters">
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -63,7 +63,7 @@
 </template>
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
-import AdminFilterItem from '/components/Admin/AdminFilterItem.vue'
+import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
 import endpoints from '../../../api/endpoints.js'
 
 import { debounce } from '../../../utils/debounce.js'
@@ -159,3 +159,4 @@ function resetFilters() {
   emit('update:filters', { ...filters })
 }
 </script> 
+

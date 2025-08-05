@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto p-4">
     <h1 class="text-3xl font-bold mb-6 text-center">CKEditor Ultimate - Phiên bản đầy đủ nhất</h1>
     
@@ -139,7 +139,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import CKEditorUltimate from '../../../components/Core/CKEditorUltimate.vue'
+import CKEditorUltimate from '../../../components/Core/Content/CKEditorUltimate.vue'
 
 const ultimateContent = ref('')
 const characterCount = ref(0)
@@ -306,3 +306,4 @@ function clearContent() {
   lastChange.value = ''
 }
 </script> 
+

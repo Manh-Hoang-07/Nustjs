@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
       <div>
@@ -117,7 +117,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import ImageForm from './image-form.vue'
-import ConfirmModal from '../../../components/Core/ConfirmModal.vue'
+import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import endpoints from '../../../api/endpoints.js'
 
 
@@ -209,3 +209,4 @@ async function deleteImage() {
   }
 }
 </script> 
+

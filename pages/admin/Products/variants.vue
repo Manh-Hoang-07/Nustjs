@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
       <div>
@@ -123,8 +123,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import VariantForm from './variant-form.vue'
-import ConfirmModal from '../../../components/Core/ConfirmModal.vue'
-import Actions from '../../../components/Core/Actions.vue'
+import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
+import Actions from '../../../components/Core/Actions/Actions.vue'
 import endpoints from '../../../api/endpoints.js'
 
 import { formatCurrency } from '../../../utils/formatCurrency.js'
@@ -224,3 +224,4 @@ function getStatusLabel(status) {
   return status
 }
 </script> 
+

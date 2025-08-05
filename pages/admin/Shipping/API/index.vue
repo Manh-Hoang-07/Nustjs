@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Quản lý API Provider</h1>
@@ -107,8 +107,8 @@ definePageMeta({
 import { ref, onMounted, reactive } from 'vue'
 import api from '../../../../api/apiClient.js'
 import endpoints from '../../../../api/endpoints.js'
-import CustomSection from '/components/Layout/CustomSection.vue'
-import Modal from '../../../components/Core/Modal.vue'
+import CustomSection from '/components/Layout/Sections/CustomSection.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
 import EditApiModal from './edit.vue'
 import ApiProviderForm from './ApiProviderForm.vue'
 
@@ -271,3 +271,4 @@ function handleAddProvider(formData) {
 }
 function openEdit() { showEdit.value = true }
 </script> 
+

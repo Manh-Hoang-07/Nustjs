@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Quản lý bài đăng</h1>
@@ -194,7 +194,7 @@ definePageMeta({
 })
 
 import { ref, onMounted } from 'vue';
-import Actions from '../../../components/Core/Actions.vue';
+import Actions from '../../../components/Core/Actions/Actions.vue';
 
 const posts = ref([]);
 const showAddModal = ref(false);
@@ -327,3 +327,4 @@ onMounted(() => {
 <style scoped>
 /* Custom styles */
 </style> 
+

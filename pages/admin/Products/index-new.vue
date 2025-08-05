@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto p-4">
     <AdminTable
       title="Quản lý sản phẩm"
@@ -128,8 +128,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import AdminTable from '/components/Admin/AdminTable.vue'
-import ConfirmModal from '../../../components/Core/ConfirmModal.vue'
+import AdminTable from '/components/Admin/Table/AdminTable.vue'
+import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import useCrudAdmin from '/composables/useCrudAdmin.js'
 import endpoints from '../../../api/endpoints.js'
 
@@ -244,3 +244,4 @@ onMounted(() => {
   fetchBrands()
 })
 </script> 
+

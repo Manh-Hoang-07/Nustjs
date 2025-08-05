@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal v-model="modalVisible" title="Nhập kho" size="4xl">
     <FormWrapper
       :default-values="defaultValues"
@@ -112,9 +112,9 @@
 </template>
 
 <script setup>
-import Modal from '../../../components/Core/Modal.vue'
-import FormWrapper from '../../../components/Core/FormWrapper.vue'
-import FormField from '../../../components/Core/FormField.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
+import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
+import FormField from '../../../components/Core/Form/FormField.vue'
 import { ref, computed, watch } from 'vue'
 import { useFormDefaults } from '../../../utils/useFormDefaults.js'
 
@@ -215,3 +215,4 @@ function onClose() {
   emit('cancel')
 }
 </script> 
+

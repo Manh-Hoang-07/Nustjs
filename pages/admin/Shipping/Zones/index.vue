@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Quản lý Zone Mapping</h1>
@@ -111,7 +111,7 @@ definePageMeta({
 import { ref, onMounted, computed, reactive } from 'vue'
 import api from '../../../../api/apiClient.js'
 import endpoints from '../../../../api/endpoints.js'
-import Modal from '../../../components/Core/Modal.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
 
 const showAddZone = ref(false)
 const editZoneName = ref('')
@@ -252,3 +252,4 @@ async function submitDeleteZone() {
   }
 }
 </script> 
+

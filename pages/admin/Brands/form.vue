@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal v-model="modalVisible" :title="formTitle">
     <FormWrapper
       :default-values="defaultValues"
@@ -54,13 +54,13 @@
 </template>
 <script setup>
 import { ref, computed, watch } from 'vue'
-import Modal from '../../../components/Core/Modal.vue'
-import FormWrapper from '../../../components/Core/FormWrapper.vue'
-import FormField from '../../../components/Core/FormField.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
+import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
+import FormField from '../../../components/Core/Form/FormField.vue'
 import { useFormDefaults } from '../../../utils/useFormDefaults.js'
 import { useUrl } from '../../../utils/useUrl.js'
 import formToFormData from '../../../utils/formToFormData.js'
-import ImageUploader from '../../../components/Core/ImageUploader.vue'
+import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
 
 const props = defineProps({
   show: Boolean,
@@ -111,3 +111,4 @@ function onClose() {
   emit('cancel')
 }
 </script> 
+

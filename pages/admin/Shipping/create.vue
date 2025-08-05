@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal v-if="show" v-model="modalVisible" title="Thêm khu vực vận chuyển mới">
     <Form :shipping-zone="null" :mode="'create'" @submit="handleSubmit" @cancel="onClose" />
   </Modal>
@@ -7,7 +7,7 @@
 import Form from './form.vue'
 import api from '../../../api/apiClient.js'
 import endpoints from '../../../api/endpoints.js'
-import Modal from '../../../components/Core/Modal.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
 import { computed } from 'vue'
 const props = defineProps({
   show: Boolean,
@@ -28,3 +28,4 @@ async function handleSubmit(formData) {
   }
 }
 </script> 
+

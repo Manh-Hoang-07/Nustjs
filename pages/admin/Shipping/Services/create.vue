@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Modal :model-value="true" title="Thêm dịch vụ mới" @update:model-value="$emit('close')">
     <form @submit.prevent="handleSubmit">
       <div class="mb-4">
@@ -42,5 +42,6 @@
   </Modal>
 </template>
 <script setup>
-import Modal from '../../../components/Core/Modal.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
 </script> 
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Quản lý thương hiệu</h1>
@@ -117,9 +117,9 @@ definePageMeta({
 import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { useDataTable } from '/composables/useDataTable.js'
 import { useToast } from '/composables/useToast.js'
-import SkeletonLoader from '../../../components/Core/SkeletonLoader.vue'
-import ConfirmModal from '../../../components/Core/ConfirmModal.vue'
-import Actions from '../../../components/Core/Actions.vue'
+import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
+import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
+import Actions from '../../../components/Core/Actions/Actions.vue'
 import { getEnumLabel } from '../../../constants/enums.js'
 import endpoints from '../../../api/endpoints.js'
 
@@ -244,3 +244,4 @@ function getStatusClass(status) {
   return 'bg-gray-100 text-gray-800'
 }
 </script> 
+

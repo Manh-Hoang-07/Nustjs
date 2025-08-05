@@ -47,7 +47,7 @@
 
 <script setup>
 import { reactive } from 'vue'
-import AdminFilterItem from '/components/Admin/AdminFilterItem.vue'
+import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
 
 const props = defineProps({
   initialFilters: {
@@ -89,4 +89,5 @@ function resetFilters() {
   emit('update:filters', { ...filters })
 }
 </script> 
+
 
