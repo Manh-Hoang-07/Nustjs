@@ -128,6 +128,7 @@ import Actions from '../../../components/Core/Actions/Actions.vue'
 import endpoints from '../../../api/endpoints.js'
 
 import { formatCurrency } from '../../../utils/formatCurrency.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 const api = useApiClient()
 

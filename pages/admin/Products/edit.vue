@@ -18,6 +18,7 @@ import endpoints from '../../../api/endpoints.js'
 import { ref, reactive, watch, onMounted } from 'vue'
 
 import { getEnumSync } from '../../../constants/enums.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 const api = useApiClient()
 

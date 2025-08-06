@@ -119,6 +119,7 @@ import { useRoute } from 'vue-router'
 import ImageForm from './image-form.vue'
 import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import endpoints from '../../../api/endpoints.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 
 const api = useApiClient()

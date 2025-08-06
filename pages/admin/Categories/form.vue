@@ -72,6 +72,7 @@ import { useUrl } from '../../../utils/useUrl.js'
 import formToFormData from '../../../utils/formToFormData.js'
 import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
 import CKEditorUltimate from '../../../components/Core/Content/CKEditorUltimate.vue'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 const api = useApiClient()
 

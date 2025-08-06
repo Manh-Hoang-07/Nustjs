@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useApiClient } from '../composables/api/useApiClient.js'
 
 export const useAuthStore = defineStore('auth', () => {
   const apiClient = useApiClient()

@@ -49,6 +49,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { debounce } from '../../utils/debounce.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 const props = defineProps({
   modelValue: {

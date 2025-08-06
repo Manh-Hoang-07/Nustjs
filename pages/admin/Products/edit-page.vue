@@ -231,6 +231,7 @@ import endpoints from '../../../api/endpoints.js'
 
 import { formatCurrency } from '../../../utils/formatCurrency.js'
 import { getEnumSync } from '../../../constants/enums.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 const api = useApiClient()
 

@@ -1,4 +1,5 @@
 import { ref, watch, onMounted } from 'vue'
+import { useApiClient } from './useApiClient.js'
 
 export default function useApiFetch(url, params = ref({}), immediate = true) {
   const api = useApiClient()

@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import { useApiClient } from '../composables/api/useApiClient.js'
 
 // Global auth state
 const isAuthenticated = ref(false)

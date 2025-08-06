@@ -67,6 +67,7 @@ import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
 import endpoints from '../../../api/endpoints.js'
 
 import { debounce } from '../../../utils/debounce.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 const api = useApiClient()
 

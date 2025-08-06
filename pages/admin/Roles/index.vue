@@ -124,8 +124,8 @@ definePageMeta({
 
 import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
 import { getEnumSync, getEnumLabel } from '../../../constants/enums.js'
-import { useDataTable } from '/composables/useDataTable.js'
-import { useToast } from '/composables/useToast.js'
+import { useDataTable } from '../../../composables/data/useDataTable.js'
+import { useToast } from '../../../composables/ui/useToast.js'
 import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import Actions from '../../../components/Core/Actions/Actions.vue'

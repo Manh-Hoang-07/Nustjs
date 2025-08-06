@@ -14,6 +14,7 @@
 import RoleForm from './form.vue'
 import endpoints from '../../../api/endpoints.js'
 import { ref, reactive, watch } from 'vue'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 
 const api = useApiClient()
