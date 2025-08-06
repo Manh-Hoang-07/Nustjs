@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   
   // Modules
   modules: [
@@ -86,6 +86,10 @@ export default defineNuxtConfig({
       exclude: [
         '@ckeditor/ckeditor5-build-decoupled-document'
       ]
+    },
+    // Performance optimizations
+    ssr: {
+      noExternal: ['@ckeditor/ckeditor5-build-decoupled-document']
     }
   },
 
@@ -102,6 +106,12 @@ export default defineNuxtConfig({
       '@heroicons/vue',
       'vue-multiselect'
     ]
+  },
+
+  // Performance optimizations
+  performance: {
+    // Enable performance monitoring
+    metrics: process.env.NODE_ENV === 'production'
   },
 
   // Nitro configuration for SSR optimization

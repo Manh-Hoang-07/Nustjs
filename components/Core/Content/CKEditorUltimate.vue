@@ -55,8 +55,8 @@ let CKEditor = null
 const loadCKEditor = async () => {
   try {
     // Dynamic import để lazy load
-    const { default: DecoupledEditor } = await import('@ckeditor/ckeditor5-build-decoupled-document')
-    CKEditor = DecoupledEditor
+    const module = await import('@ckeditor/ckeditor5-build-decoupled-document')
+    CKEditor = module.default || module
     return true
   } catch (err) {
     error.value = 'Không thể tải trình soạn thảo'
@@ -66,14 +66,31 @@ const loadCKEditor = async () => {
 }
 
 const initEditor = async () => {
-  if (!CKEditor) {
-    const loaded = await loadCKEditor()
-    if (!loaded) return
-  }
-
   try {
     loading.value = true
     error.value = null
+
+    // Đảm bảo CKEditor được load
+    if (!CKEditor) {
+      const loaded = await loadCKEditor()
+      if (!loaded) {
+        error.value = 'Không thể tải trình soạn thảo'
+        return
+      }
+    }
+
+    // Đảm bảo container tồn tại
+    if (!editorContainer.value) {
+      error.value = 'Container không tồn tại'
+      return
+    }
+
+    // Kiểm tra xem CKEditor có method create không
+    if (!CKEditor.create) {
+      error.value = 'CKEditor không được khởi tạo đúng cách'
+      console.error('CKEditor object:', CKEditor)
+      return
+    }
 
     // Default configuration
     const defaultConfig = {
@@ -148,6 +165,7 @@ const initEditor = async () => {
   } catch (err) {
     error.value = 'Không thể khởi tạo trình soạn thảo'
     console.error('CKEditor init error:', err)
+    console.error('CKEditor object:', CKEditor)
   } finally {
     loading.value = false
   }
@@ -178,6 +196,43 @@ watch(() => props.config, () => {
   }
 }, { deep: true })
 
+// Watch for component visibility (for modal cases)
+const isVisible = ref(false)
+const observer = ref(null)
+
+onMounted(() => {
+  // Tạo Intersection Observer để detect khi component visible
+  if (typeof IntersectionObserver !== 'undefined') {
+    observer.value = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        isVisible.value = entry.isIntersecting
+        if (entry.isIntersecting && !editor.value) {
+          // Khởi tạo editor khi component visible
+          setTimeout(() => {
+            initEditor()
+          }, 100)
+        }
+      })
+    })
+    
+    if (editorContainer.value) {
+      observer.value.observe(editorContainer.value)
+    }
+  } else {
+    // Fallback cho browsers không support IntersectionObserver
+    setTimeout(() => {
+      initEditor()
+    }, 100)
+  }
+})
+
+onUnmounted(() => {
+  if (observer.value) {
+    observer.value.disconnect()
+  }
+  destroyEditor()
+})
+
 const destroyEditor = async () => {
   if (editor.value) {
     try {
@@ -188,14 +243,6 @@ const destroyEditor = async () => {
     editor.value = null
   }
 }
-
-onMounted(() => {
-  initEditor()
-})
-
-onUnmounted(() => {
-  destroyEditor()
-})
 
 // Expose editor instance
 defineExpose({
