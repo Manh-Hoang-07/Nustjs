@@ -1,5 +1,5 @@
 ﻿<template>
-  <Modal v-model="modalVisible" :title="formTitle" size="7xl">
+  <Modal v-model="modalVisible" :title="formTitle" :loading="loading" size="7xl">
     <FormWrapper
       :default-values="defaultValues"
       :rules="validationRules"
@@ -527,7 +527,8 @@ const props = defineProps({
   show: Boolean,
   product: Object,
   apiErrors: { type: Object, default: () => ({}) },
-  mode: String
+  mode: String,
+  loading: { type: Boolean, default: false }
 })
 const emit = defineEmits(['submit', 'cancel'])
 const formWrapperRef = ref(null)

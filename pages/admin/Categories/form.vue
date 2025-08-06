@@ -1,5 +1,5 @@
 ﻿<template>
-  <Modal v-model="modalVisible" :title="formTitle">
+  <Modal v-model="modalVisible" :title="formTitle" :loading="loading">
     <FormWrapper
       :default-values="defaultValues"
       :rules="validationRules"
@@ -90,6 +90,10 @@ const props = defineProps({
   apiErrors: {
     type: Object,
     default: () => ({})
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 

@@ -1,5 +1,5 @@
 ﻿<template>
-  <Modal v-model="modalVisible" :title="formTitle" size="4xl">
+  <Modal v-model="modalVisible" :title="formTitle" :loading="loading" size="4xl">
         <FormWrapper
       :default-values="defaultValues"
       :rules="validationRules"
@@ -160,6 +160,10 @@ const props = defineProps({
   warehouses: {
     type: Array,
     default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -308,7 +312,6 @@ async function loadVariants(productId) {
       variants.value = response.data || []
     }
   } catch (error) {
-    console.error('Error loading variants:', error)
     variants.value = []
   }
 }

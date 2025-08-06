@@ -1,14 +1,11 @@
 <template>
   <div>
-    <div v-if="loading" class="flex justify-center items-center p-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      <span class="ml-2 text-gray-600">Đang tải dữ liệu...</span>
-    </div>
     <WarehouseForm 
-      v-else-if="showModal"
+      v-if="showModal"
       :show="showModal"
       :warehouse="warehouseData"
       :api-errors="apiErrors"
+      :loading="loading"
       @submit="handleSubmit" 
       @cancel="onClose" 
     />
@@ -77,7 +74,6 @@ async function handleSubmit(formData) {
     emit('updated')
     props.onClose()
   } catch (error) {
-    console.error('Update warehouse error:', error)
     if (error.response?.status === 422 && error.response?.data?.errors) {
       const errors = error.response.data.errors
       for (const field in errors) {

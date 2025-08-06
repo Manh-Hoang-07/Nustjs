@@ -6,6 +6,7 @@
       :order="order"
       :api-errors="apiErrors"
       :status-options="statusOptions"
+      :loading="loading"
       @submit="handleSubmit" 
       @cancel="onClose" 
     />
@@ -31,14 +32,36 @@ const emit = defineEmits(['updated'])
 const showModal = ref(false)
 const apiErrors = reactive({})
 const statusOptions = ref({})
+const loading = ref(false)
 
 watch(() => props.show, (newValue) => {
   showModal.value = newValue
   if (newValue) {
     Object.keys(apiErrors).forEach(key => delete apiErrors[key])
     fetchStatusOptions()
+    
+    // Fetch order details if needed
+    if (props.order?.id) {
+      fetchOrderDetails()
+    }
+  } else {
+    loading.value = false
   }
 }, { immediate: true })
+
+async function fetchOrderDetails() {
+  if (!props.order?.id) return
+  
+  loading.value = true
+  try {
+    const response = await api.get(`/api/admin/orders/${props.order.id}`)
+    // Update order data if needed
+  } catch (error) {
+    // Fallback to props data if API fails
+  } finally {
+    loading.value = false
+  }
+}
 
 function fetchStatusOptions() {
   const enumData = getEnumSync('order_status')

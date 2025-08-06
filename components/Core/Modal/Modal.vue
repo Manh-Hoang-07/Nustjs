@@ -5,7 +5,7 @@
         <div class="modal-backdrop" @click="handleBackdropClick"></div>
         <div class="modal-container" :class="modalSize">
           <div class="modal-header">
-            <h3 class="modal-title">{{ title }}</h3>
+            <h3 class="modal-title">{{ title || 'Modal Title' }}</h3>
             <button type="button" class="modal-close" @click="close">
               <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -13,7 +13,15 @@
             </button>
           </div>
           <div class="modal-body">
-            <slot></slot>
+            <div v-if="loading" class="flex items-center justify-center py-8">
+              <div class="flex flex-col items-center space-y-3">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="text-gray-600 text-sm">Đang tải...</p>
+              </div>
+            </div>
+            <div v-else>
+              <slot></slot>
+            </div>
           </div>
           <div v-if="$slots.footer" class="modal-footer">
             <slot name="footer"></slot>
@@ -25,7 +33,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -52,6 +60,10 @@ const props = defineProps({
   onClose: {
     type: Function,
     default: () => {}
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -59,6 +71,8 @@ const emit = defineEmits(['update:modelValue', 'close'])
 
 // Hỗ trợ cả v-model và prop show
 const isOpen = computed(() => props.modelValue || props.show)
+
+
 
 const modalSize = computed(() => {
   switch (props.size) {
@@ -99,14 +113,36 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleEscKey)
 })
 
+// Modal scroll management
+let scrollPosition = 0
+let isModalOpen = false
+
 // Prevent body scroll when modal is open
 watch(isOpen, (newValue) => {
-  if (newValue) {
+  if (newValue && !isModalOpen) {
+    // Lưu vị trí scroll hiện tại
+    scrollPosition = window.pageYOffset || document.documentElement.scrollTop
     document.body.classList.add('modal-open')
-  } else {
+    isModalOpen = true
+  } else if (!newValue && isModalOpen) {
+    // Restore scroll position
     document.body.classList.remove('modal-open')
+    isModalOpen = false
+    // Đảm bảo scroll được restore sau khi class được remove
+    nextTick(() => {
+      window.scrollTo(0, scrollPosition)
+    })
   }
 }, { immediate: true })
+
+// Cleanup khi component unmount
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', handleEscKey)
+  if (isModalOpen) {
+    document.body.classList.remove('modal-open')
+    isModalOpen = false
+  }
+})
 </script>
 
 <style scoped>
@@ -119,7 +155,7 @@ watch(isOpen, (newValue) => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 50;
+  z-index: 9999;
 }
 
 .modal-backdrop {
@@ -140,6 +176,7 @@ watch(isOpen, (newValue) => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  z-index: 10000;
 }
 
 .modal-sm {

@@ -1,15 +1,12 @@
 <template>
   <div>
-    <div v-if="loading" class="flex justify-center items-center p-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      <span class="ml-2 text-gray-600">Đang tải dữ liệu...</span>
-    </div>
     <BrandForm 
-      v-else-if="showModal"
+      v-if="showModal"
       :show="showModal"
       :brand="brandData"
       :status-enums="statusEnums"
       :api-errors="apiErrors"
+      :loading="loading"
       @submit="handleSubmit" 
       @cancel="onClose" 
     />

@@ -1,5 +1,5 @@
 ﻿<template>
-  <Modal v-model="modalVisible" :title="formTitle">
+  <Modal v-model="modalVisible" :title="formTitle" :loading="loading">
     <form @submit.prevent="validateAndSubmit" class="space-y-4">
       <!-- Tên kho hàng -->
       <div>
@@ -69,7 +69,8 @@ const props = defineProps({
   show: Boolean,
   warehouse: Object,
   apiErrors: { type: Object, default: () => ({}) },
-  mode: String
+  mode: String,
+  loading: { type: Boolean, default: false }
 })
 const emit = defineEmits(['submit', 'cancel'])
 
@@ -185,13 +186,11 @@ function validateAndSubmit() {
   if (!validateForm()) return
   isSubmitting.value = true
   try {
-    console.log('Current formData:', formData)
     const submitData = {}
     Object.entries(formData).forEach(([key, value]) => {
       // Gửi tất cả các trường, kể cả rỗng
       submitData[key] = value || ''
     })
-    console.log('Submitting warehouse data:', submitData)
     emit('submit', submitData)
   } finally {
     isSubmitting.value = false

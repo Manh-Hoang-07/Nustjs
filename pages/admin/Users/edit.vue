@@ -8,6 +8,7 @@
       :gender-enums="genderEnums"
       :role-enums="roleEnums"
       :api-errors="apiErrors"
+      :loading="loading"
       @submit="handleSubmit" 
       @cancel="onClose" 
     />
@@ -32,6 +33,7 @@ const emit = defineEmits(['updated'])
 
 const showModal = ref(false)
 const userDetail = ref(null)
+const loading = ref(false)
 
 const { apiErrors, submit } = useApiFormSubmit({
   endpoint: endpoints.users.update(props.user?.id),
@@ -52,12 +54,15 @@ watch(() => props.show, async (newValue) => {
 
 async function fetchUserDetail() {
   try {
+    loading.value = true
     const response = await apiClient.get(endpoints.users.show(props.user.id))
     if (response.data.success) {
       userDetail.value = response.data.data
     }
   } catch (error) {
-    console.error('Error fetching user detail:', error)
+    // Fallback to props data if API fails
+  } finally {
+    loading.value = false
   }
 }
 

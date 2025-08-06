@@ -6,6 +6,7 @@
       :product="productData"
       :api-errors="apiErrors"
       :status-options="statusOptions"
+      :loading="loading"
       mode="edit"
       @submit="handleSubmit" 
       @cancel="onClose" 

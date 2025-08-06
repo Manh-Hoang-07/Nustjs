@@ -1,16 +1,13 @@
 <template>
   <div>
-    <div v-if="loading" class="flex justify-center items-center p-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      <span class="ml-2 text-gray-600">Đang tải dữ liệu...</span>
-    </div>
     <InventoryForm 
-      v-else-if="showModal"
+      v-if="showModal"
       :show="showModal"
       :api-errors="apiErrors"
       :products="products"
       :warehouses="warehouses"
       :inventory="inventoryData"
+      :loading="loading"
       @submit="handleSubmit" 
       @cancel="onClose" 
     />
@@ -68,7 +65,6 @@ async function fetchInventoryDetails() {
     
     inventoryData.value = response.data.data || response.data
   } catch (error) {
-    console.error('Fetch inventory details error:', error)
     // Fallback về dữ liệu từ list view nếu API lỗi
     inventoryData.value = props.inventory
   } finally {

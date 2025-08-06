@@ -1,5 +1,5 @@
 ﻿<template>
-  <Modal v-model="modalVisible" :title="formTitle">
+  <Modal v-model="modalVisible" :title="formTitle" :loading="loading">
     <form @submit.prevent="validateAndSubmit" class="space-y-4">
       <!-- Khách hàng -->
       <div>
@@ -63,7 +63,8 @@ const props = defineProps({
   show: Boolean,
   order: Object,
   apiErrors: { type: Object, default: () => ({}) },
-  mode: String
+  mode: String,
+  loading: { type: Boolean, default: false }
 })
 const emit = defineEmits(['submit', 'cancel'])
 

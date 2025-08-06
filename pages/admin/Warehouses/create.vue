@@ -41,7 +41,6 @@ async function handleSubmit(formData) {
     emit('created')
     props.onClose()
   } catch (error) {
-    console.error('Create warehouse error:', error)
     if (error.response?.status === 422 && error.response?.data?.errors) {
       const errors = error.response.data.errors
       for (const field in errors) {
