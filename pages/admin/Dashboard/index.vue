@@ -159,6 +159,12 @@
 </template>
 
 <script setup>
+// Page meta
+definePageMeta({
+  requiresAuth: true,
+  requiresAdmin: true
+})
+
 import { ref, onMounted } from 'vue'
 import { 
   UsersIcon, 

@@ -65,6 +65,16 @@ import SidebarMenu from '../components/Layout/Sidebar/SidebarMenu.vue';
 
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
+
+// Kiểm tra quyền truy cập
+onMounted(async () => {
+  // Kiểm tra xem user có đăng nhập và có quyền admin không
+  if (!authStore.isAuthenticated || !authStore.isAdmin) {
+    await navigateTo('/login');
+    return;
+  }
+});
 
 // Đặt sidebarOpen mặc định là true
 const sidebarOpen = ref(true);
@@ -206,12 +216,11 @@ const pageTitle = computed(() => {
   return currentItem ? currentItem.name : 'Admin Panel';
 });
 
-const userName = 'Admin User'; // Có thể lấy từ store hoặc props sau này
+const userName = computed(() => authStore.user?.name || 'Admin User');
 
-const logout = () => {
-  localStorage.removeItem('isAuthenticated');
-  localStorage.removeItem('userRole');
-  navigateTo('/');
+const logout = async () => {
+  await authStore.logout();
+  await navigateTo('/login');
 };
 </script>
 

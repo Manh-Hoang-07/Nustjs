@@ -1,69 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-          <div class="flex items-center">
-            <NuxtLink to="/" class="text-xl font-bold text-gray-900">
-              Laravel Nuxt App
-            </NuxtLink>
-          </div>
-          
-          <div class="flex items-center space-x-4">
-            <NuxtLink 
-              to="/" 
-              :class="[
-                'nav-link',
-                $route.path === '/' ? 'nav-link-active' : ''
-              ]"
-            >
-              Home
-            </NuxtLink>
-            
-            <NuxtLink 
-              to="/about" 
-              :class="[
-                'nav-link',
-                $route.path === '/about' ? 'nav-link-active' : ''
-              ]"
-            >
-              About
-            </NuxtLink>
-            
-            <template v-if="authStore.isAuthenticated">
-              <NuxtLink 
-                v-if="authStore.isAdmin"
-                to="/admin" 
-                :class="[
-                  'nav-link',
-                  $route.path.startsWith('/admin') ? 'nav-link-active' : ''
-                ]"
-              >
-                Admin
-              </NuxtLink>
-              
-              <button 
-                @click="handleLogout" 
-                class="btn btn-danger"
-              >
-                Logout
-              </button>
-            </template>
-            
-            <template v-else>
-              <NuxtLink to="/login" class="btn btn-primary">
-                Login
-              </NuxtLink>
-              <NuxtLink to="/register" class="btn btn-success">
-                Register
-              </NuxtLink>
-            </template>
-          </div>
-        </div>
-      </div>
-    </nav>
-
     <!-- Main Content -->
     <NuxtLayout>
       <NuxtPage />
@@ -77,7 +13,10 @@ import { useAuthStore } from './stores/auth'
 const route = useRoute()
 const authStore = useAuthStore()
 
-// Check authentication on app start
+// Check authentication on app start - call immediately
+await authStore.checkAuth()
+
+// Also check on mount for safety
 onMounted(() => {
   authStore.checkAuth()
 })

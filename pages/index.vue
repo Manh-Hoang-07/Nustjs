@@ -11,12 +11,39 @@
             <NuxtLink to="/about" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               Giới thiệu
             </NuxtLink>
-            <NuxtLink to="/login" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              Đăng nhập
-            </NuxtLink>
-            <NuxtLink to="/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
-              Đăng ký
-            </NuxtLink>
+            
+            <!-- Hiển thị navigation dựa trên trạng thái đăng nhập -->
+            <template v-if="authStore.isAuthenticated">
+              <NuxtLink 
+                v-if="authStore.isAdmin"
+                to="/admin" 
+                class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Admin Panel
+              </NuxtLink>
+              <NuxtLink 
+                v-else
+                to="/user" 
+                class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Dashboard
+              </NuxtLink>
+              <button 
+                @click="handleLogout" 
+                class="text-red-600 hover:text-red-700 px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Đăng xuất
+              </button>
+            </template>
+            
+            <template v-else>
+              <NuxtLink to="/login" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                Đăng nhập
+              </NuxtLink>
+              <NuxtLink to="/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                Đăng ký
+              </NuxtLink>
+            </template>
           </nav>
         </div>
       </div>
@@ -174,6 +201,7 @@
 <script setup>
 // Page meta
 definePageMeta({
+  layout: 'home',
   title: 'Trang chủ - E-Commerce Platform',
   description: 'Nền tảng thương mại điện tử hiện đại với đầy đủ tính năng quản lý'
 })
@@ -181,16 +209,25 @@ definePageMeta({
 // Check if user is authenticated
 const authStore = useAuthStore()
 
-// Redirect authenticated users to appropriate dashboard
-onMounted(() => {
-  if (authStore.isAuthenticated) {
-    if (authStore.isAdmin) {
-      navigateTo('/admin')
-    } else {
-      navigateTo('/user')
-    }
-  }
-})
+// Không tự động redirect nữa - để người dùng tự chọn
+// onMounted(async () => {
+//   // Đảm bảo auth được kiểm tra trước
+//   await authStore.checkAuth()
+//   
+//   if (authStore.isAuthenticated) {
+//     if (authStore.isAdmin) {
+//       await navigateTo('/admin')
+//     } else {
+//       await navigateTo('/user')
+//     }
+//   }
+// })
+
+// Handle logout
+const handleLogout = async () => {
+  await authStore.logout()
+  await navigateTo('/login')
+}
 </script>
 
 <style scoped>

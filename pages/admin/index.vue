@@ -185,7 +185,9 @@
 definePageMeta({
   layout: 'admin-layout',
   title: 'Dashboard',
-  description: 'Admin Dashboard - Tổng quan hệ thống'
+  description: 'Admin Dashboard - Tổng quan hệ thống',
+  requiresAuth: true,
+  requiresAdmin: true
 })
 
 // Data

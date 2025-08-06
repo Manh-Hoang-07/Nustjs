@@ -130,6 +130,7 @@
 <script setup>
 // Page meta
 definePageMeta({
+  layout: 'auth',
   title: 'Đăng ký',
   description: 'Đăng ký tài khoản mới',
   requiresGuest: true

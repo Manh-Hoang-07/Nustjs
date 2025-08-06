@@ -83,8 +83,8 @@
           {{ error }}
         </div>
 
-        <!-- Demo Login Buttons -->
-        <div class="mt-6">
+        <!-- Demo Login Buttons - REMOVED FOR SECURITY -->
+        <!-- <div class="mt-6">
           <div class="relative">
             <div class="absolute inset-0 flex items-center">
               <div class="w-full border-t border-gray-300"></div>
@@ -110,7 +110,7 @@
               User Demo
             </button>
           </div>
-        </div>
+        </div> -->
       </form>
     </div>
   </div>
@@ -119,6 +119,7 @@
 <script setup>
 // Page meta
 definePageMeta({
+  layout: 'auth',
   title: 'Đăng nhập',
   description: 'Đăng nhập vào hệ thống',
   requiresGuest: true
@@ -165,13 +166,14 @@ const handleLogin = async () => {
   }
 }
 
-const loginAsAdmin = async () => {
-  authStore.loginAsAdmin()
-  await navigateTo('/admin')
-}
+// Demo methods removed for security
+// const loginAsAdmin = async () => {
+//   authStore.loginAsAdmin()
+//   await navigateTo('/admin')
+// }
 
-const loginAsUser = async () => {
-  authStore.loginAsUser()
-  await navigateTo('/user')
-}
+// const loginAsUser = async () => {
+//   authStore.loginAsUser()
+//   await navigateTo('/user')
+// }
 </script> 

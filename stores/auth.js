@@ -15,16 +15,34 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => userRole.value === 'admin')
   const isUser = computed(() => userRole.value === 'user')
 
+  // Helper function để lấy token từ cookie
+  const getTokenFromCookie = () => {
+    if (process.client) {
+      const cookies = document.cookie.split(';')
+      for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=')
+        if (name === 'auth_token') {
+          return decodeURIComponent(value)
+        }
+      }
+    }
+    return null
+  }
+
   // Helper function để lưu token vào cookie
   const setTokenToCookie = (token, days = 7) => {
-    const expires = new Date();
-    expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-    document.cookie = `auth_token=${encodeURIComponent(token)};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
+    if (process.client) {
+      const expires = new Date()
+      expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000))
+      document.cookie = `auth_token=${encodeURIComponent(token)};expires=${expires.toUTCString()};path=/;SameSite=Strict`
+    }
   }
 
   // Helper function để xóa token khỏi cookie
   const removeTokenFromCookie = () => {
-    document.cookie = 'auth_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
+    if (process.client) {
+      document.cookie = 'auth_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;'
+    }
   }
 
   // Actions
@@ -120,6 +138,15 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const checkAuth = async () => {
+    // Kiểm tra token trong cookie trước
+    const token = getTokenFromCookie()
+    if (!token) {
+      isAuthenticated.value = false
+      user.value = null
+      userRole.value = ''
+      return false
+    }
+
     if (isAuthenticated.value && user.value) {
       return true
     }
@@ -169,28 +196,28 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Demo methods for testing
-  const loginAsAdmin = () => {
-    isAuthenticated.value = true
-    user.value = {
-      id: 1,
-      name: 'Admin User',
-      email: 'admin@example.com',
-      role: 'admin'
-    }
-    userRole.value = 'admin'
-  }
+  // Demo methods for testing - REMOVED FOR SECURITY
+  // const loginAsAdmin = () => {
+  //   isAuthenticated.value = true
+  //   user.value = {
+  //     id: 1,
+  //     name: 'Admin User',
+  //     email: 'admin@example.com',
+  //     role: 'admin'
+  //   }
+  //   userRole.value = 'admin'
+  // }
 
-  const loginAsUser = () => {
-    isAuthenticated.value = true
-    user.value = {
-      id: 2,
-      name: 'Regular User',
-      email: 'user@example.com',
-      role: 'user'
-    }
-    userRole.value = 'user'
-  }
+  // const loginAsUser = () => {
+  //   isAuthenticated.value = true
+  //   user.value = {
+  //     id: 2,
+  //     name: 'Regular User',
+  //     email: 'user@example.com',
+  //     role: 'user'
+  //   }
+  //   userRole.value = 'user'
+  // }
 
   return {
     // State
@@ -212,7 +239,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshUserInfo,
     updateProfile,
     changePassword,
-    loginAsAdmin,
-    loginAsUser
+    getTokenFromCookie
+    // loginAsAdmin, loginAsUser - REMOVED FOR SECURITY
   }
 }) 

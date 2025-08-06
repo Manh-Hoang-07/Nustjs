@@ -131,6 +131,7 @@
 <script setup>
 // Page meta
 definePageMeta({
+  layout: 'home',
   title: 'Về chúng tôi - E-Commerce Platform',
   description: 'Tìm hiểu về nền tảng thương mại điện tử hàng đầu với các tính năng quản lý hiện đại'
 })

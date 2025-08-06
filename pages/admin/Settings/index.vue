@@ -208,7 +208,9 @@
 
 <script setup>
 definePageMeta({
-  layout: 'admin-layout'
+  layout: 'admin-layout',
+  requiresAuth: true,
+  requiresAdmin: true
 })
 
 import { ref, onMounted } from 'vue';
