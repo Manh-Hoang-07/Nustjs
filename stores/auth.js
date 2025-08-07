@@ -68,7 +68,19 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (error) {
       console.error('Login error:', error)
-      return { success: false, message: 'Lỗi kết nối' }
+      
+      // Enhanced error handling
+      if (error.response?.status === 401) {
+        return { success: false, message: 'Email hoặc mật khẩu không đúng' }
+      } else if (error.response?.status === 422) {
+        return { success: false, message: 'Dữ liệu không hợp lệ' }
+      } else if (error.code === 'ECONNABORTED') {
+        return { success: false, message: 'Kết nối bị timeout, vui lòng thử lại' }
+      } else if (!error.response) {
+        return { success: false, message: 'Không thể kết nối đến server' }
+      }
+      
+      return { success: false, message: error.userMessage || 'Lỗi kết nối' }
     }
   }
 
@@ -83,7 +95,15 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (error) {
       console.error('Register error:', error)
-      return { success: false, message: 'Lỗi kết nối' }
+      
+      // Enhanced error handling
+      if (error.response?.status === 422) {
+        return { success: false, message: 'Dữ liệu không hợp lệ' }
+      } else if (error.response?.status === 409) {
+        return { success: false, message: 'Email đã tồn tại' }
+      }
+      
+      return { success: false, message: error.userMessage || 'Lỗi kết nối' }
     }
   }
 
@@ -105,15 +125,19 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const fetchUserInfo = async (force = false) => {
-    const { cachedApiCall } = useApiCache()
-    
     try {
       isFetchingUser.value = true
-      const response = await cachedApiCall(
-        'user-info',
-        () => apiClient.get('/api/me'),
-        force
-      )
+      
+      // Kiểm tra token trước
+      const token = getTokenFromCookie()
+      if (!token) {
+        isAuthenticated.value = false
+        user.value = null
+        userRole.value = ''
+        return
+      }
+      
+      const response = await apiClient.get('/api/me')
       
       if (response.data.success) {
         user.value = response.data.data
@@ -125,12 +149,24 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated.value = false
         user.value = null
         userRole.value = ''
+        removeTokenFromCookie()
       }
     } catch (error) {
       console.error('Fetch user info error:', error)
-      isAuthenticated.value = false
-      user.value = null
-      userRole.value = ''
+      
+      // Handle specific errors
+      if (error.response?.status === 401) {
+        // Token expired or invalid
+        isAuthenticated.value = false
+        user.value = null
+        userRole.value = ''
+        removeTokenFromCookie()
+      } else if (error.response?.status === 403) {
+        // User not authorized
+        isAuthenticated.value = false
+        user.value = null
+        userRole.value = ''
+      }
     } finally {
       isFetchingUser.value = false
     }

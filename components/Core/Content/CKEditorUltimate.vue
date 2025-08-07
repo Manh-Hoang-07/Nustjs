@@ -49,15 +49,16 @@ const editor = ref(null)
 const loading = ref(true)
 const error = ref(null)
 
-// Lazy load CKEditor
-let CKEditor = null
-
+// Lazy load CKEditor với dynamic import
 const loadCKEditor = async () => {
   try {
-    // Dynamic import để lazy load
-    const module = await import('@ckeditor/ckeditor5-build-decoupled-document')
-    CKEditor = module.default || module
-    return true
+    // Chỉ load khi thực sự cần
+    if (process.client && !CKEditor) {
+      const module = await import(/* webpackChunkName: "ckeditor" */ '@ckeditor/ckeditor5-build-decoupled-document')
+      CKEditor = module.default || module
+      return true
+    }
+    return !!CKEditor
   } catch (err) {
     error.value = 'Không thể tải trình soạn thảo'
     console.error('CKEditor load error:', err)
@@ -65,12 +66,13 @@ const loadCKEditor = async () => {
   }
 }
 
+// Thêm loading state tốt hơn
 const initEditor = async () => {
   try {
     loading.value = true
     error.value = null
 
-    // Đảm bảo CKEditor được load
+    // Chỉ load CKEditor khi component được mount và visible
     if (!CKEditor) {
       const loaded = await loadCKEditor()
       if (!loaded) {
@@ -163,9 +165,8 @@ const initEditor = async () => {
     }
 
   } catch (err) {
-    error.value = 'Không thể khởi tạo trình soạn thảo'
-    console.error('CKEditor init error:', err)
-    console.error('CKEditor object:', CKEditor)
+    error.value = 'Lỗi khởi tạo trình soạn thảo'
+    console.error('Editor init error:', err)
   } finally {
     loading.value = false
   }

@@ -7,7 +7,10 @@ export function useDataTable(endpoint, options = {}) {
     defaultFilters = {},
     defaultSort = 'created_at_desc',
     cacheEnabled = true,
-    debounceTime = 300
+    debounceTime = 300,
+    // Thêm options mới
+    pageSize = 10,
+    enableVirtualScroll = false
   } = options
 
   // State
@@ -19,7 +22,7 @@ export function useDataTable(endpoint, options = {}) {
     from: 0,
     to: 0,
     total: 0,
-    per_page: 10,
+    per_page: pageSize,
     links: []
   })
   
@@ -33,12 +36,34 @@ export function useDataTable(endpoint, options = {}) {
   const isFirstPage = computed(() => pagination.current_page === 1)
   const isLastPage = computed(() => pagination.current_page === pagination.last_page)
 
-  // Cache key generator
+  // Cache key generator với TTL
   const getCacheKey = (params) => {
     return JSON.stringify({ ...filters, ...params })
   }
 
-  // Debounced fetch function
+  // Cache với TTL (Time To Live)
+  const setCacheWithTTL = (key, data, ttl = 5 * 60 * 1000) => { // 5 phút
+    cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      ttl
+    })
+  }
+
+  const getCacheWithTTL = (key) => {
+    const cached = cache.get(key)
+    if (!cached) return null
+    
+    const isExpired = Date.now() - cached.timestamp > cached.ttl
+    if (isExpired) {
+      cache.delete(key)
+      return null
+    }
+    
+    return cached.data
+  }
+
+  // Debounced fetch function với improved debouncing
   const debouncedFetch = (params = {}) => {
     if (debounceTimer) {
       clearTimeout(debounceTimer)
@@ -49,7 +74,7 @@ export function useDataTable(endpoint, options = {}) {
     }, debounceTime)
   }
 
-  // Main fetch function with caching
+  // Main fetch function với improved caching
   const fetchData = async (params = {}) => {
     loading.value = true
     error.value = null
@@ -58,13 +83,15 @@ export function useDataTable(endpoint, options = {}) {
       const requestParams = { ...filters, ...params }
       const cacheKey = getCacheKey(requestParams)
       
-      // Check cache first
-      if (cacheEnabled && cache.has(cacheKey)) {
-        const cachedData = cache.get(cacheKey)
-        items.value = cachedData.data
-        Object.assign(pagination, cachedData.meta)
-        loading.value = false
-        return cachedData
+      // Check cache first với TTL
+      if (cacheEnabled) {
+        const cachedData = getCacheWithTTL(cacheKey)
+        if (cachedData) {
+          items.value = cachedData.data
+          Object.assign(pagination, cachedData.meta)
+          loading.value = false
+          return cachedData
+        }
       }
       
       // Fetch from server using apiClient (with authentication)
@@ -77,9 +104,9 @@ export function useDataTable(endpoint, options = {}) {
         Object.assign(pagination, meta)
       }
       
-      // Cache the result
+      // Cache the result với TTL
       if (cacheEnabled) {
-        cache.set(cacheKey, { data, meta })
+        setCacheWithTTL(cacheKey, { data, meta })
       }
       
       return { data, meta }

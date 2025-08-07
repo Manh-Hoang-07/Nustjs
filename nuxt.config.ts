@@ -58,18 +58,24 @@ export default defineNuxtConfig({
       // Optimize bundle size
       rollupOptions: {
         output: {
-          manualChunks: {
-            // Separate vendor chunks
-            'vendor-vue': ['vue', 'vue-router'],
-            'vendor-ui': ['@heroicons/vue'],
-            'vendor-utils': ['axios', 'pinia'],
-            'vendor-editor': ['@ckeditor/ckeditor5-build-decoupled-document'],
-            'vendor-multiselect': ['vue-multiselect']
+          manualChunks: (id) => {
+            // Tách CKEditor thành chunk riêng
+            if (id.includes('@ckeditor')) {
+              return 'ckeditor'
+            }
+            // Tách vendor libraries
+            if (id.includes('node_modules')) {
+              if (id.includes('vue')) return 'vendor-vue'
+              if (id.includes('@heroicons')) return 'vendor-ui'
+              if (id.includes('axios') || id.includes('pinia')) return 'vendor-utils'
+              if (id.includes('vue-multiselect')) return 'vendor-multiselect'
+              return 'vendor'
+            }
           }
         }
       },
-      // Increase chunk size warning limit
-      chunkSizeWarningLimit: 1000
+      // Tăng limit để tránh warning không cần thiết
+      chunkSizeWarningLimit: 1500
     },
     // Optimize dependencies
     optimizeDeps: {

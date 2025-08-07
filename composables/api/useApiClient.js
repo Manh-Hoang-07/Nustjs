@@ -12,8 +12,17 @@ export function useApiClient(options = {}) {
     retryAttempts = 3,
     retryDelay = 1000,
     timeout = 30000,
-    enableRetry = true
+    enableRetry = true,
+    enablePerformanceMonitoring = true
   } = options
+
+  // Helper function để lấy thời gian hiện tại (tương thích SSR)
+  const getNow = () => {
+    if (process.client && typeof performance !== 'undefined' && performance.now) {
+      return performance.now()
+    }
+    return Date.now()
+  }
 
   // Tạo API client với base URL từ runtime config
   const api = axios.create({
@@ -25,6 +34,13 @@ export function useApiClient(options = {}) {
       'Accept': 'application/json'
     }
   })
+
+  // Performance monitoring
+  const performanceMetrics = {
+    requestCount: 0,
+    totalResponseTime: 0,
+    slowRequests: []
+  }
 
   // Helper function để lấy token từ cookie
   function getTokenFromCookie() {
@@ -42,7 +58,7 @@ export function useApiClient(options = {}) {
     return null
   }
 
-  // Retry logic
+  // Retry logic với exponential backoff
   const retryRequest = async (error, retryCount = 0) => {
     if (!enableRetry || retryCount >= retryAttempts) {
       throw error
@@ -57,8 +73,8 @@ export function useApiClient(options = {}) {
       throw error
     }
 
-    // Exponential backoff
-    const delay = retryDelay * Math.pow(2, retryCount)
+    // Exponential backoff với jitter
+    const delay = retryDelay * Math.pow(2, retryCount) + Math.random() * 1000
     await new Promise(resolve => setTimeout(resolve, delay))
 
     // Retry request
@@ -69,7 +85,7 @@ export function useApiClient(options = {}) {
     }
   }
 
-  // Request interceptor
+  // Request interceptor với performance monitoring
   api.interceptors.request.use(
     (config) => {
       // Tự động thêm token vào header nếu có trong cookie
@@ -78,8 +94,16 @@ export function useApiClient(options = {}) {
         config.headers.Authorization = `Bearer ${token}`
       }
 
-      // Add request timestamp for debugging
-      config.metadata = { startTime: new Date() }
+      // Add request timestamp for performance monitoring
+      config.metadata = { 
+        startTime: getNow(),
+        url: config.url 
+      }
+      
+      // Increment request count
+      if (enablePerformanceMonitoring) {
+        performanceMetrics.requestCount++
+      }
       
       return config
     },
@@ -89,46 +113,41 @@ export function useApiClient(options = {}) {
     }
   )
 
-  // Response interceptor
+  // Response interceptor với enhanced performance monitoring
   api.interceptors.response.use(
     (response) => {
-      // Log response time for performance monitoring - chỉ log khi thực sự chậm
-      if (response.config.metadata?.startTime) {
-        const duration = new Date() - response.config.metadata.startTime
-        // Tăng ngưỡng từ 2s lên 5s để giảm cảnh báo không cần thiết
-        if (duration > 5000) { // Chỉ log requests thực sự chậm (>5s)
-          console.warn(`Slow API request: ${response.config.url} took ${duration}ms`)
+      // Enhanced performance monitoring
+      if (response.config.metadata?.startTime && enablePerformanceMonitoring) {
+        const duration = getNow() - response.config.metadata.startTime
+        performanceMetrics.totalResponseTime += duration
+        
+        // Track slow requests (>2s)
+        if (duration > 2000) {
+          performanceMetrics.slowRequests.push({
+            url: response.config.url,
+            duration: duration,
+            timestamp: new Date().toISOString()
+          })
+          
+          console.warn(`Slow API request: ${response.config.url} took ${duration.toFixed(2)}ms`)
+        }
+        
+        // Log performance metrics every 10 requests
+        if (performanceMetrics.requestCount % 10 === 0) {
+          const avgResponseTime = performanceMetrics.totalResponseTime / performanceMetrics.requestCount
+          console.log(`API Performance - Avg: ${avgResponseTime.toFixed(2)}ms, Total: ${performanceMetrics.requestCount}`)
         }
       }
       
       return response
     },
-    async (error) => {
-      // Log detailed error information - chỉ log lỗi thực sự quan trọng
-      if (error.response?.status >= 500 || error.code === 'ECONNABORTED') {
-        console.error('API Response Error:', {
-          status: error.response?.status,
-          statusText: error.response?.statusText,
-          url: error.config?.url,
-          method: error.config?.method,
-          message: error.message,
-          duration: error.config?.metadata?.startTime ? 
-            new Date() - error.config.metadata.startTime : null
-        })
+    (error) => {
+      // Log error performance
+      if (error.config?.metadata?.startTime && enablePerformanceMonitoring) {
+        const duration = getNow() - error.config.metadata.startTime
+        console.error(`API Error: ${error.config.url} failed after ${duration.toFixed(2)}ms`)
       }
       
-      // Handle authentication errors
-      if (error.response?.status === 401) {
-        // Redirect to login or refresh token
-        console.warn('Authentication error - redirecting to login')
-        // Có thể thêm logic redirect ở đây
-      }
-      
-      if (error.response?.status === 403) {
-        console.warn('Forbidden - insufficient permissions')
-      }
-
-      // Retry logic
       return retryRequest(error)
     }
   )
@@ -178,14 +197,34 @@ export function useApiClient(options = {}) {
     },
 
     handleError(error, method, url) {
-      // Enhanced error object
+      // Enhanced error object với thông tin chi tiết
       const enhancedError = {
         ...error,
         method,
         url,
         timestamp: new Date().toISOString(),
-        userMessage: this.getUserFriendlyMessage(error)
+        userMessage: this.getUserFriendlyMessage(error),
+        // Thêm thông tin debug
+        debug: {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          config: {
+            timeout: error.config?.timeout,
+            baseURL: error.config?.baseURL
+          }
+        }
       }
+
+      // Log chi tiết cho debugging
+      console.error('API Error Details:', {
+        method,
+        url,
+        status: error.response?.status,
+        message: error.message,
+        data: error.response?.data,
+        timestamp: enhancedError.timestamp
+      })
 
       return enhancedError
     },
@@ -206,10 +245,20 @@ export function useApiClient(options = {}) {
         403: 'Bạn không có quyền thực hiện hành động này',
         404: 'Không tìm thấy dữ liệu',
         422: 'Dữ liệu không hợp lệ',
+        429: 'Quá nhiều yêu cầu, vui lòng thử lại sau',
         500: 'Lỗi server, vui lòng thử lại sau',
         502: 'Lỗi kết nối server',
         503: 'Server đang bảo trì',
         504: 'Hết thời gian chờ kết nối'
+      }
+
+      // Network errors
+      if (error.code === 'ECONNABORTED') {
+        return 'Kết nối bị timeout, vui lòng thử lại'
+      }
+      
+      if (error.code === 'NETWORK_ERROR') {
+        return 'Không thể kết nối đến server'
       }
 
       return messages[status] || 'Có lỗi xảy ra, vui lòng thử lại'

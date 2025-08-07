@@ -14,9 +14,9 @@
             
             <!-- Client-only navigation để tránh hydration mismatch -->
             <ClientOnly>
-              <template v-if="safeAuthState.isAuthenticated">
+              <template v-if="isAuthenticated">
                 <NuxtLink 
-                  v-if="safeAuthState.isAdmin"
+                  v-if="userRole === 'admin'"
                   to="/admin" 
                   class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
@@ -218,9 +218,13 @@ definePageMeta({
   description: 'Nền tảng thương mại điện tử hiện đại với đầy đủ tính năng quản lý'
 })
 
-// Sử dụng auth init composable để tránh hydration mismatch
-const { shouldRenderAuthContent, safeAuthState } = useAuthInit()
+// Sử dụng auth store
 const authStore = useAuthStore()
+
+// Reactive auth state
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const user = computed(() => authStore.user)
+const userRole = computed(() => authStore.userRole)
 
 // Handle logout
 const handleLogout = async () => {
