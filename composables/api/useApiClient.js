@@ -92,10 +92,11 @@ export function useApiClient(options = {}) {
   // Response interceptor
   api.interceptors.response.use(
     (response) => {
-      // Log response time for performance monitoring
+      // Log response time for performance monitoring - chỉ log khi thực sự chậm
       if (response.config.metadata?.startTime) {
         const duration = new Date() - response.config.metadata.startTime
-        if (duration > 2000) { // Log slow requests
+        // Tăng ngưỡng từ 2s lên 5s để giảm cảnh báo không cần thiết
+        if (duration > 5000) { // Chỉ log requests thực sự chậm (>5s)
           console.warn(`Slow API request: ${response.config.url} took ${duration}ms`)
         }
       }
@@ -103,17 +104,18 @@ export function useApiClient(options = {}) {
       return response
     },
     async (error) => {
-      // Log detailed error information
-      console.error('API Response Error:', {
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        url: error.config?.url,
-        method: error.config?.method,
-        message: error.message,
-        duration: error.config?.metadata?.startTime ? 
-          new Date() - error.config.metadata.startTime : null
-      })
+      // Log detailed error information - chỉ log lỗi thực sự quan trọng
+      if (error.response?.status >= 500 || error.code === 'ECONNABORTED') {
+        console.error('API Response Error:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          url: error.config?.url,
+          method: error.config?.method,
+          message: error.message,
+          duration: error.config?.metadata?.startTime ? 
+            new Date() - error.config.metadata.startTime : null
+        })
+      }
       
       // Handle authentication errors
       if (error.response?.status === 401) {

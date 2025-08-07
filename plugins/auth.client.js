@@ -1,6 +1,9 @@
-export default defineNuxtPlugin(async () => {
+export default defineNuxtPlugin(async (nuxtApp) => {
   const authStore = useAuthStore()
   
-  // Kiểm tra authentication ngay khi app khởi động
-  await authStore.checkAuth()
+  // Chỉ chạy trên client
+  if (process.client) {
+    // Khởi tạo auth state khi app mount
+    await authStore.checkAuth()
+  }
 }) 

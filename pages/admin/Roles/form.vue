@@ -139,6 +139,7 @@ import { ref, computed, reactive, watch, onMounted } from 'vue'
 import Modal from '../../../components/Core/Modal/Modal.vue'
 import endpoints from '../../../api/endpoints.js'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { useApiCache } from '../../../composables/api/useApiCache.js'
 
 const api = useApiClient()
 const { $loadMultiselect } = useNuxtApp()
@@ -207,9 +208,15 @@ const fetchParentOptions = async () => {
 const permissions = ref([])
 const loadingPermissions = ref(false)
 const fetchPermissions = async () => {
+  const { cachedApiCall } = useApiCache()
+  
   loadingPermissions.value = true
   try {
-    const response = await api.get(endpoints.permissions.list, { params: { per_page: 1000 } })
+    const response = await cachedApiCall(
+      'permissions-list',
+      () => api.get(endpoints.permissions.list, { params: { per_page: 1000 } }),
+      false
+    )
     permissions.value = response.data.data || []
   } catch (error) {
     
@@ -358,7 +365,7 @@ function onClose() {
 }
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>
+
 <style>
 .multiselect__tag, .multiselect__single, .multiselect__option {
   color: #222 !important;

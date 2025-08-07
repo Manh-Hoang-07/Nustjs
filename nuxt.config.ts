@@ -34,6 +34,11 @@ export default defineNuxtConfig({
     }
   },
 
+  // Global CSS
+  css: [
+    '~/assets/css/global.css'
+  ],
+
   // Color mode
   colorMode: {
     preference: 'light',
@@ -63,16 +68,8 @@ export default defineNuxtConfig({
           }
         }
       },
-      // Tree shaking
-      treeshake: true,
-      // Minify
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: process.env.NODE_ENV === 'production',
-          drop_debugger: process.env.NODE_ENV === 'production'
-        }
-      }
+      // Increase chunk size warning limit
+      chunkSizeWarningLimit: 1000
     },
     // Optimize dependencies
     optimizeDeps: {
@@ -90,39 +87,18 @@ export default defineNuxtConfig({
     // Performance optimizations
     ssr: {
       noExternal: ['@ckeditor/ckeditor5-build-decoupled-document']
+    },
+    // Suppress experimental features warnings
+    define: {
+      __VUE_OPTIONS_API__: false,
+      __VUE_PROD_DEVTOOLS__: false
     }
-  },
-
-  // Build optimization
-  build: {
-    // Enable source maps only in development
-    sourcemap: process.env.NODE_ENV !== 'production',
-    
-    // Optimize CSS
-    extractCSS: true,
-    
-    // Optimize images
-    transpile: [
-      '@heroicons/vue',
-      'vue-multiselect'
-    ]
-  },
-
-  // Performance optimizations
-  performance: {
-    // Enable performance monitoring
-    metrics: process.env.NODE_ENV === 'production'
   },
 
   // Nitro configuration for SSR optimization
   nitro: {
     // Enable compression
     compressPublicAssets: true,
-    
-    // Optimize static assets
-    static: {
-      maxAge: 60 * 60 * 24 * 365 // 1 year
-    },
     
     // Route rules for caching
     routeRules: {
@@ -139,21 +115,17 @@ export default defineNuxtConfig({
     }
   },
 
+  // Vue configuration to avoid experimental features
+  vue: {
+    compilerOptions: {
+      // Disable experimental features
+      hoistStatic: false
+    }
+  },
+
   // Alias configuration
   alias: {
     '@': '.',
     '~': '.'
-  },
-
-  // Experimental features for better performance
-  experimental: {
-    // Enable view transitions
-    viewTransition: true,
-    
-    // Enable payload extraction
-    payloadExtraction: true,
-    
-    // Enable renderJsonPayloads
-    renderJsonPayloads: true
   }
 })

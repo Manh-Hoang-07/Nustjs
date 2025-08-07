@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <!-- Main Content -->
+  <div id="app">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -8,48 +7,20 @@
 </template>
 
 <script setup>
-import { useAuthStore } from './stores/auth'
-
-const route = useRoute()
-const authStore = useAuthStore()
-
-// Check authentication on app start - call immediately
-await authStore.checkAuth()
-
-// Also check on mount for safety
-onMounted(() => {
-  authStore.checkAuth()
-})
-
-const handleLogout = async () => {
-  await authStore.logout()
-  await navigateTo('/login')
-}
+// Không cần setup gì thêm - để Nuxt tự quản lý
 </script>
 
 <style>
-/* Custom component styles */
-.btn {
-  @apply px-4 py-2 rounded-lg transition-colors text-sm font-medium;
+/* Global styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.btn-primary {
-  @apply bg-blue-500 text-white hover:bg-blue-600;
+#app {
+  min-height: 100vh;
 }
 
-.btn-success {
-  @apply bg-green-500 text-white hover:bg-green-600;
-}
-
-.btn-danger {
-  @apply bg-red-500 text-white hover:bg-red-600;
-}
-
-.nav-link {
-  @apply text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium;
-}
-
-.nav-link-active {
-  @apply text-blue-600;
-}
+/* Remove any unnecessary preload styles */
 </style> 

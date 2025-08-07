@@ -1,0 +1,12 @@
+/* Global CSS imports */
+@import 'vue-multiselect/dist/vue-multiselect.css';
+
+/* Global styles */
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Prevent duplicate imports */
+.multiselect {
+  /* Ensure styles are applied */
+} 

@@ -83,137 +83,31 @@ function handleMenuClick() {
   if (window.innerWidth < 1024) sidebarOpen.value = false;
 }
 
-// Menu items with emoji icons
-const menuItems = [
-  {
-    name: 'Dashboard',
-    path: '/admin',
-    icon: '📊'
-  },
-  {
-    name: 'Sản phẩm',
-    path: '/admin/products',
-    icon: '📦'
-  },
-  {
-    name: 'Danh mục',
-    path: '/admin/categories',
-    icon: '📁'
-  },
-  {
-    name: 'Thương hiệu',
-    path: '/admin/brands',
-    icon: '🏷️'
-  },
-  {
-    name: 'Thuộc tính',
-    path: '/admin/attributes',
-    icon: '⚙️'
-  },
-  {
-    name: 'Giá trị thuộc tính',
-    path: '/admin/attribute-values',
-    icon: '🔧'
-  },
-  {
-    name: 'Đơn hàng',
-    path: '/admin/orders',
-    icon: '📋'
-  },
-  {
-    name: 'Tài khoản',
-    icon: '👥',
-    children: [
-      {
-        name: 'Danh sách người dùng',
-        path: '/admin/users',
-        icon: '👤'
-      },
-      {
-        name: 'Thêm người dùng',
-        path: '/admin/users/create',
-        icon: '➕'
-      },
-      {
-        name: 'Phân quyền',
-        path: '/admin/roles',
-        icon: '🔑'
-      }
-    ]
-  },
-  {
-    name: 'Quyền',
-    path: '/admin/permissions',
-    icon: '🔑'
-  },
+// Sử dụng composable cho admin navigation
+const { menuItems, currentPath, preloadOnHover } = useAdminNavigation()
 
-  {
-    name: 'Kho hàng',
-    path: '/admin/warehouses',
-    icon: '🏪'
-  },
-  {
-    name: 'Quản lý Tồn kho',
-    path: '/admin/inventory',
-    icon: '📦'
-  },
-  {
-    name: 'Vận chuyển',
-    icon: '🚚',
-    children: [
-      {
-        name: 'Tích hợp api',
-        path: '/admin/shipping/api',
-        icon: '🔌'
-      },
-      {
-        name: 'Dịch vụ vận chuyển',
-        path: '/admin/shipping/services',
-        icon: '🚛'
-      },
-      {
-        name: 'Zone Mapping',
-        path: '/admin/shipping/zones',
-        icon: '🗺️'
-      },
-      {
-        name: 'Quy tắc giá',
-        path: '/admin/shipping/pricing',
-        icon: '💰'
-      },
-      {
-        name: 'Khuyến mãi',
-        path: '/admin/shipping/promotions',
-        icon: '🎉'
-      },
-      {
-        name: 'Giao hàng',
-        path: '/admin/shipping/delivery',
-        icon: '📮'
-      },
-      {
-        name: 'Nâng cao',
-        path: '/admin/shipping/advanced',
-        icon: '⚡'
-      }
-    ]
-  },
-  {
-    name: 'Báo cáo',
-    path: '/admin/reports',
-    icon: '📈'
-  },
-  {
-    name: 'Cài đặt',
-    path: '/admin/settings',
-    icon: '⚙️'
-  }
-];
+// Cập nhật current path
+currentPath.value = route.path
 
 // Dynamic page title
 const pageTitle = computed(() => {
-  const currentItem = menuItems.find(item => item.path === route.path);
-  return currentItem ? currentItem.name : 'Admin Panel';
+  // Tìm trong menu items chính
+  const currentItem = menuItems.value.find(item => item.path === route.path);
+  if (currentItem) {
+    return currentItem.name;
+  }
+  
+  // Tìm trong submenu items
+  for (const item of menuItems.value) {
+    if (item.children) {
+      const childItem = item.children.find(child => child.path === route.path);
+      if (childItem) {
+        return childItem.name;
+      }
+    }
+  }
+  
+  return 'Admin Panel';
 });
 
 const userName = computed(() => authStore.user?.name || 'Admin User');

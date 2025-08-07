@@ -29,7 +29,7 @@
       <slot name="menu-header"></slot>
       
       <!-- Menu Items -->
-      <div v-for="item in menuItems" :key="item.name">
+      <div v-for="item in menuItemsArray" :key="item.name">
         <!-- Menu with children -->
         <button
           v-if="item.children"
@@ -69,6 +69,7 @@
             v-for="child in item.children" 
             :key="child.path"
             :to="child.path" 
+            :prefetch="false"
             @click="$emit('select', child)"
             :class="[
               'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
@@ -88,6 +89,7 @@
         <NuxtLink 
           v-else
           :to="item.path" 
+          :prefetch="false"
           @click="$emit('select', item)"
           :class="[
             'group flex items-center w-full px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 min-h-[48px]',
@@ -114,7 +116,7 @@
 import { ref, computed, onMounted } from 'vue'
 
 const props = defineProps({
-  menuItems: { type: Array, required: true },
+  menuItems: { type: [Array, Object], required: true },
   activePath: { type: String, required: true },
   sidebarOpen: { type: Boolean, default: true }
 })
@@ -122,6 +124,11 @@ const props = defineProps({
 const route = useRoute()
 
 const expandedMenus = ref([])
+
+// Handle menuItems (could be computed or array)
+const menuItemsArray = computed(() => {
+  return Array.isArray(props.menuItems) ? props.menuItems : props.menuItems.value || []
+})
 
 const toggleSubmenu = (menuName) => {
   const index = expandedMenus.value.indexOf(menuName)
@@ -139,7 +146,7 @@ const isSubmenuActive = (item) => {
 
 // Auto-expand submenu if current path is in it
 const currentSubmenu = computed(() => {
-  for (const item of props.menuItems) {
+  for (const item of menuItemsArray.value) {
     if (item.children && item.children.some(child => child.path === route.path)) {
       return item.name
     }
@@ -148,9 +155,11 @@ const currentSubmenu = computed(() => {
 })
 
 // Auto-expand submenu on mount
-if (currentSubmenu.value && !expandedMenus.value.includes(currentSubmenu.value)) {
-  expandedMenus.value.push(currentSubmenu.value)
-}
+onMounted(() => {
+  if (currentSubmenu.value && !expandedMenus.value.includes(currentSubmenu.value)) {
+    expandedMenus.value.push(currentSubmenu.value)
+  }
+})
 
 
 </script>

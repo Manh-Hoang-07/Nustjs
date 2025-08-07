@@ -10,7 +10,6 @@
     "postinstall": "nuxt prepare",
     "build:analyze": "nuxt build --analyze",
     "build:prod": "NODE_ENV=production nuxt build",
-    "bundle:analyze": "npx @nuxt/bundle-analyzer",
     "lighthouse": "npx lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html"
   },
   "dependencies": {
@@ -27,7 +26,6 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
-    "vite-tsconfig-paths": "^5.1.4",
-    "@nuxt/bundle-analyzer": "^0.1.0"
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

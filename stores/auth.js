@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 import { useApiClient } from '../composables/api/useApiClient.js'
+import { useApiCache } from '../composables/api/useApiCache.js'
 
 export const useAuthStore = defineStore('auth', () => {
   const apiClient = useApiClient()
@@ -10,6 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isFetchingUser = ref(false)
   const lastFetchTime = ref(0)
   const fetchCacheDuration = 30000 // Cache trong 30 giây
+  const isInitialized = ref(false) // Flag để đánh dấu đã khởi tạo
 
   // Getters
   const isAdmin = computed(() => userRole.value === 'admin')
@@ -102,25 +105,21 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const fetchUserInfo = async (force = false) => {
-    // Kiểm tra cache
-    const now = Date.now()
-    if (!force && isFetchingUser.value) {
-      return // Đang fetch, không fetch nữa
-    }
+    const { cachedApiCall } = useApiCache()
     
-    if (!force && lastFetchTime.value && (now - lastFetchTime.value) < fetchCacheDuration) {
-      return // Cache còn hiệu lực
-    }
-
     try {
       isFetchingUser.value = true
-      const response = await apiClient.get('/api/me')
+      const response = await cachedApiCall(
+        'user-info',
+        () => apiClient.get('/api/me'),
+        force
+      )
       
       if (response.data.success) {
         user.value = response.data.data
         userRole.value = response.data.data.role || 'user'
         isAuthenticated.value = true
-        lastFetchTime.value = now
+        lastFetchTime.value = Date.now()
       } else {
         // Token không hợp lệ
         isAuthenticated.value = false
@@ -138,6 +137,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const checkAuth = async () => {
+    // Đánh dấu đã khởi tạo
+    isInitialized.value = true
+    
     // Kiểm tra token trong cookie trước
     const token = getTokenFromCookie()
     if (!token) {
@@ -196,35 +198,13 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Demo methods for testing - REMOVED FOR SECURITY
-  // const loginAsAdmin = () => {
-  //   isAuthenticated.value = true
-  //   user.value = {
-  //     id: 1,
-  //     name: 'Admin User',
-  //     email: 'admin@example.com',
-  //     role: 'admin'
-  //   }
-  //   userRole.value = 'admin'
-  // }
-
-  // const loginAsUser = () => {
-  //   isAuthenticated.value = true
-  //   user.value = {
-  //     id: 2,
-  //     name: 'Regular User',
-  //     email: 'user@example.com',
-  //     role: 'user'
-  //   }
-  //   userRole.value = 'user'
-  // }
-
   return {
     // State
     isAuthenticated,
     user,
     userRole,
     isFetchingUser,
+    isInitialized,
     
     // Getters
     isAdmin,
@@ -240,6 +220,5 @@ export const useAuthStore = defineStore('auth', () => {
     updateProfile,
     changePassword,
     getTokenFromCookie
-    // loginAsAdmin, loginAsUser - REMOVED FOR SECURITY
   }
 }) 

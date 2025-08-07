@@ -107,7 +107,7 @@ function onClose() {
 }
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.css"></style>
+
 <style>
 .multiselect__tag, .multiselect__single, .multiselect__option {
   color: #222 !important;
