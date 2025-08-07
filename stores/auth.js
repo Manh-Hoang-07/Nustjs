@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useApiClient } from '../composables/api/useApiClient.js'
-import { useApiCache } from '../composables/api/useApiCache.js'
 
 export const useAuthStore = defineStore('auth', () => {
   const apiClient = useApiClient()
+  
   // State
   const isAuthenticated = ref(false)
   const user = ref(null)
@@ -67,8 +67,6 @@ export const useAuthStore = defineStore('auth', () => {
         return { success: false, message: response.data.message || 'Đăng nhập thất bại' }
       }
     } catch (error) {
-      console.error('Login error:', error)
-      
       // Enhanced error handling
       if (error.response?.status === 401) {
         return { success: false, message: 'Email hoặc mật khẩu không đúng' }
@@ -94,13 +92,15 @@ export const useAuthStore = defineStore('auth', () => {
         return { success: false, message: response.data.message || 'Đăng ký thất bại' }
       }
     } catch (error) {
-      console.error('Register error:', error)
-      
       // Enhanced error handling
       if (error.response?.status === 422) {
         return { success: false, message: 'Dữ liệu không hợp lệ' }
       } else if (error.response?.status === 409) {
         return { success: false, message: 'Email đã tồn tại' }
+      } else if (error.code === 'ECONNABORTED') {
+        return { success: false, message: 'Kết nối bị timeout, vui lòng thử lại' }
+      } else if (!error.response) {
+        return { success: false, message: 'Không thể kết nối đến server' }
       }
       
       return { success: false, message: error.userMessage || 'Lỗi kết nối' }
@@ -111,7 +111,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await apiClient.post('/api/logout')
     } catch (error) {
-      console.error('Logout API error:', error)
+      // Ignore logout errors
     }
     
     // Xóa state
@@ -152,8 +152,6 @@ export const useAuthStore = defineStore('auth', () => {
         removeTokenFromCookie()
       }
     } catch (error) {
-      console.error('Fetch user info error:', error)
-      
       // Handle specific errors
       if (error.response?.status === 401) {
         // Token expired or invalid
@@ -211,8 +209,7 @@ export const useAuthStore = defineStore('auth', () => {
         return { success: false, message: response.message || 'Cập nhật thất bại' }
       }
     } catch (error) {
-      console.error('Update profile error:', error)
-      return { success: false, message: 'Lỗi kết nối' }
+      return { success: false, message: error.userMessage || 'Lỗi cập nhật' }
     }
   }
 
@@ -224,13 +221,12 @@ export const useAuthStore = defineStore('auth', () => {
       })
 
       if (response.success) {
-        return { success: true, message: response.message }
+        return { success: true, message: 'Đổi mật khẩu thành công' }
       } else {
         return { success: false, message: response.message || 'Đổi mật khẩu thất bại' }
       }
     } catch (error) {
-      console.error('Change password error:', error)
-      return { success: false, message: 'Lỗi kết nối' }
+      return { success: false, message: error.userMessage || 'Lỗi đổi mật khẩu' }
     }
   }
 
@@ -240,6 +236,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     userRole,
     isFetchingUser,
+    lastFetchTime,
     isInitialized,
     
     // Getters
@@ -254,7 +251,6 @@ export const useAuthStore = defineStore('auth', () => {
     checkAuth,
     refreshUserInfo,
     updateProfile,
-    changePassword,
-    getTokenFromCookie
+    changePassword
   }
 }) 

@@ -8,9 +8,7 @@ export function useDataTable(endpoint, options = {}) {
     defaultSort = 'created_at_desc',
     cacheEnabled = true,
     debounceTime = 300,
-    // Thêm options mới
-    pageSize = 10,
-    enableVirtualScroll = false
+    pageSize = 10
   } = options
 
   // State
@@ -36,7 +34,7 @@ export function useDataTable(endpoint, options = {}) {
   const isFirstPage = computed(() => pagination.current_page === 1)
   const isLastPage = computed(() => pagination.current_page === pagination.last_page)
 
-  // Cache key generator với TTL
+  // Cache key generator
   const getCacheKey = (params) => {
     return JSON.stringify({ ...filters, ...params })
   }
@@ -63,7 +61,7 @@ export function useDataTable(endpoint, options = {}) {
     return cached.data
   }
 
-  // Debounced fetch function với improved debouncing
+  // Debounced fetch function
   const debouncedFetch = (params = {}) => {
     if (debounceTimer) {
       clearTimeout(debounceTimer)
@@ -74,7 +72,7 @@ export function useDataTable(endpoint, options = {}) {
     }, debounceTime)
   }
 
-  // Main fetch function với improved caching
+  // Main fetch function
   const fetchData = async (params = {}) => {
     loading.value = true
     error.value = null
@@ -83,7 +81,7 @@ export function useDataTable(endpoint, options = {}) {
       const requestParams = { ...filters, ...params }
       const cacheKey = getCacheKey(requestParams)
       
-      // Check cache first với TTL
+      // Check cache first
       if (cacheEnabled) {
         const cachedData = getCacheWithTTL(cacheKey)
         if (cachedData) {
@@ -94,43 +92,41 @@ export function useDataTable(endpoint, options = {}) {
         }
       }
       
-      // Fetch from server using apiClient (with authentication)
+      // Fetch from server
       const response = await apiClient.get(endpoint, { params: requestParams })
       const { data, meta } = response.data
       
       // Update state
       items.value = data
-      if (meta) {
-        Object.assign(pagination, meta)
-      }
+      Object.assign(pagination, meta)
       
-      // Cache the result với TTL
+      // Cache result
       if (cacheEnabled) {
         setCacheWithTTL(cacheKey, { data, meta })
       }
       
       return { data, meta }
     } catch (err) {
-      error.value = err.response?.data?.message || 'Có lỗi xảy ra khi tải dữ liệu'
-      console.error('DataTable fetch error:', err)
+      error.value = err.userMessage || 'Lỗi tải dữ liệu'
+      items.value = []
       throw err
     } finally {
       loading.value = false
     }
   }
 
-  // Filter handlers
+  // Filter functions
   const updateFilters = (newFilters) => {
     Object.assign(filters, newFilters)
-    debouncedFetch({ page: 1 })
+    fetchData()
   }
 
   const resetFilters = () => {
     Object.assign(filters, defaultFilters)
-    debouncedFetch({ page: 1 })
+    fetchData()
   }
 
-  // Pagination handlers
+  // Pagination functions
   const changePage = (page) => {
     fetchData({ page })
   }
@@ -140,18 +136,14 @@ export function useDataTable(endpoint, options = {}) {
     fetchData({ page: 1, per_page: size })
   }
 
-  // CRUD operations
+  // CRUD functions
   const createItem = async (itemData) => {
     try {
       const response = await apiClient.post(endpoint, itemData)
-      // Clear cache and refresh
-      if (cacheEnabled) {
-        cache.clear()
-      }
-      await fetchData()
+      await fetchData() // Refresh data
       return response.data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Có lỗi xảy ra khi tạo mới'
+      error.value = err.userMessage || 'Lỗi tạo dữ liệu'
       throw err
     }
   }
@@ -159,14 +151,10 @@ export function useDataTable(endpoint, options = {}) {
   const updateItem = async (id, itemData) => {
     try {
       const response = await apiClient.put(`${endpoint}/${id}`, itemData)
-      // Clear cache and refresh
-      if (cacheEnabled) {
-        cache.clear()
-      }
-      await fetchData()
+      await fetchData() // Refresh data
       return response.data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Có lỗi xảy ra khi cập nhật'
+      error.value = err.userMessage || 'Lỗi cập nhật dữ liệu'
       throw err
     }
   }
@@ -174,13 +162,9 @@ export function useDataTable(endpoint, options = {}) {
   const deleteItem = async (id) => {
     try {
       await apiClient.delete(`${endpoint}/${id}`)
-      // Clear cache and refresh
-      if (cacheEnabled) {
-        cache.clear()
-      }
-      await fetchData()
+      await fetchData() // Refresh data
     } catch (err) {
-      error.value = err.response?.data?.message || 'Có lỗi xảy ra khi xóa'
+      error.value = err.userMessage || 'Lỗi xóa dữ liệu'
       throw err
     }
   }
@@ -210,6 +194,7 @@ export function useDataTable(endpoint, options = {}) {
     
     // Methods
     fetchData,
+    debouncedFetch,
     updateFilters,
     resetFilters,
     changePage,
@@ -218,7 +203,6 @@ export function useDataTable(endpoint, options = {}) {
     updateItem,
     deleteItem,
     clearCache,
-    refresh,
-    debouncedFetch
+    refresh
   }
 } 

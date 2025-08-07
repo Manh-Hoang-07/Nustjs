@@ -42,20 +42,6 @@ export function useApiCache() {
     }
   }
 
-  // Kiểm tra đang fetch
-  const isCurrentlyFetching = (key) => {
-    return isFetching.value.get(key) || false
-  }
-
-  // Set fetching state
-  const setFetching = (key, fetching) => {
-    if (fetching) {
-      isFetching.value.set(key, true)
-    } else {
-      isFetching.value.delete(key)
-    }
-  }
-
   // Cached API call
   const cachedApiCall = async (key, apiCall, force = false) => {
     // Kiểm tra cache trước
@@ -67,11 +53,11 @@ export function useApiCache() {
     }
 
     // Kiểm tra đang fetch
-    if (isCurrentlyFetching(key)) {
+    if (isFetching.value.get(key)) {
       // Đợi fetch hiện tại hoàn thành
       return new Promise((resolve) => {
         const checkInterval = setInterval(() => {
-          if (!isCurrentlyFetching(key)) {
+          if (!isFetching.value.get(key)) {
             clearInterval(checkInterval)
             const cachedData = getFromCache(key)
             resolve(cachedData)
@@ -81,13 +67,13 @@ export function useApiCache() {
     }
 
     // Thực hiện API call
-    setFetching(key, true)
+    isFetching.value.set(key, true)
     try {
       const data = await apiCall()
       setCache(key, data)
       return data
     } finally {
-      setFetching(key, false)
+      isFetching.value.delete(key)
     }
   }
 
@@ -96,7 +82,6 @@ export function useApiCache() {
     getFromCache,
     setCache,
     clearCache,
-    isCacheValid,
-    isCurrentlyFetching
+    isCacheValid
   }
 } 
