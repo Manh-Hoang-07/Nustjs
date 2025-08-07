@@ -35,6 +35,7 @@
           :rules="validationRules"
           :api-errors="apiErrors"
           :show-cancel-button="false"
+          :disable-submit="isLoading"
           submit-text="Đăng nhập"
           submitting-text="Đang đăng nhập..."
           @submit="handleSubmit"
@@ -50,6 +51,7 @@
                   label="Email"
                   placeholder="Nhập email của bạn"
                   :error="errors.email"
+                  :disabled="isLoading"
                   required
                   autocomplete="email"
                   @update:model-value="clearError('email')"
@@ -65,6 +67,7 @@
                   label="Mật khẩu"
                   placeholder="Nhập mật khẩu của bạn"
                   :error="errors.password"
+                  :disabled="isLoading"
                   required
                   autocomplete="current-password"
                   @update:model-value="clearError('password')"
@@ -78,9 +81,10 @@
                   name="remember"
                   type="checkbox"
                   checkbox-label="Ghi nhớ đăng nhập"
+                  :disabled="isLoading"
                 />
                 
-                <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition-all duration-200 hover:scale-105">
+                <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition-all duration-200 hover:scale-105" :class="{ 'pointer-events-none opacity-50': isLoading }">
                   Quên mật khẩu?
                 </a>
               </div>
@@ -103,7 +107,7 @@
       <div class="text-center mt-8">
         <p class="text-gray-600">
           Chưa có tài khoản?
-          <NuxtLink to="/register" class="font-semibold text-blue-600 hover:text-blue-500 transition-all duration-200 hover:scale-105 inline-block">
+          <NuxtLink to="/register" class="font-semibold text-blue-600 hover:text-blue-500 transition-all duration-200 hover:scale-105 inline-block" :class="{ 'pointer-events-none opacity-50': isLoading }">
             Đăng ký ngay
           </NuxtLink>
         </p>
@@ -145,11 +149,15 @@ const validationRules = {
 
 const apiErrors = ref({})
 const generalError = ref('')
+const isLoading = ref(false)
 
 const authStore = useAuthStore()
 
 // Methods
 const handleSubmit = async (form) => {
+  if (isLoading.value) return // Prevent multiple submissions
+  
+  isLoading.value = true
   generalError.value = ''
   apiErrors.value = {}
 
@@ -177,6 +185,8 @@ const handleSubmit = async (form) => {
     }
   } catch (err) {
     generalError.value = 'Có lỗi xảy ra, vui lòng thử lại'
+  } finally {
+    isLoading.value = false
   }
 }
 </script>
@@ -199,6 +209,11 @@ const handleSubmit = async (form) => {
   box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 10px 10px -5px rgba(59, 130, 246, 0.04);
 }
 
+:deep(.form-field input:disabled) {
+  @apply opacity-50 cursor-not-allowed;
+  transform: none;
+}
+
 :deep(.form-field input[type="checkbox"]) {
   @apply rounded border-gray-300 text-blue-600 focus:ring-blue-500;
   transition: all 0.2s ease;
@@ -206,6 +221,11 @@ const handleSubmit = async (form) => {
 
 :deep(.form-field input[type="checkbox"]:checked) {
   transform: scale(1.1);
+}
+
+:deep(.form-field input[type="checkbox"]:disabled) {
+  @apply opacity-50 cursor-not-allowed;
+  transform: none;
 }
 
 :deep(.form-field label) {
@@ -247,6 +267,30 @@ const handleSubmit = async (form) => {
 
 :deep(.form-wrapper button[type="submit"]:disabled) {
   @apply opacity-50 cursor-not-allowed transform-none;
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+}
+
+:deep(.form-wrapper button[type="submit"]:disabled:before) {
+  display: none;
+}
+
+/* Loading spinner for button */
+:deep(.form-wrapper button[type="submit"]:disabled) {
+  position: relative;
+}
+
+:deep(.form-wrapper button[type="submit"]:disabled::after) {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 /* Animations */
@@ -259,6 +303,11 @@ const handleSubmit = async (form) => {
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Floating animation for background elements */
