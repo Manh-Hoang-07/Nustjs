@@ -59,6 +59,7 @@
 </template>
 
 <script setup>
+import { useAdminNavigation } from '../composables/navigation/useAdminNavigation.js'
 import { ref, computed, onMounted } from 'vue';
 import HeaderBar from '../components/Layout/Header/HeaderBar.vue';
 import SidebarMenu from '../components/Layout/Sidebar/SidebarMenu.vue';
