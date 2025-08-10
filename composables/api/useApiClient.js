@@ -9,10 +9,10 @@ export function useApiClient(options = {}) {
   const config = useRuntimeConfig()
   
   const {
-    retryAttempts = 3,
+    retryAttempts = 0, // Tắt retry hoàn toàn
     retryDelay = 1000,
     timeout = 30000,
-    enableRetry = true
+    enableRetry = false // Tắt retry mặc định
   } = options
 
   // Tạo API client với base URL từ runtime config
@@ -42,32 +42,7 @@ export function useApiClient(options = {}) {
     return null
   }
 
-  // Retry logic với exponential backoff
-  const retryRequest = async (error, retryCount = 0) => {
-    if (!enableRetry || retryCount >= retryAttempts) {
-      throw error
-    }
 
-    // Chỉ retry cho một số lỗi nhất định
-    const shouldRetry = error.response?.status >= 500 || 
-                       error.code === 'ECONNABORTED' ||
-                       error.code === 'NETWORK_ERROR'
-
-    if (!shouldRetry) {
-      throw error
-    }
-
-    // Exponential backoff với jitter
-    const delay = retryDelay * Math.pow(2, retryCount) + Math.random() * 1000
-    await new Promise(resolve => setTimeout(resolve, delay))
-
-    // Retry request
-    try {
-      return await api.request(error.config)
-    } catch (retryError) {
-      return retryRequest(retryError, retryCount + 1)
-    }
-  }
 
   // Request interceptor
   api.interceptors.request.use(
@@ -91,7 +66,8 @@ export function useApiClient(options = {}) {
       return response
     },
     (error) => {
-      return retryRequest(error)
+      // Không retry, chỉ throw error
+      return Promise.reject(error)
     }
   )
 

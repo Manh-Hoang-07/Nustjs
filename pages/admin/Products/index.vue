@@ -18,7 +18,7 @@
 
     <!-- Bảng dữ liệu -->
     <div v-if="loading" class="mb-6">
-      <SkeletonLoader type="table" :rows="5" :columns="7" />
+      <SkeletonLoader type="table" :rows="5" :columns="6" />
     </div>
     
     <div v-else class="bg-white shadow-md rounded-lg overflow-hidden">
@@ -29,7 +29,6 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên sản phẩm</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá gốc</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá KM</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thương hiệu</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
@@ -45,7 +44,6 @@
               <span v-if="product.sale_price" class="text-red-600 font-medium">{{ product.formattedSalePrice }}</span>
               <span v-else class="text-gray-400">-</span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.brandName }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
@@ -92,7 +90,7 @@
             </td>
           </tr>
           <tr v-if="products.length === 0">
-            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>

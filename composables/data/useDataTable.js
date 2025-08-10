@@ -34,6 +34,8 @@ export function useDataTable(endpoint, options = {}) {
   const isFirstPage = computed(() => pagination.current_page === 1)
   const isLastPage = computed(() => pagination.current_page === pagination.last_page)
 
+
+
   // Cache key generator
   const getCacheKey = (params) => {
     return JSON.stringify({ ...filters, ...params })
@@ -74,6 +76,12 @@ export function useDataTable(endpoint, options = {}) {
 
   // Main fetch function
   const fetchData = async (params = {}) => {
+    // Prevent multiple simultaneous API calls
+    if (loading.value) {
+      console.warn('API call already in progress, skipping...')
+      return
+    }
+    
     loading.value = true
     error.value = null
     
@@ -92,7 +100,7 @@ export function useDataTable(endpoint, options = {}) {
         }
       }
       
-      // Fetch from server
+      // Fetch from server (no retry logic)
       const response = await apiClient.get(endpoint, { params: requestParams })
       const { data, meta } = response.data
       
@@ -117,11 +125,19 @@ export function useDataTable(endpoint, options = {}) {
 
   // Filter functions
   const updateFilters = (newFilters) => {
+    // Prevent infinite loops by checking if filters actually changed
+    const hasChanged = Object.keys(newFilters).some(key => filters[key] !== newFilters[key])
+    if (!hasChanged) return
+    
     Object.assign(filters, newFilters)
     fetchData()
   }
 
   const resetFilters = () => {
+    // Prevent infinite loops by checking if filters actually changed
+    const hasChanged = Object.keys(defaultFilters).some(key => filters[key] !== defaultFilters[key])
+    if (!hasChanged) return
+    
     Object.assign(filters, defaultFilters)
     fetchData()
   }

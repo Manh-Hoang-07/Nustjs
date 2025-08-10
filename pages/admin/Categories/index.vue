@@ -18,13 +18,12 @@
 
     <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="4" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên danh mục</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục cha</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
@@ -33,7 +32,6 @@
           <tr v-for="category in items" :key="category.id">
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ category.id }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ category.name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ category.parent_name || 'Danh mục gốc' }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
@@ -51,7 +49,7 @@
             </td>
           </tr>
           <tr v-if="items.length === 0">
-            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>

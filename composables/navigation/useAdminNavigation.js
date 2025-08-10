@@ -11,60 +11,61 @@ export function useAdminNavigation() {
       icon: '📊'
     },
     {
+      name: 'Quản lý chung',
+      icon: '⚙️',
+      children: [
+        {
+          name: 'Tài khoản',
+          path: '/admin/users',
+          icon: '👤'
+        },
+        {
+          name: 'Quyền',
+          path: '/admin/permissions',
+          icon: '🔑'
+        },
+        {
+          name: 'Vai trò',
+          path: '/admin/roles',
+          icon: '👑'
+        }
+      ]
+    },
+    {
+      name: 'Khai báo chung',
+      icon: '📋',
+      children: [
+        {
+          name: 'Danh mục',
+          path: '/admin/categories',
+          icon: '📁'
+        },
+        {
+          name: 'Thương hiệu',
+          path: '/admin/brands',
+          icon: '🏷️'
+        },
+        {
+          name: 'Thuộc tính',
+          path: '/admin/attributes',
+          icon: '⚙️'
+        },
+        {
+          name: 'Giá trị thuộc tính',
+          path: '/admin/attribute-values',
+          icon: '🔧'
+        }
+      ]
+    },
+    {
       name: 'Sản phẩm',
       path: '/admin/products',
       icon: '📦'
     },
     {
-      name: 'Danh mục',
-      path: '/admin/categories',
-      icon: '📁'
-    },
-    {
-      name: 'Thương hiệu',
-      path: '/admin/brands',
-      icon: '🏷️'
-    },
-    {
-      name: 'Thuộc tính',
-      path: '/admin/attributes',
-      icon: '⚙️'
-    },
-    {
-      name: 'Giá trị thuộc tính',
-      path: '/admin/attribute-values',
-      icon: '🔧'
-    },
-    {
       name: 'Đơn hàng',
       path: '/admin/orders',
       icon: '📋'
-    },
-    {
-      name: 'Tài khoản',
-      icon: '👥',
-      children: [
-        {
-          name: 'Danh sách người dùng',
-          path: '/admin/users',
-          icon: '👤'
-        },
-        {
-          name: 'Thêm người dùng',
-          path: '/admin/users/create',
-          icon: '➕'
-        },
-        {
-          name: 'Phân quyền',
-          path: '/admin/roles',
-          icon: '🔑'
-        }
-      ]
-    },
-    {
-      name: 'Quyền',
-      path: '/admin/permissions',
-      icon: '🔑'
     },
     {
       name: 'Kho hàng',

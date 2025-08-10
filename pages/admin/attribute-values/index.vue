@@ -18,15 +18,13 @@
 
     <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="7" />
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thuộc tính</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá trị</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hiển thị</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thứ tự</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
@@ -34,10 +32,10 @@
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="val in items" :key="val.id">
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ val.id }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ val.attribute_name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ val.value }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ val.value || val.attribute_value || val.attribute_value_name || 'N/A' }}
+            </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ val.name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ val.sort_order }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
@@ -55,7 +53,7 @@
             </td>
           </tr>
           <tr v-if="items.length === 0">
-            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>
@@ -164,6 +162,8 @@ const showDeleteModal = ref(false)
 // Fetch data
 onMounted(async () => {
   await fetchData()
+  // Debug: Log dữ liệu để kiểm tra cấu trúc
+  console.log('Attribute values data:', items.value)
 })
 
 // Filter handlers

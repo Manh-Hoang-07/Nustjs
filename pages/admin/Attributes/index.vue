@@ -18,14 +18,12 @@
 
     <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="6" />
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="4" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên thuộc tính</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kiểu</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tùy chọn</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
@@ -36,19 +34,6 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
               <div>{{ attribute.name }}</div>
               <div v-if="attribute.description" class="text-xs text-gray-500 mt-1">{{ attribute.description }}</div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                {{ attribute.type }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              <div class="flex flex-wrap gap-1">
-                <span v-if="attribute.is_required" class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded">Bắt buộc</span>
-                <span v-if="attribute.is_unique" class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">Duy nhất</span>
-                <span v-if="attribute.is_filterable" class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Lọc</span>
-                <span v-if="attribute.is_searchable" class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded">Tìm</span>
-              </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
@@ -67,7 +52,7 @@
             </td>
           </tr>
           <tr v-if="items.length === 0">
-            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>
