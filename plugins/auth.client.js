@@ -1,9 +1,14 @@
-export default defineNuxtPlugin(async (nuxtApp) => {
-  const authStore = useAuthStore()
-  
-  // Chỉ chạy trên client
+// plugins/auth.client.js
+export default defineNuxtPlugin((nuxtApp) => {
   if (process.client) {
-    // Khởi tạo auth state khi app mount
-    await authStore.checkAuth()
+    // Chờ cho tới khi app đã mount xong mới gọi store
+    nuxtApp.hooks.hook('app:mounted', async () => {
+      try {
+        const authStore = useAuthStore()
+        await authStore.checkAuth()
+      } catch (error) {
+        console.error('Auth init failed:', error)
+      }
+    })
   }
-}) 
+})

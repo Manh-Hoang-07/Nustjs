@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
@@ -8,7 +9,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode'
   ],
 
-  tailwindcss: {},
+  // tailwindcss: {},
 
   runtimeConfig: {
     public: {
@@ -18,11 +19,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Laravel Nuxt App',
+      title: 'App',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Laravel Nuxt Application' }
+        { name: 'description', content: 'Application' }
       ]
     }
   },
@@ -31,11 +32,11 @@ export default defineNuxtConfig({
     '~/assets/css/global.css'
   ],
 
-  colorMode: {
-    preference: 'light',
-    fallback: 'light',
-    classSuffix: ''
-  },
+  // colorMode: {
+  //   preference: 'light',
+  //   fallback: 'light',
+  //   classSuffix: ''
+  // },
 
   vite: {
     resolve: {
@@ -45,22 +46,8 @@ export default defineNuxtConfig({
       }
     },
     build: {
-      rollupOptions: {
-        output: {
-          manualChunks: (id) => {
-            if (id.includes('@ckeditor')) {
-              return 'ckeditor'
-            }
-            if (id.includes('node_modules')) {
-              if (id.includes('vue')) return 'vendor-vue'
-              if (id.includes('@heroicons')) return 'vendor-ui'
-              if (id.includes('axios') || id.includes('pinia')) return 'vendor-utils'
-              if (id.includes('vue-multiselect')) return 'vendor-multiselect'
-              return 'vendor'
-            }
-          }
-        }
-      },
+      sourcemap: true,
+      minify: true,
       chunkSizeWarningLimit: 1500
     },
     optimizeDeps: {
@@ -85,6 +72,8 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    sourceMap: false,
+    minify: true,
     compressPublicAssets: true,
     routeRules: {
       '/admin/**': { 
@@ -107,7 +96,7 @@ export default defineNuxtConfig({
   },
 
   alias: {
-    '@': '.',
-    '~': '.'
+    '@': fileURLToPath(new URL('./', import.meta.url)),
+    '~': fileURLToPath(new URL('./', import.meta.url))
   }
 })
