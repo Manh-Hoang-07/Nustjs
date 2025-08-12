@@ -1,0 +1,1 @@
+import{c as t,a as e,o as a}from"./CRPNSmKO.js";const l={__name:"index",setup(c){return(s,n)=>(a(),t("div",{class:"p-6"},[e("h1",{class:"text-2xl font-bold mb-2"},"Delivery Settings"),e("p",{class:"text-gray-600"},"Cài đặt thời gian, khung giờ, lịch nghỉ lễ cho vận chuyển.")]))}};export{l as default};

@@ -1,0 +1,1 @@
+const a="@keyframes fadeInUp-2c1194fe{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.animate-fade-in-up[data-v-2c1194fe]{animation:fadeInUp-2c1194fe .6s ease-out}";export{a as e};
