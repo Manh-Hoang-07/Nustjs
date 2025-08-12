@@ -1,1 +1,0 @@
-function n(r,t="VND",i="vi-VN"){if(null==r)return"";try{return new Intl.NumberFormat(i,{style:"currency",currency:t,minimumFractionDigits:0,maximumFractionDigits:0}).format(r)}catch{return`${r.toLocaleString()} ${t}`}}export{n};
