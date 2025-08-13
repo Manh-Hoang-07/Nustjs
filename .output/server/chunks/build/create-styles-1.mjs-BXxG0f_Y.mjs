@@ -1,1 +1,0 @@
-const t=".multiselect__option,.multiselect__single,.multiselect__tag{color:#222!important;font-size:14px!important;min-width:40px}.multiselect__tags{align-items:flex-start;display:flex;flex-wrap:wrap;max-height:90px;overflow-y:auto}";export{t};

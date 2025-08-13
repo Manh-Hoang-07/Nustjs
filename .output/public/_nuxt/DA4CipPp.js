@@ -1,1 +1,0 @@
-import{c as e,a as t,o as a}from"./CRPNSmKO.js";const l={__name:"test",setup(s){return(o,c)=>(a(),e("div",{class:"p-4"},[t("h1",{class:"text-2xl font-bold text-blue-600"},"Test Products Page"),t("p",{class:"mt-2 text-gray-600"},"Nếu bạn thấy sidebar, layout đã hoạt động!")]))}};export{l as default};

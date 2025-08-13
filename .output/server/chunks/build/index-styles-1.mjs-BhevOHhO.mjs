@@ -1,1 +1,0 @@
-const a=".hero-gradient[data-v-77e09d66]{background:linear-gradient(135deg,#667eea,#764ba2)}html[data-v-77e09d66]{scroll-behavior:smooth}@keyframes float-77e09d66{0%,to{transform:translateY(0)}50%{transform:translateY(-10px)}}.animate-float[data-v-77e09d66]{animation:float-77e09d66 3s ease-in-out infinite}";export{a};

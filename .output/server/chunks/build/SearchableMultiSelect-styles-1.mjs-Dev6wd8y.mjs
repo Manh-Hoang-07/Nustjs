@@ -1,1 +1,0 @@
-const d=".searchable-multi-select[data-v-7194d39d]{position:relative}.dropdown[data-v-7194d39d]{box-shadow:0 4px 6px -1px #0000001a,0 2px 4px -1px #0000000f}.selected-items[data-v-7194d39d]{min-height:2rem}";export{d as e};
