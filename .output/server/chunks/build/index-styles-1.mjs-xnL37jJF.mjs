@@ -1,1 +1,0 @@
-const a="@keyframes fadeInUp-121c774b{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.animate-fade-in-up[data-v-121c774b]{animation:fadeInUp-121c774b .6s ease-out}.line-clamp-2[data-v-121c774b]{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}";export{a};

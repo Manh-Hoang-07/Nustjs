@@ -1,1 +1,0 @@
-import{c as a,a as e,o as t}from"./DDT-0HTi.js";const l={__name:"index",setup(c){return(o,s)=>(t(),a("div",{class:"p-6"},[e("h1",{class:"text-2xl font-bold mb-2"},"Advanced Settings"),e("p",{class:"text-gray-600"},"Cài đặt nâng cao cho vận chuyển (fallback, webhook, log...)")]))}};export{l as default};
