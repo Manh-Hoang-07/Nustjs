@@ -1,0 +1,1 @@
+import{c as a,a as e,o as n}from"./DDT-0HTi.js";const i={__name:"index",setup(t){return(p,s)=>(n(),a("div",null,[e("h1",null,"Shipping Management"),e("p",null,"This is the shipping management page.")]))}};export{i as default};

@@ -1,0 +1,1 @@
+const a="aside[data-v-2f15dfe6]::-webkit-scrollbar{width:4px}aside[data-v-2f15dfe6]::-webkit-scrollbar-track{background:transparent}aside[data-v-2f15dfe6]::-webkit-scrollbar-thumb{background:#ffffff1a;border-radius:2px}aside[data-v-2f15dfe6]::-webkit-scrollbar-thumb:hover{background:#fff3}";export{a};
