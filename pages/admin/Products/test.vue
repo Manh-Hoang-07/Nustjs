@@ -7,6 +7,6 @@
 
 <script setup>
 definePageMeta({
-  layout: 'admin'
+  layout: 'admin-layout'
 })
 </script> 

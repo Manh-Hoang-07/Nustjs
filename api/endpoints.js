@@ -63,4 +63,17 @@ const endpoints = {
   shippingAdvanced: createResourceEndpoints('shipping/advanced'),
 };
 
+// Posts API endpoints
+export const POSTS_ENDPOINTS = {
+  // Admin endpoints
+  ADMIN_POSTS: '/api/admin/posts',
+  ADMIN_POST_CATEGORIES: '/api/admin/post-categories',
+  ADMIN_POST_TAGS: '/api/admin/post-tags',
+  
+  // Public endpoints
+  PUBLIC_POSTS: '/api/posts',
+  PUBLIC_POST_CATEGORIES: '/api/post-categories',
+  PUBLIC_POST_TAGS: '/api/post-tags',
+};
+
 export default endpoints; 

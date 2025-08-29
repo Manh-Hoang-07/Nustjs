@@ -10,24 +10,59 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   
   // Kiểm tra auth nếu chưa được khởi tạo
   if (!authStore.isInitialized) {
+    console.log('Auth store not initialized, calling checkAuth...')
     await authStore.checkAuth()
+  }
+
+  console.log('Auth middleware - current state:', {
+    isAuthenticated: authStore.isAuthenticated,
+    isAdmin: authStore.isAdmin,
+    user: authStore.user,
+    userRole: authStore.userRole,
+    route: to.path,
+    requiresAuth: to.meta.requiresAuth,
+    requiresAdmin: to.meta.requiresAdmin
+  })
+
+  // Tự động áp dụng middleware cho tất cả các route /admin/**
+  if (to.path.startsWith('/admin')) {
+    console.log('Admin route detected, checking permissions...')
+    
+    // Kiểm tra authentication
+    if (!authStore.isAuthenticated) {
+      console.log('User not authenticated, redirecting to login')
+      return navigateTo('/login')
+    }
+    
+    // Kiểm tra quyền admin
+    if (!authStore.isAdmin) {
+      console.log('User not admin, redirecting to home')
+      return navigateTo('/')
+    }
+    
+    console.log('Admin access granted')
+    return
   }
 
   // Nếu route yêu cầu auth nhưng user chưa đăng nhập
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    console.log('Route requires auth but user not authenticated, redirecting to login')
     return navigateTo('/login')
   }
 
   // Nếu route yêu cầu admin nhưng user không phải admin
   if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    console.log('Route requires admin but user not admin, redirecting to home')
     return navigateTo('/')
   }
 
   // Nếu user đã đăng nhập và truy cập login/register, redirect về trang chủ
   if (authStore.isAuthenticated && (to.path === '/login' || to.path === '/register')) {
     if (authStore.isAdmin) {
+      console.log('Admin user accessing login/register, redirecting to admin')
       return navigateTo('/admin')
     } else {
+      console.log('User accessing login/register, redirecting to user')
       return navigateTo('/user')
     }
   }

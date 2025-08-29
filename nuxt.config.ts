@@ -89,6 +89,13 @@ export default defineNuxtConfig({
     }
   },
 
+  // Áp dụng middleware auth cho tất cả các route /admin/**
+  routeRules: {
+    '/admin/**': { 
+      middleware: ['auth']
+    }
+  },
+
   vue: {
     compilerOptions: {
       hoistStatic: false

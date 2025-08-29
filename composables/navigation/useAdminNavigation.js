@@ -78,6 +78,27 @@ export function useAdminNavigation() {
       icon: '📦'
     },
     {
+      name: 'Tin tức',
+      icon: '📰',
+      children: [
+        {
+          name: 'Danh sách bài viết',
+          path: '/admin/posts',
+          icon: '📄'
+        },
+        {
+          name: 'Danh mục bài viết',
+          path: '/admin/post-categories',
+          icon: '📁'
+        },
+        {
+          name: 'Thẻ bài viết',
+          path: '/admin/post-tags',
+          icon: '🏷️'
+        }
+      ]
+    },
+    {
       name: 'Vận chuyển',
       icon: '🚚',
       children: [

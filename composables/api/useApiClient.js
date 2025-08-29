@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useRuntimeConfig } from '#app'
 
 /**
  * Composable để tạo và quản lý API client với các tính năng cơ bản

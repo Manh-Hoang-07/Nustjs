@@ -68,13 +68,15 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
-// Kiểm tra quyền truy cập
+// Kiểm tra quyền truy cập - để middleware xử lý
 onMounted(async () => {
-  // Kiểm tra xem user có đăng nhập và có quyền admin không
-  if (!authStore.isAuthenticated || !authStore.isAdmin) {
-    await navigateTo('/login');
-    return;
-  }
+  // Middleware sẽ xử lý authentication
+  console.log('Admin layout mounted, auth state:', {
+    isAuthenticated: authStore.isAuthenticated,
+    isAdmin: authStore.isAdmin,
+    user: authStore.user,
+    userRole: authStore.userRole
+  })
 });
 
 // Đặt sidebarOpen mặc định là true
@@ -85,7 +87,7 @@ function handleMenuClick() {
 }
 
 // Sử dụng composable cho admin navigation
-const { menuItems, currentPath, preloadOnHover } = useAdminNavigation()
+const { menuItems, currentPath } = useAdminNavigation()
 
 // Cập nhật current path
 currentPath.value = route.path
