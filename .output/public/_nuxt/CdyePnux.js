@@ -1,1 +1,0 @@
-import{_ as a}from"./DlAUqK2U.js";import{c as s,o,a as r,r as t}from"./CRPNSmKO.js";const c={__name:"home",setup(n){return(e,_)=>(o(),s("div",{class:"min-h-screen bg-gray-50"},[r("main",{class:"flex-1"},[t(e.$slots,"default",{},void 0,!0)])]))}},l=a(c,[["__scopeId","data-v-af1bd965"]]);export{l as default};
