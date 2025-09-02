@@ -18,55 +18,29 @@
 
     <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="4" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên danh mục</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thứ tự</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="category in items" :key="category.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4">
-              <div class="flex items-center">
-                <div class="flex-shrink-0 h-10 w-10">
-                  <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                    </svg>
-                  </div>
-                </div>
-                <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900">{{ category.name }}</div>
-                  <div class="text-sm text-gray-500">{{ category.slug }}</div>
-                </div>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-              <div class="text-sm text-gray-900">
-                {{ category.description || 'Không có mô tả' }}
-              </div>
-            </td>
-            <td class="px-6 py-4">
+          <tr v-for="category in items" :key="category.id">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ category.id }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ category.name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
               <span 
-                :class="{
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium': true,
-                  'bg-green-100 text-green-800': category.status === 'active',
-                  'bg-red-100 text-red-800': category.status === 'inactive',
-                  'bg-gray-100 text-gray-800': !category.status
-                }"
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                :class="getStatusClass(category.status)"
               >
-                {{ getStatusText(category.status) }}
+                {{ getStatusLabel(category.status) }}
               </span>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-500">
-              {{ category.sort_order || 0 }}
-            </td>
-            <td class="px-6 py-4 text-sm font-medium">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <Actions 
                 :item="category"
                 @edit="openEditModal"
@@ -75,7 +49,7 @@
             </td>
           </tr>
           <tr v-if="items.length === 0">
-            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>
@@ -101,9 +75,8 @@
               : 'bg-white text-gray-700 hover:bg-gray-50',
             !page.url && 'opacity-50 cursor-not-allowed'
           ]"
-        >
-          {{ page.label }}
-        </button>
+          v-html="page.label"
+        ></button>
       </div>
     </div>
 
@@ -126,55 +99,50 @@
       @updated="handleCategoryUpdated"
     />
 
-    <!-- Delete Confirmation Modal -->
-    <Modal v-model="showDeleteModal" :title="'Xác nhận xóa'">
-      <div class="text-center">
-        <p class="text-gray-600 mb-4">Bạn có chắc chắn muốn xóa danh mục này không?</p>
-        <div class="flex justify-center space-x-3">
-          <button
-            @click="closeDeleteModal"
-            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-          >
-            Hủy
-          </button>
-          <button
-            @click="handleDelete"
-            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-          >
-            Xóa
-          </button>
-        </div>
-      </div>
-    </Modal>
+    <!-- Modal xác nhận xóa -->
+    <ConfirmModal
+      v-if="showDeleteModal"
+      :show="showDeleteModal"
+      title="Xác nhận xóa"
+      :message="`Bạn có chắc chắn muốn xóa danh mục ${selectedCategory?.name || ''}?`"
+      :on-close="closeDeleteModal"
+      @confirm="deleteCategory"
+    />
   </div>
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'admin-layout'
+  layout: 'admin-layout',
+  requiresAuth: true,
+  requiresAdmin: true
 })
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
+import { getEnumSync, getEnumLabel } from '../../../constants/enums.js'
 import { useDataTable } from '../../../composables/data/useDataTable.js'
 import { useToast } from '../../../composables/ui/useToast.js'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
 import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import Actions from '../../../components/Core/Actions/Actions.vue'
-import CategoryFilter from './filter.vue'
-import CreateCategory from './create.vue'
-import EditCategory from './edit.vue'
+import endpoints from '../../../api/endpoints.js'
+
+// Lazy load components
+const CreateCategory = defineAsyncComponent(() => import('./create.vue'))
+const EditCategory = defineAsyncComponent(() => import('./edit.vue'))
+const CategoryFilter = defineAsyncComponent(() => import('./filter.vue'))
 
 // Use composables
 const { 
   items, 
   loading, 
   pagination, 
-  filters,
+  filters, 
   fetchData, 
-  updateFilters,
+  updateFilters, 
   deleteItem 
-} = useDataTable('/api/admin/post-categories', {
+} = useDataTable(endpoints.postCategories.list, {
   defaultFilters: {
     search: '',
     status: '',
@@ -183,39 +151,36 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const apiClient = useApiClient()
+const api = useApiClient()
 
 // State
 const selectedCategory = ref(null)
+const statusEnums = ref([])
+
+// Modal state
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
 const showDeleteModal = ref(false)
 
-// Enums and options
-const statusEnums = ref([])
-
 // Fetch data
 onMounted(async () => {
-  // Load enums and options
-  await loadEnums()
+  // Load enums immediately (static)
+  fetchEnums()
+  
+  // Fetch categories
   await fetchData()
 })
 
-// Load enums and options
-async function loadEnums() {
-  try {
-    // Status options
-    statusEnums.value = [
-      { value: 'active', label: 'Hoạt động' },
-      { value: 'inactive', label: 'Không hoạt động' }
-    ]
-  } catch (error) {
-    console.error('Error loading enums:', error)
-    showError('Không thể tải dữ liệu cần thiết')
-  }
+function fetchEnums() {
+  // Sử dụng static enum thay vì gọi API
+  statusEnums.value = [
+    { value: 'active', label: 'Hoạt động' },
+    { value: 'inactive', label: 'Không hoạt động' }
+  ]
 }
 
-// Filter handlers
+
+
 function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
@@ -239,7 +204,7 @@ function closeEditModal() {
   selectedCategory.value = null
 }
 
-function openDeleteModal(category) {
+function confirmDelete(category) {
   selectedCategory.value = category
   showDeleteModal.value = true
 }
@@ -249,7 +214,7 @@ function closeDeleteModal() {
   selectedCategory.value = null
 }
 
-// CRUD operations
+// Action handlers
 async function handleCategoryCreated() {
   await fetchData()
   closeCreateModal()
@@ -262,18 +227,13 @@ async function handleCategoryUpdated() {
   showSuccess('Danh mục đã được cập nhật thành công')
 }
 
-async function confirmDelete(category) {
-  openDeleteModal(category)
-}
-
-async function handleDelete() {
+async function deleteCategory() {
   try {
     await deleteItem(selectedCategory.value.id)
-    showSuccess('Xóa danh mục thành công')
     closeDeleteModal()
-    await fetchData()
+    showSuccess('Danh mục đã được xóa thành công')
   } catch (error) {
-    showError('Lỗi khi xóa danh mục')
+    showError('Không thể xóa danh mục')
   }
 }
 
@@ -285,12 +245,19 @@ function changePage(url) {
   fetchData({ page })
 }
 
-function getStatusText(status) {
+// Status helper functions
+function getStatusLabel(status) {
   const statusMap = {
     'active': 'Hoạt động',
     'inactive': 'Không hoạt động'
   }
-  return statusMap[status] || 'Không xác định'
+  return statusMap[status] || status || 'Không xác định'
+}
+
+function getStatusClass(status) {
+  if (status === 'active') return 'bg-green-100 text-green-800'
+  if (status === 'inactive') return 'bg-red-100 text-red-800'
+  return 'bg-gray-100 text-gray-800'
 }
 
 function formatDate(dateString) {
@@ -298,3 +265,10 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('vi-VN')
 }
 </script>
+
+<style>
+/* Cho phép cuộn ngang table khi màn hình nhỏ */
+.table-responsive {
+  overflow-x: auto;
+}
+</style>

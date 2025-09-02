@@ -24,6 +24,15 @@
       v-if="showDropdown && (filteredOptions.length > 0 || searchQuery.length > 0)" 
       class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
     >
+      <!-- Clear selection option -->
+      <div 
+        v-if="selectedOption"
+        @click="clearSelection"
+        class="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-100 text-gray-500"
+      >
+        ✕ Xóa lựa chọn
+      </div>
+      
       <div 
         v-for="option in filteredOptions" 
         :key="option.value"
@@ -118,17 +127,24 @@ const loadDefaultOptions = async () => {
     try {
       // Load tất cả nếu ít hơn 50 items, nếu không thì load 50 items đầu
       const response = await api.get(`${props.searchApi}?limit=50`)
-      const allOptions = response.data.data || []
+      const allOptions = response.data.data || response.data || []
       
-      if (allOptions.length <= 50) {
+      // Transform options to have consistent label field
+      const transformedOptions = allOptions.map(option => ({
+        value: option.id,
+        label: option.title || option.name || option.label || 'Không có tên'
+      }))
+      
+      if (transformedOptions.length <= 50) {
         // Nếu ít hơn 50 items, load tất cả
-        options.value = allOptions
+        options.value = transformedOptions
       } else {
         // Nếu nhiều hơn 50 items, chỉ load 50 items đầu và hiển thị thông báo
-        options.value = allOptions.slice(0, 50)
+        options.value = transformedOptions.slice(0, 50)
       }
     } catch (error) {
-      
+      console.error('Error loading default options:', error)
+      options.value = []
     } finally {
       loading.value = false
     }
@@ -145,9 +161,15 @@ const debouncedSearch = debounce(async () => {
   loading.value = true
   try {
     const response = await api.get(`${props.searchApi}?search=${encodeURIComponent(searchQuery.value)}`)
-    options.value = response.data.data || []
-  } catch (error) {
+    const searchResults = response.data.data || response.data || []
     
+    // Transform search results to have consistent label field
+    options.value = searchResults.map(option => ({
+      value: option.id,
+      label: option.title || option.name || option.label || 'Không có tên'
+    }))
+  } catch (error) {
+    console.error('Error searching options:', error)
     options.value = []
   } finally {
     loading.value = false
@@ -185,6 +207,15 @@ const selectOption = (option) => {
   emit('change', option.value)
 }
 
+// Clear selection
+const clearSelection = () => {
+  selectedOption.value = null
+  searchQuery.value = ''
+  showDropdown.value = false
+  emit('update:modelValue', null)
+  emit('change', null)
+}
+
 // Watch for modelValue changes to update selected option
 watch(() => props.modelValue, async (newValue) => {
   if (newValue && !selectedOption.value) {
@@ -196,11 +227,16 @@ watch(() => props.modelValue, async (newValue) => {
       // If not found, fetch it from API
       try {
         const response = await api.get(`${props.searchApi}?id=${newValue}`)
-        if (response.data.data && response.data.data.length > 0) {
-          selectedOption.value = response.data.data[0]
+        const data = response.data.data || response.data || []
+        if (data && data.length > 0) {
+          const option = data[0]
+          selectedOption.value = {
+            value: option.id,
+            label: option.title || option.name || option.label || 'Không có tên'
+          }
         }
       } catch (error) {
-        
+        console.error('Error fetching option by ID:', error)
       }
     }
   } else if (!newValue) {
@@ -213,13 +249,19 @@ onMounted(async () => {
   if (props.modelValue) {
     try {
       const response = await api.get(`${props.searchApi}?id=${props.modelValue}`)
-      if (response.data.data && response.data.data.length > 0) {
-        selectedOption.value = response.data.data[0]
+      const data = response.data.data || response.data || []
+      if (data && data.length > 0) {
+        const option = data[0]
+        const transformedOption = {
+          value: option.id,
+          label: option.title || option.name || option.label || 'Không có tên'
+        }
+        selectedOption.value = transformedOption
         // Add to options so it shows in dropdown
-        options.value = [response.data.data[0]]
+        options.value = [transformedOption]
       }
     } catch (error) {
-      
+      console.error('Error loading initial option:', error)
     }
   }
 })
