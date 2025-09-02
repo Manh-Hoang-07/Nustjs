@@ -18,14 +18,12 @@
 
     <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="3" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thẻ</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số bài viết</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
         </thead>
@@ -42,13 +40,7 @@
                 </div>
                 <div class="ml-4">
                   <div class="text-sm font-medium text-gray-900">{{ tag.name }}</div>
-                  <div class="text-sm text-gray-500">{{ tag.slug }}</div>
                 </div>
-              </div>
-            </td>
-            <td class="px-6 py-4">
-              <div class="text-sm text-gray-900">
-                {{ tag.description || 'Không có mô tả' }}
               </div>
             </td>
             <td class="px-6 py-4">
@@ -63,11 +55,6 @@
                 {{ getStatusText(tag.status) }}
               </span>
             </td>
-            <td class="px-6 py-4 text-sm text-gray-500">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                {{ tag.post_count || 0 }}
-              </span>
-            </td>
             <td class="px-6 py-4 text-sm font-medium">
               <Actions 
                 :item="tag"
@@ -77,7 +64,7 @@
             </td>
           </tr>
           <tr v-if="items.length === 0">
-            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="3" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>
@@ -160,6 +147,7 @@ import { ref, onMounted } from 'vue'
 import { useDataTable } from '../../../composables/data/useDataTable.js'
 import { useToast } from '../../../composables/ui/useToast.js'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
+import endpoints from '../../../api/endpoints.js'
 import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
 import Modal from '../../../components/Core/Modal/Modal.vue'
 import Actions from '../../../components/Core/Actions/Actions.vue'
@@ -176,7 +164,7 @@ const {
   fetchData, 
   updateFilters,
   deleteItem 
-} = useDataTable('/api/admin/post-tags', {
+} = useDataTable(endpoints.postTags.list, {
   defaultFilters: {
     search: '',
     sort_by: 'created_at_desc'

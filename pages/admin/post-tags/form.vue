@@ -19,15 +19,6 @@
           @update:model-value="clearError('name')"
         />
         
-        <!-- Slug -->
-        <FormField
-          v-model="form.slug"
-          label="Slug"
-          name="slug"
-          :error="errors.slug"
-          @update:model-value="clearError('slug')"
-        />
-        
         <!-- Mô tả -->
         <FormField
           v-model="form.description"
@@ -38,15 +29,33 @@
           @update:model-value="clearError('description')"
         />
         
-        <!-- Ảnh thẻ -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="tag-image">Ảnh thẻ</label>
-          <ImageUploader
-            v-model="form.image"
-            :default-url="imageUrl"
-            @remove="form.remove_image = true"
-          />
-        </div>
+        <!-- Meta Title -->
+        <FormField
+          v-model="form.meta_title"
+          label="Meta Title"
+          name="meta_title"
+          :error="errors.meta_title"
+          @update:model-value="clearError('meta_title')"
+        />
+        
+        <!-- Meta Description -->
+        <FormField
+          v-model="form.meta_description"
+          label="Meta Description"
+          name="meta_description"
+          type="textarea"
+          :error="errors.meta_description"
+          @update:model-value="clearError('meta_description')"
+        />
+        
+        <!-- Canonical URL -->
+        <FormField
+          v-model="form.canonical_url"
+          label="Canonical URL"
+          name="canonical_url"
+          :error="errors.canonical_url"
+          @update:model-value="clearError('canonical_url')"
+        />
         
         <!-- Trạng thái -->
         <FormField
@@ -68,8 +77,6 @@ import { computed } from 'vue'
 import Modal from '../../../components/Core/Modal/Modal.vue'
 import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
 import FormField from '../../../components/Core/Form/FormField.vue'
-import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
-// import { useUrl } from '../../../utils/useUrl.js'
 
 const props = defineProps({
   show: Boolean,
@@ -99,30 +106,38 @@ const modalVisible = computed({
 const defaultValues = computed(() => {
   const obj = props.tag || {}
   
+  // Loại bỏ slug khỏi object
+  const { slug, ...tagWithoutSlug } = obj
+  
   return {
     name: '',
-    slug: '',
     description: '',
-    image: null,
+    meta_title: '',
+    meta_description: '',
+    canonical_url: '',
     status: 'active',
-    remove_image: false,
-    ...obj
+    ...tagWithoutSlug
   }
 })
 
-// const imageUrl = useUrl(props, 'tag', 'image')
-const imageUrl = computed(() => null)
+
 
 const validationRules = computed(() => ({
   name: [
     { required: 'Tên thẻ là bắt buộc.' },
     { max: [255, 'Tên thẻ không được vượt quá 255 ký tự.'] }
   ],
-  slug: [
-    { max: [255, 'Slug không được vượt quá 255 ký tự.'] }
-  ],
   description: [
     { max: [500, 'Mô tả không được vượt quá 500 ký tự.'] }
+  ],
+  meta_title: [
+    { max: [255, 'Meta title không được vượt quá 255 ký tự.'] }
+  ],
+  meta_description: [
+    { max: [500, 'Meta description không được vượt quá 500 ký tự.'] }
+  ],
+  canonical_url: [
+    { max: [255, 'Canonical URL không được vượt quá 255 ký tự.'] }
   ]
 }))
 

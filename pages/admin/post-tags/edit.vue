@@ -16,9 +16,8 @@
 <script setup>
 import TagForm from './form.vue'
 import endpoints from '../../../api/endpoints.js'
-import { ref, watch } from 'vue'
-import { useApiFormSubmit } from '../../../utils/useApiFormSubmit.js'
-import apiClient from '../../../api/apiClient.js'
+import { ref, watch, reactive } from 'vue'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 const props = defineProps({
   show: Boolean,
@@ -32,41 +31,67 @@ const emit = defineEmits(['updated'])
 const showModal = ref(false)
 const tagDetail = ref(null)
 const loading = ref(false)
+const apiErrors = reactive({})
 
-const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: endpoints.postTags.update(props.tag?.id),
-  emit,
-  onClose: props.onClose,
-  eventName: 'updated',
-  method: 'put'
-})
+const api = useApiClient()
 
 // Watch show prop để cập nhật showModal và fetch tag detail
 watch(() => props.show, async (newValue) => {
   showModal.value = newValue
   
-  if (newValue && props.tag?.id) {
-    await fetchTagDetail()
+  if (newValue) {
+    // Luôn fetch dữ liệu chi tiết từ API khi mở modal
+    if (props.tag?.id) {
+      await fetchTagDetail()
+    }
+  } else {
+    tagDetail.value = null // Reset data khi đóng modal
+    loading.value = false
   }
 }, { immediate: true })
 
 async function fetchTagDetail() {
+  if (!props.tag?.id) return
+  
+  loading.value = true
   try {
-    loading.value = true
-    const response = await apiClient.get(endpoints.postTags.show(props.tag.id))
-    if (response.data.success) {
-      tagDetail.value = response.data.data
-    }
+    const response = await api.get(`/api/admin/post-tags/${props.tag.id}`)
+    tagDetail.value = response.data.data || response.data
   } catch (error) {
-    // Fallback to props data if API fails
+    // Fallback về dữ liệu từ list view nếu API lỗi
     console.error('Error fetching tag detail:', error)
+    tagDetail.value = props.tag
   } finally {
     loading.value = false
   }
 }
 
 async function handleSubmit(formData) {
-  await submit(formData)
+  try {
+    if (!props.tag) return;
+    Object.keys(apiErrors).forEach(key => delete apiErrors[key])
+    
+    // Thêm _method = PUT để Laravel hiểu đây là PUT request
+    const dataWithMethod = {
+      ...formData,
+      _method: 'PUT'
+    }
+    
+    const response = await api.post(endpoints.postTags.update(props.tag.id), dataWithMethod)
+    emit('updated')
+    props.onClose()
+  } catch (error) {
+    if (error.response?.status === 422 && error.response?.data?.errors) {
+      const errors = error.response.data.errors
+      for (const field in errors) {
+        if (Array.isArray(errors[field])) {
+          apiErrors[field] = errors[field][0]
+        } else {
+          apiErrors[field] = errors[field]
+        }
+      }
+    }
+  }
 }
 
 function onClose() {
