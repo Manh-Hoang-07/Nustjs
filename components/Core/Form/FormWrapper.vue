@@ -87,7 +87,7 @@ const props = defineProps({
 const emit = defineEmits(['submit', 'cancel', 'error'])
 
 // Form state
-const form = reactive({ ...props.defaultValues, ...props.initialData })
+const form = reactive({ ...props.defaultValues })
 const localErrors = reactive({})
 const isSubmitting = ref(false)
 

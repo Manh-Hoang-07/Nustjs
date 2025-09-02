@@ -61,6 +61,10 @@ const endpoints = {
   shippingPromotions: createResourceEndpoints('shipping/promotions'),
   shippingDelivery: createResourceEndpoints('shipping/delivery'),
   shippingAdvanced: createResourceEndpoints('shipping/advanced'),
+  // Posts endpoints
+  posts: createResourceEndpoints('posts'),
+  postCategories: createResourceEndpoints('post-categories'),
+  postTags: createResourceEndpoints('post-tags'),
 };
 
 // Posts API endpoints

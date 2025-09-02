@@ -1,193 +1,152 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
+  <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Quản lý Tags</h1>
-        <p class="text-gray-600 mt-2">Quản lý các tags bài viết</p>
-      </div>
+      <h1 class="text-2xl font-bold">Quản lý thẻ bài viết</h1>
       <button 
-        @click="showAddModal = true"
-        class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors flex items-center"
+        @click="openCreateModal" 
+        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        Thêm Tag
+        Thêm thẻ mới
       </button>
     </div>
 
+    <!-- Bộ lọc -->
+    <TagFilter 
+      :initial-filters="filters"
+      @update:filters="handleFilterUpdate" 
+    />
 
+    <!-- Bảng dữ liệu -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
+      <table v-else class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thẻ</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mô tả</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số bài viết</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr v-for="tag in items" :key="tag.id" class="hover:bg-gray-50">
+            <td class="px-6 py-4">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  <div class="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">{{ tag.name }}</div>
+                  <div class="text-sm text-gray-500">{{ tag.slug }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-900">
+                {{ tag.description || 'Không có mô tả' }}
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span 
+                :class="{
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium': true,
+                  'bg-green-100 text-green-800': tag.status === 'active',
+                  'bg-red-100 text-red-800': tag.status === 'inactive',
+                  'bg-gray-100 text-gray-800': !tag.status
+                }"
+              >
+                {{ getStatusText(tag.status) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {{ tag.post_count || 0 }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm font-medium">
+              <Actions 
+                :item="tag"
+                @edit="openEditModal"
+                @delete="confirmDelete"
+              />
+            </td>
+          </tr>
+          <tr v-if="items.length === 0">
+            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+              Không có dữ liệu
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <!-- Search and Filters -->
-    <div class="bg-white p-6 rounded-lg shadow mb-6">
-      <div class="flex flex-col sm:flex-row gap-4">
-        <div class="flex-1">
-          <input 
-            v-model="searchQuery"
-            type="text" 
-            placeholder="Tìm kiếm tags..."
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-        </div>
-        <select 
-          v-model="sortBy"
-          class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-        >
-          <option value="name">Sắp xếp theo tên</option>
-          <option value="posts">Sắp xếp theo số bài viết</option>
-          <option value="created">Sắp xếp theo ngày tạo</option>
-        </select>
+    <!-- Phân trang -->
+    <div class="mt-4 flex justify-between items-center">
+      <div class="text-sm text-gray-700">
+        Hiển thị {{ pagination.from }} đến {{ pagination.to }} trên tổng số {{ pagination.total }} bản ghi
+      </div>
+      <div class="flex space-x-1">
         <button 
-          @click="loadTags"
-          class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+          v-for="page in pagination.links" 
+          :key="page.label"
+          @click="changePage(page.url)"
+          :disabled="!page.url"
+          :class="[
+            'px-3 py-1 border rounded',
+            page.active 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-white text-gray-700 hover:bg-gray-50',
+            !page.url && 'opacity-50 cursor-not-allowed'
+          ]"
         >
-          Lọc
+          {{ page.label }}
         </button>
       </div>
     </div>
 
-    <!-- Tags Grid -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div class="p-6">
-        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div v-for="i in 6" :key="i" class="animate-pulse">
-            <div class="h-24 bg-gray-200 rounded-lg"></div>
-          </div>
-        </div>
+    <!-- Modal thêm mới -->
+    <CreateTag
+      v-if="showCreateModal"
+      :show="showCreateModal"
+      :status-enums="statusEnums"
+      :on-close="closeCreateModal"
+      @created="handleTagCreated"
+    />
 
-        <div v-else-if="filteredTags.length === 0" class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-          </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">Không tìm thấy tags</h3>
-          <p class="mt-1 text-sm text-gray-500">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm.</p>
-        </div>
+    <!-- Modal chỉnh sửa -->
+    <EditTag
+      v-if="showEditModal"
+      :show="showEditModal"
+      :tag="selectedTag"
+      :status-enums="statusEnums"
+      :on-close="closeEditModal"
+      @updated="handleTagUpdated"
+    />
 
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div 
-            v-for="tag in filteredTags" 
-            :key="tag.id"
-            class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors"
-          >
-            <div class="flex items-center justify-between mb-3">
-              <div class="flex items-center space-x-2">
-                <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
-                <h3 class="text-lg font-semibold text-gray-900">{{ tag.name }}</h3>
-              </div>
-              <Actions 
-                :item="tag"
-                @edit="editTag"
-                @delete="(item) => handleDeleteTag(item.id)"
-                size="sm"
-              />
-            </div>
-            
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Slug:</span>
-                <span class="text-gray-900 font-mono">{{ tag.slug }}</span>
-              </div>
-              
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Số bài viết:</span>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  {{ tag.post_count || 0 }}
-                </span>
-              </div>
-              
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600">Trạng thái:</span>
-                <span 
-                  :class="{
-                    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-                    'bg-green-100 text-green-800': tag.status === 'active',
-                    'bg-red-100 text-red-800': tag.status === 'inactive'
-                  }"
-                >
-                  {{ getStatusText(tag.status) }}
-                </span>
-              </div>
-              
-              <div v-if="tag.description" class="text-sm text-gray-600 mt-2">
-                {{ tag.description }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Add/Edit Modal -->
-    <Modal v-if="showAddModal || showEditModal" @close="closeModal">
-      <template #header>
-        <h3 class="text-lg font-medium text-gray-900">
-          {{ showEditModal ? 'Sửa Tag' : 'Thêm Tag' }}
-        </h3>
-      </template>
-      
-      <template #body>
-        <form @submit.prevent="saveTag" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Tên Tag *</label>
-            <input 
-              v-model="form.name"
-              type="text" 
-              required
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Slug</label>
-            <input 
-              v-model="form.slug"
-              type="text" 
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-            <p class="mt-1 text-sm text-gray-500">Để trống để tự động tạo từ tên tag</p>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Mô tả</label>
-            <textarea 
-              v-model="form.description"
-              rows="3"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            ></textarea>
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Trạng thái</label>
-            <select 
-              v-model="form.status"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-            >
-              <option value="active">Hoạt động</option>
-              <option value="inactive">Không hoạt động</option>
-            </select>
-          </div>
-        </form>
-      </template>
-      
-      <template #footer>
-        <div class="flex justify-end space-x-3">
-          <button 
-            type="button"
-            @click="closeModal"
-            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+    <!-- Delete Confirmation Modal -->
+    <Modal v-model="showDeleteModal" :title="'Xác nhận xóa'">
+      <div class="text-center">
+        <p class="text-gray-600 mb-4">Bạn có chắc chắn muốn xóa thẻ này không?</p>
+        <div class="flex justify-center space-x-3">
+          <button
+            @click="closeDeleteModal"
+            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             Hủy
           </button>
-          <button 
-            type="submit"
-            @click="saveTag"
-            :disabled="loading"
-            class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50"
+          <button
+            @click="handleDelete"
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
           >
-            {{ loading ? 'Đang xử lý...' : (showEditModal ? 'Cập nhật' : 'Thêm') }}
+            Xóa
           </button>
         </div>
-      </template>
+      </div>
     </Modal>
   </div>
 </template>
@@ -197,152 +156,146 @@ definePageMeta({
   layout: 'admin-layout'
 })
 
-import { ref, computed, onMounted, watch } from 'vue'
-import useCrudAdmin from '../../composables/data/useCrudAdmin.js'
-import { useToast } from '../../composables/ui/useToast.js'
-import Actions from '../../components/Core/Actions/Actions.vue'
-import Modal from '../../components/Core/Modal/Modal.vue'
+import { ref, onMounted } from 'vue'
+import { useDataTable } from '../../../composables/data/useDataTable.js'
+import { useToast } from '../../../composables/ui/useToast.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
+import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
+import Actions from '../../../components/Core/Actions/Actions.vue'
+import TagFilter from './filter.vue'
+import CreateTag from './create.vue'
+import EditTag from './edit.vue'
 
+// Use composables
 const { 
-  items: tags, 
+  items, 
   loading, 
-  apiErrors,
-  fetchItems: fetchTags,
-  createItem: createTag,
-  updateItem: updateTag,
-  deleteItem: deleteTag
-} = useCrudAdmin({
-  endpoints: {
-    list: '/api/admin/post-tags',
-    create: '/api/admin/post-tags',
-    update: '/api/admin/post-tags',
-    delete: '/api/admin/post-tags'
-  },
-  resourceName: 'thẻ bài viết'
+  pagination, 
+  filters,
+  fetchData, 
+  updateFilters,
+  deleteItem 
+} = useDataTable('/api/admin/post-tags', {
+  defaultFilters: {
+    search: '',
+    sort_by: 'created_at_desc'
+  }
 })
 
-const { showToast } = useToast()
+const { showSuccess, showError } = useToast()
+const apiClient = useApiClient()
 
 // State
-const showAddModal = ref(false)
+const selectedTag = ref(null)
+const showCreateModal = ref(false)
 const showEditModal = ref(false)
-const editingTag = ref(null)
-const searchQuery = ref('')
-const sortBy = ref('name')
+const showDeleteModal = ref(false)
 
-const form = ref({
-  name: '',
-  slug: '',
-  description: '',
-  status: 'active'
+// Enums and options
+const statusEnums = ref([])
+
+// Fetch data
+onMounted(async () => {
+  // Load enums and options
+  await loadEnums()
+  await fetchData()
 })
 
-// Computed
-const filteredTags = computed(() => {
-  if (!tags.value || !Array.isArray(tags.value)) return []
-  
-  let filtered = tags.value
-  
-  if (searchQuery.value) {
-    filtered = filtered.filter(tag => 
-      tag.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      tag.description?.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-  }
-  
-  // Sort tags
-  filtered = [...filtered].sort((a, b) => {
-    switch (sortBy.value) {
-      case 'posts':
-        return (b.post_count || 0) - (a.post_count || 0)
-      case 'created':
-        return new Date(b.created_at) - new Date(a.created_at)
-      default: // name
-        return a.name.localeCompare(b.name)
-    }
-  })
-  
-  return filtered
-})
-
-const totalPosts = computed(() => {
-  if (!tags.value || !Array.isArray(tags.value)) return 0
-  return tags.value.reduce((total, tag) => total + (tag.post_count || 0), 0)
-})
-
-const popularTag = computed(() => {
-  if (!tags.value || !Array.isArray(tags.value) || tags.value.length === 0) return null
-  return tags.value.reduce((max, tag) => 
-    (tag.post_count || 0) > (max.post_count || 0) ? tag : max
-  )
-})
-
-// Methods
-const loadTags = async () => {
+// Load enums and options
+async function loadEnums() {
   try {
-    await fetchTags()
-  } catch (err) {
-    showToast('Lỗi khi tải danh sách tags', 'error')
+    // Status options
+    statusEnums.value = [
+      { value: 'active', label: 'Hoạt động' },
+      { value: 'inactive', label: 'Không hoạt động' }
+    ]
+  } catch (error) {
+    console.error('Error loading enums:', error)
+    showError('Không thể tải dữ liệu cần thiết')
   }
 }
 
-const editTag = (tag) => {
-  editingTag.value = tag
-  form.value = { ...tag }
+// Filter handlers
+function handleFilterUpdate(newFilters) {
+  updateFilters(newFilters)
+}
+
+// Modal handlers
+function openCreateModal() {
+  showCreateModal.value = true
+}
+
+function closeCreateModal() {
+  showCreateModal.value = false
+}
+
+function openEditModal(tag) {
+  selectedTag.value = tag
   showEditModal.value = true
 }
 
-const saveTag = async () => {
-  try {
-    if (showEditModal.value) {
-      await updateTag(editingTag.value.id, form.value)
-      showToast('Cập nhật tag thành công', 'success')
-    } else {
-      await createTag(form.value)
-      showToast('Thêm tag thành công', 'success')
-    }
-    closeModal()
-  } catch (err) {
-    showToast('Lỗi khi lưu tag', 'error')
-  }
-}
-
-const handleDeleteTag = async (id) => {
-  try {
-    await deleteTag(id)
-    showToast('Xóa tag thành công', 'success')
-  } catch (err) {
-    showToast('Lỗi khi xóa tag', 'error')
-  }
-}
-
-const closeModal = () => {
-  showAddModal.value = false
+function closeEditModal() {
   showEditModal.value = false
-  editingTag.value = null
-  form.value = {
-    name: '',
-    slug: '',
-    description: '',
-    status: 'active'
+  selectedTag.value = null
+}
+
+function openDeleteModal(tag) {
+  selectedTag.value = tag
+  showDeleteModal.value = true
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false
+  selectedTag.value = null
+}
+
+// CRUD operations
+async function handleTagCreated() {
+  await fetchData()
+  closeCreateModal()
+  showSuccess('Thẻ đã được tạo thành công')
+}
+
+async function handleTagUpdated() {
+  await fetchData()
+  closeEditModal()
+  showSuccess('Thẻ đã được cập nhật thành công')
+}
+
+async function confirmDelete(tag) {
+  openDeleteModal(tag)
+}
+
+async function handleDelete() {
+  try {
+    await deleteItem(selectedTag.value.id)
+    showSuccess('Xóa thẻ thành công')
+    closeDeleteModal()
+    await fetchData()
+  } catch (error) {
+    showError('Lỗi khi xóa thẻ')
   }
 }
 
-const getStatusText = (status) => {
+function changePage(url) {
+  if (!url) return
+  
+  const urlObj = new URL(url)
+  const page = urlObj.searchParams.get('page')
+  fetchData({ page })
+}
+
+function getStatusText(status) {
   const statusMap = {
-    active: 'Hoạt động',
-    inactive: 'Không hoạt động'
+    'active': 'Hoạt động',
+    'inactive': 'Không hoạt động'
   }
-  return statusMap[status] || status
+  return statusMap[status] || 'Không xác định'
 }
 
-// Watchers
-watch([searchQuery, sortBy], () => {
-  // Re-filter when search or sort changes
-})
-
-onMounted(async () => {
-  await loadTags()
-})
+function formatDate(dateString) {
+  if (!dateString) return 'N/A'
+  return new Date(dateString).toLocaleDateString('vi-VN')
+}
 </script>
-

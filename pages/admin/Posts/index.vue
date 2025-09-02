@@ -1,203 +1,195 @@
 ﻿<template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
+  <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">Quản lý bài đăng</h1>
-        <p class="text-gray-600 mt-2">Quản lý tất cả bài đăng, danh mục và tags</p>
-      </div>
-      <div class="flex space-x-3">
-        <button 
-        @click="showAddModal = true"
-          class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center"
+      <h1 class="text-2xl font-bold">Quản lý bài viết</h1>
+      <button 
+        @click="openCreateModal" 
+        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-        Thêm bài đăng
+        Thêm bài viết mới
       </button>
-      </div>
     </div>
 
+    <!-- Bộ lọc -->
+    <PostFilter 
+      :initial-filters="filters"
+      @update:filters="handleFilterUpdate" 
+    />
 
-
-    <!-- Posts Table -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+    <!-- Bảng dữ liệu -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="6" />
+      <table v-else class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bài đăng</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bài viết</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thẻ</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-if="loading" class="text-center">
-              <td colspan="4" class="px-6 py-4">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-              </td>
-            </tr>
-            <tr v-else-if="!posts || posts.length === 0" class="text-center">
-              <td colspan="4" class="px-6 py-4 text-gray-500">
-                Không có bài đăng nào
-              </td>
-            </tr>
-            <tr v-else v-for="post in posts" :key="post.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
+          <tr v-for="post in items" :key="post.id" class="hover:bg-gray-50">
+            <td class="px-6 py-4">
                 <div class="flex items-center">
-                  <div class="flex-shrink-0 h-12 w-12">
-                    <img 
-                      v-if="post.featured_image"
-                      :src="post.featured_image"
-                      :alt="post.title"
-                      class="h-12 w-12 rounded-lg object-cover"
-                    >
-                    <div v-else class="h-12 w-12 rounded-lg bg-gray-200 flex items-center justify-center">
-                      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                      </svg>
-                    </div>
+                <div class="flex-shrink-0 h-10 w-10">
+                  <img 
+                    v-if="post.cover_image" 
+                    :src="post.cover_image" 
+                    :alt="post.name"
+                    class="h-10 w-10 rounded-lg object-cover"
+                  />
+                  <div v-else class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
                   </div>
                   <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">{{ post.title }}</div>
-                    <div class="text-sm text-gray-500 line-clamp-2">{{ post.excerpt }}</div>
+                  <div class="text-sm font-medium text-gray-900">{{ post.name }}</div>
+                  <div class="text-sm text-gray-500">{{ post.slug }}</div>
+                  <div v-if="post.excerpt" class="text-sm text-gray-400 mt-1 line-clamp-2">
+                    {{ post.excerpt }}
+                  </div>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4">
+              <div v-if="post.categories && post.categories.length > 0">
+                <span 
+                  v-for="category in post.categories" 
+                  :key="category.id"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1 mb-1"
+                >
+                  {{ category.name }}
+                </span>
+              </div>
+              <span v-else class="text-gray-400 text-sm">Không có</span>
+              </td>
+            <td class="px-6 py-4">
+              <div v-if="post.tags && post.tags.length > 0">
+                  <span 
+                    v-for="tag in post.tags" 
+                    :key="tag.id"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-1 mb-1"
+                  >
+                    {{ tag.name }}
+                  </span>
+                </div>
+              <span v-else class="text-gray-400 text-sm">Không có</span>
+              </td>
+            <td class="px-6 py-4">
                 <span 
                   :class="{
-                    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full': true,
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium': true,
                     'bg-green-100 text-green-800': post.status === 'published',
                     'bg-yellow-100 text-yellow-800': post.status === 'draft',
-                    'bg-red-100 text-red-800': post.status === 'archived'
+                  'bg-red-100 text-red-800': post.status === 'archived',
+                  'bg-gray-100 text-gray-800': !post.status
                   }"
                 >
                   {{ getStatusText(post.status) }}
+              </span>
+              <div v-if="post.is_featured" class="mt-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                  Nổi bật
                 </span>
+              </div>
+              <div v-if="post.is_pinned" class="mt-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                  Ghim
+                </span>
+              </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <td class="px-6 py-4 text-sm text-gray-500">
                 {{ formatDate(post.created_at) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="flex space-x-2">
-                  <button 
-                    @click="editPost(post)"
-                    class="text-blue-600 hover:text-blue-800"
-                  >
-                    Sửa
-                  </button>
-                  <button 
-                    @click="deletePost(post.id)"
-                    class="text-red-600 hover:text-red-800"
-                  >
-                    Xóa
-                  </button>
-                </div>
+            <td class="px-6 py-4 text-sm font-medium">
+                <Actions 
+                  :item="post"
+                @edit="openEditModal"
+                @delete="confirmDelete"
+                />
               </td>
             </tr>
+          <tr v-if="items.length === 0">
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+              Không có dữ liệu
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>
+      
+    <!-- Phân trang -->
+    <div class="mt-4 flex justify-between items-center">
+      <div class="text-sm text-gray-700">
+        Hiển thị {{ pagination.from }} đến {{ pagination.to }} trên tổng số {{ pagination.total }} bản ghi
+      </div>
+      <div class="flex space-x-1">
+        <button 
+          v-for="page in pagination.links" 
+          :key="page.label"
+          @click="changePage(page.url)"
+          :disabled="!page.url"
+          :class="[
+            'px-3 py-1 border rounded',
+            page.active 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-white text-gray-700 hover:bg-gray-50',
+            !page.url && 'opacity-50 cursor-not-allowed'
+          ]"
+        >
+          {{ page.label }}
+        </button>
+      </div>
     </div>
 
-    <!-- Add/Edit Modal -->
-    <div v-if="showAddModal || showEditModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white p-6 rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-medium text-gray-900">
-            {{ showEditModal ? 'Sửa bài đăng' : 'Thêm bài đăng' }}
-          </h3>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-        
-        <form @submit.prevent="savePost" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-              <label class="block text-sm font-medium text-gray-700">Tiêu đề *</label>
-                <input 
-                  v-model="form.title"
-                  type="text" 
-                  required
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-              </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Slug</label>
-              <input 
-                v-model="form.slug"
-                type="text" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-            </div>
-          </div>
-          
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Tóm tắt</label>
-                <textarea 
-                  v-model="form.excerpt"
-                  rows="3"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                ></textarea>
-              </div>
-          
-              <div>
-            <label class="block text-sm font-medium text-gray-700">Nội dung</label>
-            <textarea 
-                  v-model="form.content"
-              rows="6"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Nhập nội dung bài viết..."
-            ></textarea>
-              </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Trạng thái</label>
-                <select 
-                  v-model="form.status"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="draft">Bản nháp</option>
-                  <option value="published">Xuất bản</option>
-                  <option value="archived">Lưu trữ</option>
-                </select>
-              </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700">Ảnh đại diện</label>
-              <input 
-              v-model="form.featured_image"
-                type="text" 
-                placeholder="URL ảnh"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-            </div>
-          </div>
-      
-        <div class="flex justify-end space-x-3">
+    <!-- Modal thêm mới -->
+    <CreatePost
+      v-if="showCreateModal"
+      :show="showCreateModal"
+      :status-enums="statusEnums"
+      :category-enums="categoryEnums"
+      :tag-enums="tagEnums"
+      :on-close="closeCreateModal"
+      @created="handlePostCreated"
+    />
+
+    <!-- Modal chỉnh sửa -->
+    <EditPost
+      v-if="showEditModal"
+      :show="showEditModal"
+      :post="selectedPost"
+      :status-enums="statusEnums"
+      :category-enums="categoryEnums"
+      :tag-enums="tagEnums"
+      :on-close="closeEditModal"
+      @updated="handlePostUpdated"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <Modal v-model="showDeleteModal" :title="'Xác nhận xóa'">
+      <div class="text-center">
+        <p class="text-gray-600 mb-4">Bạn có chắc chắn muốn xóa bài viết này không?</p>
+        <div class="flex justify-center space-x-3">
               <button 
-                type="button"
-                @click="closeModal"
-                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            @click="closeDeleteModal"
+            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
                 Hủy
               </button>
               <button 
-                type="submit"
-            :disabled="loading"
-            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            @click="handleDelete"
+            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
           >
-            {{ loading ? 'Đang xử lý...' : (showEditModal ? 'Cập nhật' : 'Thêm') }}
+            Xóa
           </button>
         </div>
-        </form>
       </div>
-    </div>
+    </Modal>
   </div>
 </template>
 
@@ -206,116 +198,166 @@ definePageMeta({
   layout: 'admin-layout'
 })
 
-import { ref, computed, onMounted } from 'vue'
-import useCrudAdmin from '../../composables/data/useCrudAdmin.js'
-import { useToast } from '../../composables/ui/useToast.js'
+import { ref, onMounted } from 'vue'
+import { useDataTable } from '../../../composables/data/useDataTable.js'
+import { useToast } from '../../../composables/ui/useToast.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
+import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
+import Modal from '../../../components/Core/Modal/Modal.vue'
+import Actions from '../../../components/Core/Actions/Actions.vue'
+import PostFilter from './filter.vue'
+import CreatePost from './create.vue'
+import EditPost from './edit.vue'
 
+// Use composables
 const { 
-  items: posts, 
+  items, 
   loading, 
-  apiErrors,
-  fetchItems: fetchAdminPosts, 
-  createItem: createPost, 
-  updateItem: updatePost, 
-  deleteItem: deletePost
-} = useCrudAdmin({
-  endpoints: {
-    list: '/api/admin/posts',
-    create: '/api/admin/posts',
-    update: '/api/admin/posts',
-    delete: '/api/admin/posts'
-  },
-  resourceName: 'bài viết'
+  pagination, 
+  filters,
+  fetchData, 
+  updateFilters,
+  deleteItem 
+} = useDataTable('/api/admin/posts', {
+  defaultFilters: {
+    search: '',
+    status: '',
+    category_id: '',
+    sort_by: 'created_at_desc'
+  }
 })
 
-const { showToast } = useToast()
+const { showSuccess, showError } = useToast()
+const apiClient = useApiClient()
 
 // State
-const showAddModal = ref(false)
+const selectedPost = ref(null)
+const showCreateModal = ref(false)
 const showEditModal = ref(false)
-const editingPost = ref(null)
+const showDeleteModal = ref(false)
 
-const form = ref({
-  title: '',
-  slug: '',
-  excerpt: '',
-  content: '',
-  status: 'draft',
-  featured_image: ''
+// Enums and options
+const statusEnums = ref([])
+const categoryEnums = ref([])
+const tagEnums = ref([])
+
+// Fetch data
+onMounted(async () => {
+  // Load enums and options
+  await loadEnums()
+  await fetchData()
 })
 
-// Computed
-const publishedPosts = computed(() => {
-  if (!posts.value) return []
-  return posts.value.filter(post => post.status === 'published')
-})
-
-const draftPosts = computed(() => {
-  if (!posts.value) return []
-  return posts.value.filter(post => post.status === 'draft')
-})
-
-// Methods
-const loadPosts = async () => {
+// Load enums and options
+async function loadEnums() {
   try {
-    await fetchAdminPosts()
-  } catch (err) {
-    showToast('Lỗi khi tải danh sách bài viết', 'error')
+    // Load categories
+    const categoriesResponse = await apiClient.get('/api/admin/post-categories')
+    if (categoriesResponse.data.success) {
+      categoryEnums.value = categoriesResponse.data.data.data || []
+    }
+    
+    // Load tags
+    const tagsResponse = await apiClient.get('/api/admin/post-tags')
+    if (tagsResponse.data.success) {
+      tagEnums.value = tagsResponse.data.data.data || []
+    }
+    
+    // Status options
+    statusEnums.value = [
+      { value: 'draft', label: 'Bản nháp' },
+      { value: 'published', label: 'Xuất bản' },
+      { value: 'archived', label: 'Lưu trữ' }
+    ]
+  } catch (error) {
+    console.error('Error loading enums:', error)
+    showError('Không thể tải dữ liệu cần thiết')
   }
 }
 
-const editPost = (post) => {
-  editingPost.value = post
-  form.value = { ...post }
+// Filter handlers
+function handleFilterUpdate(newFilters) {
+  updateFilters(newFilters)
+}
+
+// Modal handlers
+function openCreateModal() {
+  showCreateModal.value = true
+}
+
+function closeCreateModal() {
+  showCreateModal.value = false
+}
+
+function openEditModal(post) {
+  selectedPost.value = post
   showEditModal.value = true
 }
 
-const savePost = async () => {
-  try {
-    if (showEditModal.value) {
-      await updatePost(editingPost.value.id, form.value)
-      showToast('Cập nhật bài viết thành công', 'success')
-    } else {
-      await createPost(form.value)
-      showToast('Thêm bài viết thành công', 'success')
-    }
-    closeModal()
-  } catch (err) {
-    showToast('Lỗi khi lưu bài viết', 'error')
-  }
-}
-
-const closeModal = () => {
-  showAddModal.value = false
+function closeEditModal() {
   showEditModal.value = false
-  editingPost.value = null
-  form.value = {
-    title: '',
-    slug: '',
-    excerpt: '',
-    content: '',
-    status: 'draft',
-    featured_image: ''
+  selectedPost.value = null
+}
+
+function openDeleteModal(post) {
+  selectedPost.value = post
+  showDeleteModal.value = true
+}
+
+function closeDeleteModal() {
+  showDeleteModal.value = false
+  selectedPost.value = null
+}
+
+// CRUD operations
+async function handlePostCreated() {
+  await fetchData()
+  closeCreateModal()
+  showSuccess('Bài viết đã được tạo thành công')
+}
+
+async function handlePostUpdated() {
+  await fetchData()
+  closeEditModal()
+  showSuccess('Bài viết đã được cập nhật thành công')
+}
+
+async function confirmDelete(post) {
+  openDeleteModal(post)
+}
+
+async function handleDelete() {
+  try {
+    await deleteItem(selectedPost.value.id)
+    showSuccess('Xóa bài viết thành công')
+    closeDeleteModal()
+    await fetchData()
+  } catch (error) {
+    showError('Lỗi khi xóa bài viết')
   }
 }
 
-const getStatusText = (status) => {
+function changePage(url) {
+  if (!url) return
+  
+  const urlObj = new URL(url)
+  const page = urlObj.searchParams.get('page')
+  fetchData({ page })
+}
+
+function getStatusText(status) {
   const statusMap = {
-    published: 'Đã xuất bản',
-    draft: 'Bản nháp',
-    archived: 'Đã lưu trữ'
+    'published': 'Xuất bản',
+    'draft': 'Bản nháp',
+    'archived': 'Lưu trữ'
   }
-  return statusMap[status] || status
+  return statusMap[status] || 'Không xác định'
 }
 
-const formatDate = (date) => {
-  if (!date) return 'N/A'
-  return new Date(date).toLocaleDateString('vi-VN')
+function formatDate(dateString) {
+  if (!dateString) return 'N/A'
+  return new Date(dateString).toLocaleDateString('vi-VN')
 }
-
-onMounted(async () => {
-  await loadPosts()
-})
 </script>
 
 <style scoped>
