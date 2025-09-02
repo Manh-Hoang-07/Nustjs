@@ -30,6 +30,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import api from '../../api/apiClient.js'
+import { getImageUrl as getImageUrlFromConfig } from '../../config/api.js'
 const props = defineProps({
   modelValue: File || String || null,
   defaultUrl: String || null
@@ -50,20 +51,21 @@ watch(() => props.modelValue, (val) => {
 }, { immediate: true })
 
 function getImageUrl(url) {
-  if (!url) return null
-  if (url.startsWith('http')) return url
-  if (url.startsWith('/storage/')) return url.replace(/^(\/storage\/)+/, '/storage/')
-  return `/storage/${url.replace(/^\/storage\//, '')}`
+  return getImageUrlFromConfig(url)
 }
 
 async function onFileChange(e) {
   const file = e.target.files[0]
   if (file) {
+    // Hiển thị preview ngay lập tức
+    previewUrl.value = URL.createObjectURL(file)
+    
     uploading.value = true
     error.value = ''
     try {
       const formData = new FormData()
       formData.append('image', file)
+      
       const res = await api.post('/api/upload-image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
@@ -76,11 +78,10 @@ async function onFileChange(e) {
         emit('update:modelValue', url)
         previewUrl.value = getImageUrl(url)
       } else {
-        
         error.value = 'Upload thất bại: Không nhận được URL!'
+        // Giữ preview từ file local
       }
     } catch (err) {
-      
       if (err.response?.data?.message) {
         error.value = `Upload thất bại: ${err.response.data.message}`
       } else if (err.message) {
@@ -88,6 +89,7 @@ async function onFileChange(e) {
       } else {
         error.value = 'Upload thất bại!'
       }
+      // Giữ preview từ file local
     } finally {
       uploading.value = false
     }

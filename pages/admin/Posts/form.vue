@@ -50,7 +50,7 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Ảnh bìa</label>
           <ImageUploader
           v-model="formData.cover_image"
-            :default-url="coverImageUrl"
+            :defaultUrl="coverImageUrl"
           @remove="formData.cover_image = null"
         />
         <p v-if="validationErrors.cover_image" class="mt-1 text-sm text-red-600">{{ validationErrors.cover_image }}</p>
@@ -60,9 +60,9 @@
       <!-- Ảnh đại diện -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Ảnh đại diện</label>
-        <ImageUploader
+          <ImageUploader
           v-model="formData.image"
-          :default-url="imageUrl"
+          :defaultUrl="imageUrl"
           @remove="formData.image = null"
         />
         <p v-if="validationErrors.image" class="mt-1 text-sm text-red-600">{{ validationErrors.image }}</p>
@@ -141,10 +141,6 @@
           placeholder="Chọn thẻ"
           :error="validationErrors.tag_ids || apiErrors.tag_ids"
         />
-        <!-- Debug info -->
-        <div class="text-xs text-gray-500 mt-1">
-          Debug: {{ tagOptions.length }} tags loaded, selected: {{ formData.tag_ids }}
-        </div>
       </div>
         
         <!-- Nổi bật -->
@@ -297,7 +293,6 @@ async function fetchCategories() {
   
   loadingCategories.value = true
   try {
-    console.log('Fetching categories from API...')
     // Thử các endpoint khác nhau, bỏ qua endpoint lỗi
     let response
     const endpoints = [
@@ -308,12 +303,9 @@ async function fetchCategories() {
     
     for (const endpoint of endpoints) {
       try {
-        console.log(`Trying endpoint: ${endpoint}`)
         response = await api.get(endpoint)
-        console.log(`Success with endpoint: ${endpoint}`)
         break
       } catch (error) {
-        console.log(`Failed endpoint: ${endpoint}`, error.response?.status)
         // Bỏ qua endpoint lỗi, thử endpoint tiếp theo
         continue
       }
@@ -323,7 +315,6 @@ async function fetchCategories() {
       throw new Error('All endpoints failed')
     }
     
-    console.log('Categories API response:', response.data)
     const categories = response.data.data || response.data
     const options = categories.map(category => ({
       value: category.id,
@@ -333,7 +324,6 @@ async function fetchCategories() {
     // Cache kết quả
     categoriesCache.value = options
     categoryOptions.value = options
-    console.log('Category options set:', categoryOptions.value)
   } catch (error) {
     console.error('Error fetching categories:', error)
     categoryOptions.value = []
@@ -354,7 +344,6 @@ async function fetchTags() {
   
   loadingTags.value = true
   try {
-    console.log('Fetching tags from API...')
     // Thử các endpoint khác nhau, bỏ qua endpoint lỗi
     let response
     const endpoints = [
@@ -365,12 +354,9 @@ async function fetchTags() {
     
     for (const endpoint of endpoints) {
       try {
-        console.log(`Trying endpoint: ${endpoint}`)
         response = await api.get(endpoint)
-        console.log(`Success with endpoint: ${endpoint}`)
         break
       } catch (error) {
-        console.log(`Failed endpoint: ${endpoint}`, error.response?.status)
         // Bỏ qua endpoint lỗi, thử endpoint tiếp theo
         continue
       }
@@ -380,7 +366,6 @@ async function fetchTags() {
       throw new Error('All endpoints failed')
     }
     
-    console.log('Tags API response:', response.data)
     const tags = response.data.data || response.data
     const options = tags.map(tag => ({
       value: tag.id,
@@ -390,7 +375,6 @@ async function fetchTags() {
     // Cache kết quả
     tagsCache.value = options
     tagOptions.value = options
-    console.log('Tag options set:', tagOptions.value)
   } catch (error) {
     console.error('Error fetching tags:', error)
     tagOptions.value = []
@@ -458,8 +442,11 @@ watch(() => props.post, async (newVal) => {
     formData.name = newVal.name || ''
     formData.excerpt = newVal.excerpt || ''
     formData.content = newVal.content || ''
+    
+    // Xử lý ảnh - set URL vào v-model để ImageUploader hiển thị
     formData.cover_image = newVal.cover_image || null
     formData.image = newVal.image || null
+    
     formData.status = newVal.status !== undefined ? newVal.status : ''
     formData.published_at = newVal.published_at ? formatDateTimeForInput(newVal.published_at) : ''
     formData.primary_postcategory_id = newVal.primary_postcategory_id || ''
@@ -483,6 +470,8 @@ watch(() => props.post, async (newVal) => {
     formData.meta_title = newVal.meta_title || ''
     formData.meta_description = newVal.meta_description || ''
     formData.canonical_url = newVal.canonical_url || ''
+    
+
     
     // Đảm bảo DOM được cập nhật
     await nextTick()
