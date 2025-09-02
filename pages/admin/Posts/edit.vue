@@ -1,76 +1,114 @@
 <template>
   <div>
+    <div v-if="loading" class="flex justify-center items-center p-8">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <span class="ml-2 text-gray-600">Đang tải dữ liệu...</span>
+    </div>
     <PostForm 
-      v-if="showModal"
+      v-else-if="showModal"
       :show="showModal"
-      :post="postDetail"
+      :post="postData"
       :status-enums="statusEnums"
       :category-enums="categoryEnums"
       :tag-enums="tagEnums"
       :api-errors="apiErrors"
-      :loading="loading"
       @submit="handleSubmit" 
       @cancel="onClose" 
     />
   </div>
 </template>
-
 <script setup>
 import PostForm from './form.vue'
 import endpoints from '../../../api/endpoints.js'
-import { ref, watch } from 'vue'
-import { useApiFormSubmit } from '../../../utils/useApiFormSubmit.js'
-import apiClient from '../../../api/apiClient.js'
+import { ref, reactive, watch } from 'vue'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
+
+
+const api = useApiClient()
 
 const props = defineProps({
   show: Boolean,
   post: Object,
-  statusEnums: Array,
-  categoryEnums: Array,
-  tagEnums: Array,
+  statusEnums: {
+    type: Array,
+    default: () => []
+  },
+  categoryEnums: {
+    type: Array,
+    default: () => []
+  },
+  tagEnums: {
+    type: Array,
+    default: () => []
+  },
   onClose: Function
 })
-
 const emit = defineEmits(['updated'])
 
 const showModal = ref(false)
-const postDetail = ref(null)
+const postData = ref(null)
 const loading = ref(false)
+const apiErrors = reactive({})
 
-const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: endpoints.posts.update(props.post?.id),
-  emit,
-  onClose: props.onClose,
-  eventName: 'updated',
-  method: 'put'
-})
-
-// Watch show prop để cập nhật showModal và fetch post detail
-watch(() => props.show, async (newValue) => {
+watch(() => props.show, (newValue) => {
   showModal.value = newValue
-  
-  if (newValue && props.post?.id) {
-    await fetchPostDetail()
+  if (newValue) {
+    Object.keys(apiErrors).forEach(key => delete apiErrors[key])
+    
+    // Luôn fetch dữ liệu chi tiết từ API khi mở modal
+    if (props.post?.id) {
+      fetchPostDetails()
+    }
+  } else {
+    postData.value = null // Reset data khi đóng modal
+    loading.value = false
   }
 }, { immediate: true })
 
-async function fetchPostDetail() {
+
+
+async function fetchPostDetails() {
+  if (!props.post?.id) return
+  
+  loading.value = true
   try {
-    loading.value = true
-    const response = await apiClient.get(endpoints.posts.show(props.post.id))
-    if (response.data.success) {
-      postDetail.value = response.data.data
-    }
+    const response = await api.get(`/api/admin/posts/${props.post.id}`)
+    
+    postData.value = response.data.data || response.data
   } catch (error) {
-    // Fallback to props data if API fails
-    console.error('Error fetching post detail:', error)
+    // Fallback về dữ liệu từ list view nếu API lỗi
+    postData.value = props.post
   } finally {
     loading.value = false
   }
 }
 
 async function handleSubmit(formData) {
-  await submit(formData)
+  try {
+    if (!props.post) return;
+    Object.keys(apiErrors).forEach(key => delete apiErrors[key])
+    
+    // Thêm _method = PUT để Laravel hiểu đây là PUT request
+    const dataWithMethod = {
+      ...formData,
+      _method: 'PUT'
+    }
+    
+    const response = await api.post(endpoints.posts.update(props.post.id), dataWithMethod)
+    emit('updated')
+    props.onClose()
+  } catch (error) {
+    if (error.response?.status === 422 && error.response?.data?.errors) {
+      const errors = error.response.data.errors
+      for (const field in errors) {
+        if (Array.isArray(errors[field])) {
+          apiErrors[field] = errors[field][0]
+        } else {
+          apiErrors[field] = errors[field]
+        }
+      }
+    }
+  }
 }
 
 function onClose() {

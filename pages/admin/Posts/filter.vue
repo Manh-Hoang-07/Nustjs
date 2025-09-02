@@ -10,7 +10,6 @@
           v-model="filters.search"
           placeholder="Tìm theo tên bài viết"
         />
-        
         <!-- Lọc theo trạng thái -->
         <AdminFilterItem
           id="status"
@@ -20,17 +19,6 @@
           placeholder="Tất cả trạng thái"
           :options="statusOptions"
         />
-        
-        <!-- Lọc theo danh mục -->
-        <AdminFilterItem
-          id="category_id"
-          label="Danh mục"
-          type="select"
-          v-model="filters.category_id"
-          placeholder="Tất cả danh mục"
-          :options="categoryOptions"
-        />
-        
         <!-- Sắp xếp theo -->
         <AdminFilterItem
           id="sort_by"
@@ -61,8 +49,9 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
+import { getEnumSync } from '../../../constants/enums.js'
 
 const props = defineProps({
   initialFilters: {
@@ -76,30 +65,31 @@ const emit = defineEmits(['update:filters'])
 const filters = reactive({
   search: props.initialFilters.search || '',
   status: props.initialFilters.status || '',
-  category_id: props.initialFilters.category_id || '',
   sort_by: props.initialFilters.sort_by || 'created_at_desc',
 })
 
 // Các tùy chọn cho select
-const statusOptions = [
-  { value: 'published', label: 'Xuất bản' },
-  { value: 'draft', label: 'Bản nháp' },
-  { value: 'archived', label: 'Lưu trữ' }
-]
-
-const categoryOptions = [
-  { value: '', label: 'Tất cả danh mục' },
-  { value: '1', label: 'Tin tức' },
-  { value: '16', label: 'Incidunt Vitae' }
-]
+const statusOptions = computed(() => {
+  const options = [{ value: '', label: 'Tất cả trạng thái' }]
+  
+  // Sử dụng static enum cho posts
+  const postStatuses = [
+    { value: 'draft', label: 'Bản nháp' },
+    { value: 'published', label: 'Xuất bản' },
+    { value: 'scheduled', label: 'Lên lịch' },
+    { value: 'archived', label: 'Lưu trữ' }
+  ]
+  
+  options.push(...postStatuses)
+  
+  return options
+})
 
 const sortOptions = [
   { value: 'created_at_desc', label: 'Mới nhất' },
   { value: 'created_at_asc', label: 'Cũ nhất' },
-  { value: 'name_asc', label: 'Tên bài viết (A-Z)' },
-  { value: 'name_desc', label: 'Tên bài viết (Z-A)' },
-  { value: 'published_at_desc', label: 'Xuất bản mới nhất' },
-  { value: 'view_count_desc', label: 'Lượt xem cao nhất' }
+  { value: 'name_asc', label: 'Tên (A-Z)' },
+  { value: 'name_desc', label: 'Tên (Z-A)' }
 ]
 
 // Áp dụng bộ lọc

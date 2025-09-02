@@ -20,109 +20,47 @@
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
       <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="6" />
       <table v-else class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bài viết</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thẻ</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="post in items" :key="post.id" class="hover:bg-gray-50">
-            <td class="px-6 py-4">
-                <div class="flex items-center">
-                <div class="flex-shrink-0 h-10 w-10">
-                  <img 
-                    v-if="post.cover_image" 
-                    :src="post.cover_image" 
-                    :alt="post.name"
-                    class="h-10 w-10 rounded-lg object-cover"
-                  />
-                  <div v-else class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                  </div>
-                  </div>
-                  <div class="ml-4">
-                  <div class="text-sm font-medium text-gray-900">{{ post.name }}</div>
-                  <div class="text-sm text-gray-500">{{ post.slug }}</div>
-                  <div v-if="post.excerpt" class="text-sm text-gray-400 mt-1 line-clamp-2">
-                    {{ post.excerpt }}
-                  </div>
-                  </div>
-                </div>
-              </td>
-            <td class="px-6 py-4">
-              <div v-if="post.categories && post.categories.length > 0">
-                <span 
-                  v-for="category in post.categories" 
-                  :key="category.id"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1 mb-1"
-                >
-                  {{ category.name }}
-                </span>
-              </div>
-              <span v-else class="text-gray-400 text-sm">Không có</span>
-              </td>
-            <td class="px-6 py-4">
-              <div v-if="post.tags && post.tags.length > 0">
-                  <span 
-                    v-for="tag in post.tags" 
-                    :key="tag.id"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-1 mb-1"
-                  >
-                    {{ tag.name }}
-                  </span>
-                </div>
-              <span v-else class="text-gray-400 text-sm">Không có</span>
-              </td>
-            <td class="px-6 py-4">
-                <span 
-                  :class="{
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium': true,
-                    'bg-green-100 text-green-800': post.status === 'published',
-                    'bg-yellow-100 text-yellow-800': post.status === 'draft',
-                  'bg-red-100 text-red-800': post.status === 'archived',
-                  'bg-gray-100 text-gray-800': !post.status
-                  }"
-                >
-                  {{ getStatusText(post.status) }}
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiêu đề</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr v-for="post in items" :key="post.id">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ post.id }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ post.name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ getCategoryNames(post.categories) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span 
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                :class="getStatusClass(post.status)"
+              >
+                {{ getStatusLabel(post.status) }}
               </span>
-              <div v-if="post.is_featured" class="mt-1">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                  Nổi bật
-                </span>
-              </div>
-              <div v-if="post.is_pinned" class="mt-1">
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
-                  Ghim
-                </span>
-              </div>
-              </td>
-            <td class="px-6 py-4 text-sm text-gray-500">
-                {{ formatDate(post.created_at) }}
-              </td>
-            <td class="px-6 py-4 text-sm font-medium">
-                <Actions 
-                  :item="post"
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(post.created_at) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <Actions 
+                :item="post"
                 @edit="openEditModal"
                 @delete="confirmDelete"
-                />
-              </td>
-            </tr>
+              />
+            </td>
+          </tr>
           <tr v-if="items.length === 0">
             <td colspan="6" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>
-          </tbody>
-        </table>
-      </div>
-      
+        </tbody>
+      </table>
+    </div>
+
     <!-- Phân trang -->
     <div class="mt-4 flex justify-between items-center">
       <div class="text-sm text-gray-700">
@@ -141,9 +79,8 @@
               : 'bg-white text-gray-700 hover:bg-gray-50',
             !page.url && 'opacity-50 cursor-not-allowed'
           ]"
-        >
-          {{ page.label }}
-        </button>
+          v-html="page.label"
+        ></button>
       </div>
     </div>
 
@@ -170,55 +107,49 @@
       @updated="handlePostUpdated"
     />
 
-    <!-- Delete Confirmation Modal -->
-    <Modal v-model="showDeleteModal" :title="'Xác nhận xóa'">
-      <div class="text-center">
-        <p class="text-gray-600 mb-4">Bạn có chắc chắn muốn xóa bài viết này không?</p>
-        <div class="flex justify-center space-x-3">
-              <button 
-            @click="closeDeleteModal"
-            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-              >
-                Hủy
-              </button>
-              <button 
-            @click="handleDelete"
-            class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-          >
-            Xóa
-          </button>
-        </div>
-      </div>
-    </Modal>
+    <!-- Modal xác nhận xóa -->
+    <ConfirmModal
+      v-if="showDeleteModal"
+      :show="showDeleteModal"
+      title="Xác nhận xóa"
+      :message="`Bạn có chắc chắn muốn xóa bài viết ${selectedPost?.name || ''}?`"
+      :on-close="closeDeleteModal"
+      @confirm="deletePost"
+    />
   </div>
 </template>
 
 <script setup>
 definePageMeta({
-  layout: 'admin-layout'
+  layout: 'admin-layout',
+  requiresAuth: true,
+  requiresAdmin: true
 })
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
+import { getEnumSync, getEnumLabel } from '../../../constants/enums.js'
 import { useDataTable } from '../../../composables/data/useDataTable.js'
 import { useToast } from '../../../composables/ui/useToast.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
 import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import Actions from '../../../components/Core/Actions/Actions.vue'
-import PostFilter from './filter.vue'
-import CreatePost from './create.vue'
-import EditPost from './edit.vue'
+import endpoints from '../../../api/endpoints.js'
+
+// Lazy load components
+const CreatePost = defineAsyncComponent(() => import('./create.vue'))
+const EditPost = defineAsyncComponent(() => import('./edit.vue'))
+const PostFilter = defineAsyncComponent(() => import('./filter.vue'))
 
 // Use composables
 const { 
   items, 
   loading, 
   pagination, 
-  filters,
+  filters, 
   fetchData, 
-  updateFilters,
+  updateFilters, 
   deleteItem 
-} = useDataTable('/api/admin/posts', {
+} = useDataTable(endpoints.posts.list, {
   defaultFilters: {
     search: '',
     status: '',
@@ -228,56 +159,43 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const apiClient = useApiClient()
 
 // State
 const selectedPost = ref(null)
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const showDeleteModal = ref(false)
-
-// Enums and options
 const statusEnums = ref([])
 const categoryEnums = ref([])
 const tagEnums = ref([])
 
+// Modal state
+const showCreateModal = ref(false)
+const showEditModal = ref(false)
+const showDeleteModal = ref(false)
+
 // Fetch data
 onMounted(async () => {
-  // Load enums and options
-  await loadEnums()
+  // Load enums immediately (static)
+  fetchEnums()
+  
+  // Fetch posts
   await fetchData()
 })
 
-// Load enums and options
-async function loadEnums() {
-  try {
-    // Load categories
-    const categoriesResponse = await apiClient.get('/api/admin/post-categories')
-    if (categoriesResponse.data.success) {
-      categoryEnums.value = categoriesResponse.data.data.data || []
-    }
-    
-    // Load tags
-    const tagsResponse = await apiClient.get('/api/admin/post-tags')
-    if (tagsResponse.data.success) {
-      tagEnums.value = tagsResponse.data.data.data || []
-    }
-    
-    // Status options
-    statusEnums.value = [
-      { value: 'draft', label: 'Bản nháp' },
-      { value: 'published', label: 'Xuất bản' },
-      { value: 'archived', label: 'Lưu trữ' }
-    ]
-  } catch (error) {
-    console.error('Error loading enums:', error)
-    showError('Không thể tải dữ liệu cần thiết')
-  }
-}
-
-// Filter handlers
 function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
+}
+
+function fetchEnums() {
+  // Sử dụng static enum thay vì gọi API
+  statusEnums.value = [
+    { value: 'draft', label: 'Bản nháp' },
+    { value: 'published', label: 'Xuất bản' },
+    { value: 'scheduled', label: 'Lên lịch' },
+    { value: 'archived', label: 'Lưu trữ' }
+  ]
+  
+  // TODO: Load categories and tags from API if needed
+  categoryEnums.value = []
+  tagEnums.value = []
 }
 
 // Modal handlers
@@ -299,7 +217,7 @@ function closeEditModal() {
   selectedPost.value = null
 }
 
-function openDeleteModal(post) {
+function confirmDelete(post) {
   selectedPost.value = post
   showDeleteModal.value = true
 }
@@ -309,7 +227,7 @@ function closeDeleteModal() {
   selectedPost.value = null
 }
 
-// CRUD operations
+// Action handlers
 async function handlePostCreated() {
   await fetchData()
   closeCreateModal()
@@ -322,18 +240,13 @@ async function handlePostUpdated() {
   showSuccess('Bài viết đã được cập nhật thành công')
 }
 
-async function confirmDelete(post) {
-  openDeleteModal(post)
-}
-
-async function handleDelete() {
+async function deletePost() {
   try {
     await deleteItem(selectedPost.value.id)
-    showSuccess('Xóa bài viết thành công')
     closeDeleteModal()
-    await fetchData()
+    showSuccess('Bài viết đã được xóa thành công')
   } catch (error) {
-    showError('Lỗi khi xóa bài viết')
+    showError('Không thể xóa bài viết')
   }
 }
 
@@ -345,13 +258,30 @@ function changePage(url) {
   fetchData({ page })
 }
 
-function getStatusText(status) {
+// Status helper functions
+function getStatusLabel(status) {
   const statusMap = {
     'published': 'Xuất bản',
     'draft': 'Bản nháp',
+    'scheduled': 'Lên lịch',
     'archived': 'Lưu trữ'
   }
-  return statusMap[status] || 'Không xác định'
+  return statusMap[status] || status || 'Không xác định'
+}
+
+function getStatusClass(status) {
+  if (status === 'published') return 'bg-green-100 text-green-800'
+  if (status === 'draft') return 'bg-yellow-100 text-yellow-800'
+  if (status === 'scheduled') return 'bg-blue-100 text-blue-800'
+  if (status === 'archived') return 'bg-red-100 text-red-800'
+  return 'bg-gray-100 text-gray-800'
+}
+
+function getCategoryNames(categories) {
+  if (!categories || !Array.isArray(categories) || categories.length === 0) {
+    return '—'
+  }
+  return categories.map(cat => cat.name).join(', ')
 }
 
 function formatDate(dateString) {
@@ -360,12 +290,10 @@ function formatDate(dateString) {
 }
 </script>
 
-<style scoped>
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+<style>
+/* Cho phép cuộn ngang table khi màn hình nhỏ */
+.table-responsive {
+  overflow-x: auto;
 }
 </style> 
 

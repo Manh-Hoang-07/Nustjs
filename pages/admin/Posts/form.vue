@@ -1,102 +1,156 @@
 <template>
-  <Modal v-model="modalVisible" :title="formTitle" :loading="loading">
-    <FormWrapper
-      :default-values="defaultValues"
-      :rules="validationRules"
-      :api-errors="apiErrors"
-      :submit-text="post ? 'Cập nhật' : 'Thêm mới'"
-      @submit="handleSubmit"
-      @cancel="onClose"
-    >
-      <template #default="{ form, errors, clearError, isSubmitting }">
+  <Modal v-model="modalVisible" :title="formTitle">
+    <form @submit.prevent="validateAndSubmit" class="space-y-4">
         <!-- Tiêu đề -->
-        <FormField
-          v-model="form.name"
-          label="Tiêu đề"
-          name="name"
-          :error="errors.name"
-          required
-          @update:model-value="clearError('name')"
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Tiêu đề <span class="text-red-500">*</span></label>
+        <input
+          id="name"
+          v-model="formData.name"
+          type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.name || apiErrors.name }"
         />
-        
-        <!-- Slug -->
-        <FormField
-          v-model="form.slug"
-          label="Slug"
-          name="slug"
-          :error="errors.slug"
-          @update:model-value="clearError('slug')"
-        />
+        <p v-if="validationErrors.name" class="mt-1 text-sm text-red-600">{{ validationErrors.name }}</p>
+        <p v-else-if="apiErrors.name" class="mt-1 text-sm text-red-600">{{ apiErrors.name }}</p>
+      </div>
+
+
         
         <!-- Tóm tắt -->
-        <FormField
-          v-model="form.excerpt"
-          label="Tóm tắt"
-          name="excerpt"
-          type="textarea"
-          :error="errors.excerpt"
-          @update:model-value="clearError('excerpt')"
-        />
+      <div>
+        <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-1">Tóm tắt</label>
+        <textarea
+          id="excerpt"
+          v-model="formData.excerpt"
+          rows="3"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.excerpt || apiErrors.excerpt }"
+        ></textarea>
+        <p v-if="validationErrors.excerpt" class="mt-1 text-sm text-red-600">{{ validationErrors.excerpt }}</p>
+        <p v-else-if="apiErrors.excerpt" class="mt-1 text-sm text-red-600">{{ apiErrors.excerpt }}</p>
+      </div>
         
         <!-- Nội dung -->
-        <FormField
-          v-model="form.content"
-          label="Nội dung"
-          name="content"
-          type="textarea"
-          :error="errors.content"
-          @update:model-value="clearError('content')"
-        />
+      <div>
+        <label for="content" class="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
+        <textarea
+          id="content"
+          v-model="formData.content"
+          rows="6"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.content || apiErrors.content }"
+        ></textarea>
+        <p v-if="validationErrors.content" class="mt-1 text-sm text-red-600">{{ validationErrors.content }}</p>
+        <p v-else-if="apiErrors.content" class="mt-1 text-sm text-red-600">{{ apiErrors.content }}</p>
+      </div>
         
         <!-- Ảnh bìa -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="post-cover">Ảnh bìa</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Ảnh bìa</label>
           <ImageUploader
-            v-model="form.cover_image"
+          v-model="formData.cover_image"
             :default-url="coverImageUrl"
-            @remove="form.remove_cover_image = true"
-          />
+          @remove="formData.cover_image = null"
+        />
+        <p v-if="validationErrors.cover_image" class="mt-1 text-sm text-red-600">{{ validationErrors.cover_image }}</p>
+        <p v-else-if="apiErrors.cover_image" class="mt-1 text-sm text-red-600">{{ apiErrors.cover_image }}</p>
+      </div>
+
+      <!-- Ảnh đại diện -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Ảnh đại diện</label>
+        <ImageUploader
+          v-model="formData.image"
+          :default-url="imageUrl"
+          @remove="formData.image = null"
+        />
+        <p v-if="validationErrors.image" class="mt-1 text-sm text-red-600">{{ validationErrors.image }}</p>
+        <p v-else-if="apiErrors.image" class="mt-1 text-sm text-red-600">{{ apiErrors.image }}</p>
         </div>
         
         <!-- Trạng thái -->
-        <FormField
-          v-model="form.status"
-          label="Trạng thái"
-          name="status"
-          type="select"
-          :options="statusOptions"
-          :error="errors.status"
-          @update:model-value="clearError('status')"
+      <div>
+        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+        <select
+          id="status"
+          :value="formData.status"
+          @change="formData.status = $event.target.value"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.status || apiErrors.status }"
+        >
+          <option value="">-- Chọn trạng thái --</option>
+          <option v-for="option in statusOptions" :key="option.value" :value="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+        <p v-if="validationErrors.status" class="mt-1 text-sm text-red-600">{{ validationErrors.status }}</p>
+        <p v-else-if="apiErrors.status" class="mt-1 text-sm text-red-600">{{ apiErrors.status }}</p>
+      </div>
+
+      <!-- Ngày xuất bản -->
+      <div>
+        <label for="published_at" class="block text-sm font-medium text-gray-700 mb-1">Ngày xuất bản</label>
+        <input
+          id="published_at"
+          v-model="formData.published_at"
+          type="datetime-local"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.published_at || apiErrors.published_at }"
         />
+        <p v-if="validationErrors.published_at" class="mt-1 text-sm text-red-600">{{ validationErrors.published_at }}</p>
+        <p v-else-if="apiErrors.published_at" class="mt-1 text-sm text-red-600">{{ apiErrors.published_at }}</p>
+      </div>
+
+      <!-- Danh mục chính -->
+      <div>
+        <label for="primary_postcategory_id" class="block text-sm font-medium text-gray-700 mb-1">Danh mục chính</label>
+        <select
+          id="primary_postcategory_id"
+          :value="formData.primary_postcategory_id"
+          @change="formData.primary_postcategory_id = $event.target.value"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.primary_postcategory_id || apiErrors.primary_postcategory_id }"
+        >
+          <option value="">-- Chọn danh mục chính --</option>
+          <option v-for="category in categoryOptions" :key="category.value" :value="category.value">
+            {{ category.label }}
+          </option>
+        </select>
+        <p v-if="validationErrors.primary_postcategory_id" class="mt-1 text-sm text-red-600">{{ validationErrors.primary_postcategory_id }}</p>
+        <p v-else-if="apiErrors.primary_postcategory_id" class="mt-1 text-sm text-red-600">{{ apiErrors.primary_postcategory_id }}</p>
+      </div>
         
         <!-- Danh mục -->
-        <FormField
-          v-model="form.category_ids"
-          label="Danh mục"
-          name="category_ids"
-          type="select"
+      <div>
+        <MultipleSelect
+          v-model="formData.category_ids"
           :options="categoryOptions"
-          :error="errors.category_ids"
-          multiple
-          @update:model-value="clearError('category_ids')"
+          label="Danh mục"
+          placeholder="Chọn danh mục"
+          :error="validationErrors.category_ids || apiErrors.category_ids"
         />
+      </div>
         
         <!-- Thẻ -->
-        <FormField
-          v-model="form.tag_ids"
-          label="Thẻ"
-          name="tag_ids"
-          type="select"
+      <div>
+        <MultipleSelect
+          v-model="formData.tag_ids"
           :options="tagOptions"
-          :error="errors.tag_ids"
-          multiple
-          @update:model-value="clearError('tag_ids')"
+          label="Thẻ"
+          placeholder="Chọn thẻ"
+          :error="validationErrors.tag_ids || apiErrors.tag_ids"
         />
+        <!-- Debug info -->
+        <div class="text-xs text-gray-500 mt-1">
+          Debug: {{ tagOptions.length }} tags loaded, selected: {{ formData.tag_ids }}
+        </div>
+      </div>
         
         <!-- Nổi bật -->
         <div class="flex items-center">
           <input
-            v-model="form.is_featured"
+          v-model="formData.is_featured"
             type="checkbox"
             class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
           />
@@ -106,24 +160,83 @@
         <!-- Ghim -->
         <div class="flex items-center">
           <input
-            v-model="form.is_pinned"
+          v-model="formData.is_pinned"
             type="checkbox"
             class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
           />
           <label class="ml-2 text-sm text-gray-700">Ghim</label>
         </div>
-      </template>
-    </FormWrapper>
+
+      <!-- SEO Meta Title -->
+      <div>
+        <label for="meta_title" class="block text-sm font-medium text-gray-700 mb-1">Meta Title (SEO)</label>
+        <input
+          id="meta_title"
+          v-model="formData.meta_title"
+          type="text"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.meta_title || apiErrors.meta_title }"
+        />
+        <p v-if="validationErrors.meta_title" class="mt-1 text-sm text-red-600">{{ validationErrors.meta_title }}</p>
+        <p v-else-if="apiErrors.meta_title" class="mt-1 text-sm text-red-600">{{ apiErrors.meta_title }}</p>
+      </div>
+
+      <!-- SEO Meta Description -->
+      <div>
+        <label for="meta_description" class="block text-sm font-medium text-gray-700 mb-1">Meta Description (SEO)</label>
+        <textarea
+          id="meta_description"
+          v-model="formData.meta_description"
+          rows="3"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.meta_description || apiErrors.meta_description }"
+        ></textarea>
+        <p v-if="validationErrors.meta_description" class="mt-1 text-sm text-red-600">{{ validationErrors.meta_description }}</p>
+        <p v-else-if="apiErrors.meta_description" class="mt-1 text-sm text-red-600">{{ apiErrors.meta_description }}</p>
+      </div>
+
+      <!-- Canonical URL -->
+      <div>
+        <label for="canonical_url" class="block text-sm font-medium text-gray-700 mb-1">Canonical URL</label>
+        <input
+          id="canonical_url"
+          v-model="formData.canonical_url"
+          type="url"
+          placeholder="https://example.com/page"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          :class="{ 'border-red-500': validationErrors.canonical_url || apiErrors.canonical_url }"
+        />
+        <p v-if="validationErrors.canonical_url" class="mt-1 text-sm text-red-600">{{ validationErrors.canonical_url }}</p>
+        <p v-else-if="apiErrors.canonical_url" class="mt-1 text-sm text-red-600">{{ apiErrors.canonical_url }}</p>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex justify-end space-x-3 pt-4">
+        <button
+          type="button"
+          @click="onClose"
+          class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+        >
+          Hủy
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+          :disabled="isSubmitting"
+        >
+          {{ isSubmitting ? 'Đang xử lý...' : (post ? 'Cập nhật' : 'Thêm mới') }}
+        </button>
+      </div>
+    </form>
   </Modal>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, reactive, watch, nextTick, onMounted } from 'vue'
 import Modal from '../../../components/Core/Modal/Modal.vue'
-import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
-import FormField from '../../../components/Core/Form/FormField.vue'
 import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
-// import { useUrl } from '../../../utils/useUrl.js'
+import MultipleSelect from '../../../components/Core/Select/MultipleSelect.vue'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
 
 const props = defineProps({
   show: Boolean,
@@ -143,97 +256,361 @@ const props = defineProps({
   apiErrors: {
     type: Object,
     default: () => ({})
-  },
-  loading: {
-    type: Boolean,
-    default: false
   }
 })
 
 const emit = defineEmits(['submit', 'cancel'])
 
+// API client
+const api = useApiClient()
+
+// Status options từ props
+const statusOptions = computed(() => {
+  if (Array.isArray(props.statusEnums)) {
+    return props.statusEnums.map(enumItem => ({
+      value: enumItem.value,
+      label: enumItem.label
+    }))
+  }
+  return []
+})
+
+// Category và tag options từ API
+const categoryOptions = ref([])
+const tagOptions = ref([])
+const loadingCategories = ref(false)
+const loadingTags = ref(false)
+
+// Cache để tránh gọi API nhiều lần
+const categoriesCache = ref(null)
+const tagsCache = ref(null)
+
+// Fetch categories từ API
+async function fetchCategories() {
+  // Nếu đã có cache, không gọi API nữa
+  if (categoriesCache.value) {
+    categoryOptions.value = categoriesCache.value
+    return
+  }
+  
+  if (loadingCategories.value) return
+  
+  loadingCategories.value = true
+  try {
+    console.log('Fetching categories from API...')
+    // Thử các endpoint khác nhau, bỏ qua endpoint lỗi
+    let response
+    const endpoints = [
+      '/api/post-categories',
+      '/api/post-categories/list',
+      '/api/admin/post-categories/list'
+    ]
+    
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Trying endpoint: ${endpoint}`)
+        response = await api.get(endpoint)
+        console.log(`Success with endpoint: ${endpoint}`)
+        break
+      } catch (error) {
+        console.log(`Failed endpoint: ${endpoint}`, error.response?.status)
+        // Bỏ qua endpoint lỗi, thử endpoint tiếp theo
+        continue
+      }
+    }
+    
+    if (!response) {
+      throw new Error('All endpoints failed')
+    }
+    
+    console.log('Categories API response:', response.data)
+    const categories = response.data.data || response.data
+    const options = categories.map(category => ({
+      value: category.id,
+      label: category.name
+    }))
+    
+    // Cache kết quả
+    categoriesCache.value = options
+    categoryOptions.value = options
+    console.log('Category options set:', categoryOptions.value)
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+    categoryOptions.value = []
+  } finally {
+    loadingCategories.value = false
+  }
+}
+
+// Fetch tags từ API
+async function fetchTags() {
+  // Nếu đã có cache, không gọi API nữa
+  if (tagsCache.value) {
+    tagOptions.value = tagsCache.value
+    return
+  }
+  
+  if (loadingTags.value) return
+  
+  loadingTags.value = true
+  try {
+    console.log('Fetching tags from API...')
+    // Thử các endpoint khác nhau, bỏ qua endpoint lỗi
+    let response
+    const endpoints = [
+      '/api/post-tags',
+      '/api/post-tags/list',
+      '/api/admin/post-tags/list'
+    ]
+    
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Trying endpoint: ${endpoint}`)
+        response = await api.get(endpoint)
+        console.log(`Success with endpoint: ${endpoint}`)
+        break
+      } catch (error) {
+        console.log(`Failed endpoint: ${endpoint}`, error.response?.status)
+        // Bỏ qua endpoint lỗi, thử endpoint tiếp theo
+        continue
+      }
+    }
+    
+    if (!response) {
+      throw new Error('All endpoints failed')
+    }
+    
+    console.log('Tags API response:', response.data)
+    const tags = response.data.data || response.data
+    const options = tags.map(tag => ({
+      value: tag.id,
+      label: tag.name
+    }))
+    
+    // Cache kết quả
+    tagsCache.value = options
+    tagOptions.value = options
+    console.log('Tag options set:', tagOptions.value)
+  } catch (error) {
+    console.error('Error fetching tags:', error)
+    tagOptions.value = []
+  } finally {
+    loadingTags.value = false
+  }
+}
+
+
+
+// Form title
 const formTitle = computed(() => props.post ? 'Chỉnh sửa bài viết' : 'Thêm bài viết mới')
+
+// Modal visibility
 const modalVisible = computed({
   get: () => props.show,
   set: () => onClose()
 })
 
-const defaultValues = computed(() => {
-  const obj = props.post || {}
-  
-  // Extract category_ids from categories array if exists
-  let categoryIds = []
-  if (obj.categories && Array.isArray(obj.categories)) {
-    categoryIds = obj.categories.map(category => category.id)
+// Image URLs for ImageUploader
+const coverImageUrl = computed(() => {
+  if (props.post?.cover_image) {
+    return props.post.cover_image
   }
-  
-  // Extract tag_ids from tags array if exists
-  let tagIds = []
-  if (obj.tags && Array.isArray(obj.tags)) {
-    tagIds = obj.tags.map(tag => tag.id)
+  return null
+})
+
+const imageUrl = computed(() => {
+  if (props.post?.image) {
+    return props.post.image
   }
-  
-  return {
+  return null
+})
+
+// Form data
+const formData = reactive({
     name: '',
-    slug: '',
     excerpt: '',
     content: '',
     cover_image: null,
-    status: 'draft',
-    category_ids: categoryIds,
-    tag_ids: tagIds,
+  image: null,
+  status: '',
+  published_at: '',
+  primary_postcategory_id: '',
+  category_ids: [],
+  tag_ids: [],
     is_featured: false,
     is_pinned: false,
-    remove_cover_image: false,
-    ...obj
-  }
+  meta_title: '',
+  meta_description: '',
+  canonical_url: ''
 })
 
-// const coverImageUrl = useUrl(props, 'post', 'cover_image')
-const coverImageUrl = computed(() => null)
 
+
+
+
+// Form state
+const validationErrors = reactive({})
+const isSubmitting = ref(false)
+
+// Watch post prop to update form data
+watch(() => props.post, async (newVal) => {
+  if (newVal) {
+    formData.name = newVal.name || ''
+    formData.excerpt = newVal.excerpt || ''
+    formData.content = newVal.content || ''
+    formData.cover_image = newVal.cover_image || null
+    formData.image = newVal.image || null
+    formData.status = newVal.status !== undefined ? newVal.status : ''
+    formData.published_at = newVal.published_at ? formatDateTimeForInput(newVal.published_at) : ''
+    formData.primary_postcategory_id = newVal.primary_postcategory_id || ''
+    
+    // Xử lý categories
+    if (newVal.categories && Array.isArray(newVal.categories)) {
+      formData.category_ids = newVal.categories.map(cat => cat.id)
+    } else {
+      formData.category_ids = []
+    }
+    
+    // Xử lý tags
+    if (newVal.tags && Array.isArray(newVal.tags)) {
+      formData.tag_ids = newVal.tags.map(tag => tag.id)
+    } else {
+      formData.tag_ids = []
+    }
+    
+    formData.is_featured = newVal.is_featured || false
+    formData.is_pinned = newVal.is_pinned || false
+    formData.meta_title = newVal.meta_title || ''
+    formData.meta_description = newVal.meta_description || ''
+    formData.canonical_url = newVal.canonical_url || ''
+    
+    // Đảm bảo DOM được cập nhật
+    await nextTick()
+  } else {
+    // Khi tạo mới, set giá trị mặc định
+    formData.name = ''
+    formData.excerpt = ''
+    formData.content = ''
+    formData.cover_image = null
+    formData.image = null
+    formData.status = 'draft'
+    formData.published_at = ''
+    formData.primary_postcategory_id = ''
+    formData.category_ids = []
+    formData.tag_ids = []
+    formData.is_featured = false
+    formData.is_pinned = false
+    formData.meta_title = ''
+    formData.meta_description = ''
+    formData.canonical_url = ''
+    clearErrors()
+  }
+}, { immediate: true })
+
+// Reset form
+function resetForm() {
+  formData.name = ''
+  formData.excerpt = ''
+  formData.content = ''
+  formData.cover_image = null
+  formData.image = null
+  formData.status = ''
+  formData.published_at = ''
+  formData.primary_postcategory_id = ''
+  formData.category_ids = []
+  formData.tag_ids = []
+  formData.is_featured = false
+  formData.is_pinned = false
+  formData.meta_title = ''
+  formData.meta_description = ''
+  formData.canonical_url = ''
+  clearErrors()
+}
+
+// Format datetime for input
+function formatDateTimeForInput(dateString) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+// Clear errors
+function clearErrors() {
+  Object.keys(validationErrors).forEach(key => delete validationErrors[key])
+}
+
+// Validation rules
 const validationRules = computed(() => ({
   name: [
-    { required: 'Tiêu đề là bắt buộc.' },
-    { max: [255, 'Tiêu đề không được vượt quá 255 ký tự.'] }
-  ],
-  slug: [
-    { max: [255, 'Slug không được vượt quá 255 ký tự.'] }
-  ],
-  excerpt: [
-    { max: [500, 'Tóm tắt không được vượt quá 500 ký tự.'] }
-  ],
-  content: [
-    { max: [10000, 'Nội dung không được vượt quá 10000 ký tự.'] }
+    { required: 'Tiêu đề là bắt buộc' }
   ]
 }))
 
-const statusOptions = computed(() =>
-  (props.statusEnums || []).map(opt => ({
-    value: opt.value,
-    label: opt.label
-  }))
-)
-
-const categoryOptions = computed(() =>
-  (props.categoryEnums || []).map(opt => ({
-    value: opt.id,
-    label: opt.name
-  }))
-)
-
-const tagOptions = computed(() =>
-  (props.tagEnums || []).map(opt => ({
-    value: opt.id,
-    label: opt.name
-  }))
-)
-
-function handleSubmit(form) {
-  emit('submit', form)
+function validateForm() {
+  clearErrors()
+  let valid = true
+  const rules = validationRules.value
+  for (const field in rules) {
+    for (const rule of rules[field]) {
+      if (rule.required && !formData[field]) {
+        validationErrors[field] = rule.required
+        valid = false
+        break
+      }
+    }
+  }
+  return valid
 }
 
+// Validate and submit form
+function validateAndSubmit() {
+  if (!validateForm()) {
+    return
+  }
+  
+  isSubmitting.value = true
+  
+  try {
+    // Tạo object data thay vì FormData
+    const submitData = {
+      name: formData.name,
+      excerpt: formData.excerpt,
+      content: formData.content,
+      cover_image: formData.cover_image,
+      image: formData.image,
+      status: formData.status,
+      published_at: formData.published_at || null,
+      primary_postcategory_id: formData.primary_postcategory_id || null,
+      category_ids: formData.category_ids,
+      tag_ids: formData.tag_ids,
+      is_featured: formData.is_featured,
+      is_pinned: formData.is_pinned,
+      meta_title: formData.meta_title,
+      meta_description: formData.meta_description,
+      canonical_url: formData.canonical_url
+    }
+    
+    emit('submit', submitData)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+// Close modal
 function onClose() {
   emit('cancel')
 }
+
+// Load data khi component mount
+onMounted(() => {
+  fetchCategories()
+  fetchTags()
+})
+
+
 </script>
