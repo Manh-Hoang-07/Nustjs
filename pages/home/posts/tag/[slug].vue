@@ -4,9 +4,9 @@
     <div class="bg-white shadow-sm border-b">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="text-center">
-          <h1 class="text-4xl font-bold text-gray-900 mb-4">Blog & Tin tức</h1>
+          <h1 class="text-4xl font-bold text-gray-900 mb-4">#{{ tagName }}</h1>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            Khám phá những bài viết mới nhất về công nghệ, phát triển web và những xu hướng mới trong ngành
+            Khám phá những bài viết được gắn thẻ {{ tagName.toLowerCase() }}
           </p>
         </div>
       </div>
@@ -27,15 +27,6 @@
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
               </div>
-              <select 
-                v-model="selectedCategory"
-                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Tất cả danh mục</option>
-                <option v-for="category in categories" :key="category.id" :value="category.id">
-                  {{ category.name }}
-                </option>
-              </select>
               <select 
                 v-model="sortBy"
                 class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -103,6 +94,21 @@
                   
                   <p class="text-gray-600 mb-4 line-clamp-3">{{ post.excerpt }}</p>
                   
+                  <!-- Tags -->
+                  <div v-if="post.tags && post.tags.length > 0" class="mb-4">
+                    <div class="flex flex-wrap gap-2">
+                      <NuxtLink 
+                        v-for="tag in post.tags" 
+                        :key="tag.id"
+                        :to="`/home/posts/tag/${tag.slug || tag.id}`"
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                        :class="{ 'bg-blue-100 text-blue-800': tag.slug === tagSlug }"
+                      >
+                        #{{ tag.name }}
+                      </NuxtLink>
+                    </div>
+                  </div>
+                  
                   <div class="flex items-center justify-between">
                     <div class="flex items-center">
                       <img 
@@ -155,7 +161,6 @@
                 :key="category.id"
                 :to="`/home/posts/category/${category.slug || category.id}`"
                 class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                :class="{ 'bg-blue-50 text-blue-700': selectedCategory === category.id }"
               >
                 <span>{{ category.name }}</span>
                 <span class="text-sm text-gray-500">{{ category.post_count || 0 }}</span>
@@ -172,6 +177,7 @@
                 :key="tag.id"
                 :to="`/home/posts/tag/${tag.slug || tag.id}`"
                 class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
+                :class="{ 'bg-blue-100 text-blue-800': tag.slug === tagSlug }"
               >
                 {{ tag.name }}
               </NuxtLink>
@@ -214,9 +220,11 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { usePosts } from '../../composables/usePosts.js'
-import Pagination from '../../components/Core/Navigation/Pagination.vue'
+import { useRoute } from 'vue-router'
+import { usePosts } from '../../../composables/usePosts.js'
+import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 
+const route = useRoute()
 const { 
   posts, 
   categories, 
@@ -230,24 +238,29 @@ const {
 
 // State
 const searchQuery = ref('')
-const selectedCategory = ref('')
 const sortBy = ref('latest')
 const currentPage = ref(1)
 const totalPages = ref(1)
 
 // Computed
+const tagSlug = computed(() => route.params.slug)
+const currentTag = computed(() => {
+  return tags.value.find(t => t.slug === tagSlug.value || t.id === tagSlug.value)
+})
+const tagName = computed(() => currentTag.value?.name || 'Tag')
+
 const filteredPosts = computed(() => {
-  let filtered = posts.value
+  let filtered = posts.value.filter(post => 
+    post.tags && post.tags.some(tag => 
+      tag.slug === tagSlug.value || tag.id === tagSlug.value
+    )
+  )
   
   if (searchQuery.value) {
     filtered = filtered.filter(post => 
       post.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
-  }
-  
-  if (selectedCategory.value) {
-    filtered = filtered.filter(post => post.category_id === selectedCategory.value)
   }
   
   // Sort posts
@@ -278,7 +291,7 @@ const loadPosts = async () => {
   try {
     await fetchPublicPosts({ 
       page: currentPage.value,
-      category: selectedCategory.value,
+      tag: tagSlug.value,
       search: searchQuery.value,
       sort: sortBy.value
     })
@@ -306,7 +319,7 @@ const formatDate = (dateString) => {
 }
 
 // Watchers
-watch([searchQuery, selectedCategory, sortBy], () => {
+watch([searchQuery, sortBy], () => {
   currentPage.value = 1
   loadPosts()
 })
@@ -334,4 +347,3 @@ definePageMeta({
   overflow: hidden;
 }
 </style>
-

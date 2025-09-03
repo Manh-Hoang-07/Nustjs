@@ -65,6 +65,8 @@
         <div class="max-w-2xl mx-auto mb-12">
           <div class="relative">
             <input 
+              v-model="searchQuery"
+              @keyup.enter="handleSearch"
               type="text" 
               placeholder="Tìm kiếm sản phẩm theo tên, danh mục..." 
               class="w-full px-6 py-4 pl-12 pr-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
@@ -74,7 +76,10 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </div>
-            <button class="absolute inset-y-0 right-0 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-r-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300">
+            <button 
+              @click="handleSearch"
+              class="absolute inset-y-0 right-0 px-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-r-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+            >
               Tìm kiếm
             </button>
           </div>
@@ -82,60 +87,20 @@
         
         <!-- Categories Grid -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          <!-- Category 1 -->
-          <div class="group bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 text-center hover:from-blue-100 hover:to-blue-200 transition-all duration-300 transform hover:scale-105 cursor-pointer border border-blue-200">
-            <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-              </svg>
+          <NuxtLink 
+            v-for="(category, index) in categories" 
+            :key="category.name"
+            :to="category.path"
+            class="group rounded-xl p-6 text-center transition-all duration-300 transform hover:scale-105 cursor-pointer border"
+            :class="getCategoryClasses(index)"
+          >
+            <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
+                 :class="getCategoryIconClasses(index)">
+              <span class="text-2xl">{{ category.icon }}</span>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Điện tử</h3>
-            <p class="text-sm text-gray-600">1,234 sản phẩm</p>
-          </div>
-          
-          <!-- Category 2 -->
-          <div class="group bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center hover:from-green-100 hover:to-green-200 transition-all duration-300 transform hover:scale-105 cursor-pointer border border-green-200">
-            <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Thời trang</h3>
-            <p class="text-sm text-gray-600">2,156 sản phẩm</p>
-          </div>
-          
-          <!-- Category 3 -->
-          <div class="group bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 text-center hover:from-purple-100 hover:to-purple-200 transition-all duration-300 transform hover:scale-105 cursor-pointer border border-purple-200">
-            <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Nhà cửa</h3>
-            <p class="text-sm text-gray-600">987 sản phẩm</p>
-          </div>
-          
-          <!-- Category 4 -->
-          <div class="group bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 text-center hover:from-yellow-100 hover:to-yellow-200 transition-all duration-300 transform hover:scale-105 cursor-pointer border border-yellow-200">
-            <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Sức khỏe</h3>
-            <p class="text-sm text-gray-600">756 sản phẩm</p>
-          </div>
-          
-          <!-- Category 5 -->
-          <div class="group bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 text-center hover:from-red-100 hover:to-red-200 transition-all duration-300 transform hover:scale-105 cursor-pointer border border-red-200">
-            <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Thể thao</h3>
-            <p class="text-sm text-gray-600">543 sản phẩm</p>
-          </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ category.name }}</h3>
+            <p class="text-sm text-gray-600">{{ getRandomProductCount() }} sản phẩm</p>
+          </NuxtLink>
         </div>
         
         <!-- View All Categories Button -->
@@ -307,7 +272,7 @@
               <p class="text-gray-600 text-sm mb-4">Trong bài viết này, chúng ta sẽ tìm hiểu cách xây dựng một ứng dụng Vue.js hoàn chỉnh từ những khái niệm cơ bản nhất...</p>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-blue-600 font-medium">8 phút đọc</span>
-                <NuxtLink to="/posts/huong-dan-xay-dung-ung-dung-vue-js-tu-co-ban-den-nang-cao" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
+                <NuxtLink to="/home/posts/huong-dan-xay-dung-ung-dung-vue-js-tu-co-ban-den-nang-cao" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors">
                   Đọc thêm →
                 </NuxtLink>
               </div>
@@ -332,7 +297,7 @@
               <p class="text-gray-600 text-sm mb-4">Tìm hiểu cách sử dụng useMemo và useCallback để tối ưu hóa hiệu suất của ứng dụng React, tránh re-render không cần thiết...</p>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-green-600 font-medium">6 phút đọc</span>
-                <NuxtLink to="/posts/toi-uu-hoa-hieu-suat-react-voi-usememo-va-usecallback" class="text-green-600 hover:text-green-800 text-sm font-medium transition-colors">
+                <NuxtLink to="/home/posts/toi-uu-hoa-hieu-suat-react-voi-usememo-va-usecallback" class="text-green-600 hover:text-green-800 text-sm font-medium transition-colors">
                   Đọc thêm →
                 </NuxtLink>
               </div>
@@ -357,7 +322,7 @@
               <p class="text-gray-600 text-sm mb-4">Hướng dẫn chi tiết cách xây dựng một API RESTful hoàn chỉnh sử dụng Node.js và Express framework...</p>
               <div class="flex justify-between items-center">
                 <span class="text-sm text-purple-600 font-medium">10 phút đọc</span>
-                <NuxtLink to="/posts/xay-dung-api-restful-voi-node-js-va-express" class="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors">
+                <NuxtLink to="/home/posts/xay-dung-api-restful-voi-node-js-va-express" class="text-purple-600 hover:text-purple-800 text-sm font-medium transition-colors">
                   Đọc thêm →
                 </NuxtLink>
               </div>
@@ -435,6 +400,8 @@
 </template>
 
 <script setup>
+import { useUserNavigation } from '../../composables/navigation/useUserNavigation.js'
+
 // Page meta
 definePageMeta({
   layout: 'home',
@@ -445,15 +412,67 @@ definePageMeta({
 // Sử dụng auth store
 const authStore = useAuthStore()
 
+// Sử dụng user navigation composable
+const { 
+  menuItems: navigationItems,
+  getBreadcrumb,
+  searchInMenuItems 
+} = useUserNavigation()
+
 // Reactive auth state
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const user = computed(() => authStore.user)
 const userRole = computed(() => authStore.userRole)
 
+// Breadcrumb cho trang hiện tại
+const breadcrumb = computed(() => getBreadcrumb())
+
 // Handle logout
 const handleLogout = async () => {
   await authStore.logout()
   await navigateTo('/auth/login')
+}
+
+// Tìm kiếm sản phẩm
+const searchQuery = ref('')
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    navigateTo(`/home/products?search=${encodeURIComponent(searchQuery.value)}`)
+  }
+}
+
+// Lấy danh mục sản phẩm từ navigation
+const categories = computed(() => {
+  const categoryItem = navigationItems.value.find(item => item.name === 'Danh mục')
+  return categoryItem?.children || []
+})
+
+// Helper functions cho categories
+const getCategoryClasses = (index) => {
+  const colorClasses = [
+    'bg-gradient-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 border-blue-200',
+    'bg-gradient-to-br from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 border-green-200',
+    'bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 border-purple-200',
+    'bg-gradient-to-br from-yellow-50 to-yellow-100 hover:from-yellow-100 hover:to-yellow-200 border-yellow-200',
+    'bg-gradient-to-br from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 border-red-200'
+  ]
+  return colorClasses[index % colorClasses.length]
+}
+
+const getCategoryIconClasses = (index) => {
+  const iconClasses = [
+    'bg-gradient-to-r from-blue-500 to-blue-600',
+    'bg-gradient-to-r from-green-500 to-green-600',
+    'bg-gradient-to-r from-purple-500 to-purple-600',
+    'bg-gradient-to-r from-yellow-500 to-yellow-600',
+    'bg-gradient-to-r from-red-500 to-red-600'
+  ]
+  return iconClasses[index % iconClasses.length]
+}
+
+const getRandomProductCount = () => {
+  const counts = ['1,234', '2,156', '987', '756', '543', '1,890', '2,345', '1,567']
+  return counts[Math.floor(Math.random() * counts.length)]
 }
 </script>
 

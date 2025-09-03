@@ -81,60 +81,44 @@
         <div class="border-t border-gray-200 py-3">
           <nav class="flex items-center justify-between">
             <div class="flex items-center space-x-8">
-              <!-- Categories Dropdown -->
-              <div class="relative group">
-                <button class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors font-medium">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                  </svg>
-                  <span>Danh mục</span>
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                  </svg>
-                </button>
-                <!-- Dropdown Menu -->
-                <div class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                  <div class="py-2">
-                    <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
-                      <svg class="w-5 h-5 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                      </svg>
-                      Điện tử
-                    </a>
-                    <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
-                      <svg class="w-5 h-5 mr-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                      Thời trang
-                    </a>
-                    <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
-                      <svg class="w-5 h-5 mr-3 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                      </svg>
-                      Nhà cửa
-                    </a>
-                    <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
-                      <svg class="w-5 h-5 mr-3 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                      </svg>
-                      Sức khỏe
-                    </a>
-                    <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
-                      <svg class="w-5 h-5 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                      </svg>
-                      Thể thao
-                    </a>
+              <!-- Dynamic Navigation Menu -->
+              <template v-for="item in navigationItems" :key="item.name">
+                <!-- Menu item có children (dropdown) -->
+                <div v-if="item.children" class="relative group">
+                  <button class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors font-medium">
+                    <span class="text-lg">{{ item.icon }}</span>
+                    <span>{{ item.name }}</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                  <!-- Dropdown Menu -->
+                  <div class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                    <div class="py-2">
+                      <NuxtLink 
+                        v-for="child in item.children" 
+                        :key="child.name"
+                        :to="child.path" 
+                        class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                      >
+                        <span class="text-lg mr-3">{{ child.icon }}</span>
+                        {{ child.name }}
+                      </NuxtLink>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <!-- Main Navigation -->
-              <NuxtLink to="/home" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Trang chủ</NuxtLink>
-              <NuxtLink to="/home/products" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Sản phẩm</NuxtLink>
-              <NuxtLink to="/home/posts" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Tin tức</NuxtLink>
-              <NuxtLink to="/home/about" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Giới thiệu</NuxtLink>
-              <NuxtLink to="/contact" class="text-gray-700 hover:text-blue-600 transition-colors font-medium">Liên hệ</NuxtLink>
+                
+                <!-- Menu item thường -->
+                <NuxtLink 
+                  v-else
+                  :to="item.path" 
+                  class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                  :class="{ 'text-blue-600': isActiveMenuItem(item) }"
+                >
+                  <span class="text-lg">{{ item.icon }}</span>
+                  <span>{{ item.name }}</span>
+                </NuxtLink>
+              </template>
             </div>
             
             <!-- Mobile Search -->
@@ -239,13 +223,28 @@
 </template>
 
 <script setup>
+import { useUserNavigation } from '../composables/navigation/useUserNavigation.js'
+
 // Sử dụng auth store
 const authStore = useAuthStore()
+
+// Sử dụng user navigation composable
+const { 
+  menuItems: navigationItems, 
+  isActiveMenuItem,
+  currentPath 
+} = useUserNavigation()
 
 // Reactive auth state
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const user = computed(() => authStore.user)
 const userRole = computed(() => authStore.userRole)
+
+// Cập nhật current path khi route thay đổi
+const route = useRoute()
+watch(() => route.path, (newPath) => {
+  currentPath.value = newPath
+}, { immediate: true })
 
 // Handle logout
 const handleLogout = async () => {
