@@ -8,13 +8,13 @@
             <h1 class="text-2xl font-bold text-gray-900">E-Commerce Platform</h1>
           </div>
           <nav class="flex space-x-8">
-            <NuxtLink to="/" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+            <NuxtLink to="/home" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               Trang chủ
             </NuxtLink>
-            <NuxtLink to="/login" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+            <NuxtLink to="/auth/login" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               Đăng nhập
             </NuxtLink>
-            <NuxtLink to="/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+            <NuxtLink to="/auth/register" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
               Đăng ký
             </NuxtLink>
           </nav>
@@ -116,10 +116,10 @@
         <h3 class="text-2xl font-semibold text-gray-900 mb-4">Sẵn sàng bắt đầu?</h3>
         <p class="text-gray-600 mb-6">Tham gia cùng chúng tôi để xây dựng tương lai thương mại điện tử</p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <NuxtLink to="/register" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+          <NuxtLink to="/auth/register" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
             Đăng ký ngay
           </NuxtLink>
-          <NuxtLink to="/" class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors">
+          <NuxtLink to="/home" class="border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors">
             Về trang chủ
           </NuxtLink>
         </div>

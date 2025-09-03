@@ -31,13 +31,13 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     // Kiểm tra authentication
     if (!authStore.isAuthenticated) {
       console.log('User not authenticated, redirecting to login')
-      return navigateTo('/login')
+      return navigateTo('/auth/login')
     }
     
     // Kiểm tra quyền admin
     if (!authStore.isAdmin) {
       console.log('User not admin, redirecting to home')
-      return navigateTo('/')
+      return navigateTo('/home')
     }
     
     console.log('Admin access granted')
@@ -53,11 +53,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   // Nếu route yêu cầu admin nhưng user không phải admin
   if (to.meta.requiresAdmin && !authStore.isAdmin) {
     console.log('Route requires admin but user not admin, redirecting to home')
-    return navigateTo('/')
+    return navigateTo('/home')
   }
 
   // Nếu user đã đăng nhập và truy cập login/register, redirect về trang chủ
-  if (authStore.isAuthenticated && (to.path === '/login' || to.path === '/register')) {
+  if (authStore.isAuthenticated && (to.path === '/auth/login' || to.path === '/auth/register')) {
     if (authStore.isAdmin) {
       console.log('Admin user accessing login/register, redirecting to admin')
       return navigateTo('/admin')

@@ -18,7 +18,7 @@
         <p class="mt-1 text-sm text-gray-500">{{ error }}</p>
         <div class="mt-6">
           <NuxtLink 
-            to="/posts"
+            to="/home/posts"
             class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
             Quay lại danh sách
@@ -126,7 +126,7 @@
           <div v-else></div>
 
           <NuxtLink 
-            to="/posts"
+            to="/home/posts"
             class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             Danh sách bài viết
@@ -190,8 +190,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { usePosts } from '~/composables/data/usePosts'
-import HtmlContent from '~/components/Core/Content/HtmlContent.vue'
+import { usePosts } from '../../composables/usePosts.js'
+import HtmlContent from '../../components/Core/Content/HtmlContent.vue'
 
 const route = useRoute()
 const { 
@@ -278,6 +278,11 @@ onMounted(async () => {
     fetchCategories(),
     loadPost()
   ])
+})
+
+// Page meta
+definePageMeta({
+  layout: 'home'
 })
 </script>
 

@@ -107,7 +107,7 @@
       <div class="text-center mt-8">
         <p class="text-gray-600">
           Chưa có tài khoản?
-          <NuxtLink to="/register" class="font-semibold text-blue-600 hover:text-blue-500 transition-all duration-200 hover:scale-105 inline-block" :class="{ 'pointer-events-none opacity-50': isLoading }">
+          <NuxtLink to="/auth/register" class="font-semibold text-blue-600 hover:text-blue-500 transition-all duration-200 hover:scale-105 inline-block" :class="{ 'pointer-events-none opacity-50': isLoading }">
             Đăng ký ngay
           </NuxtLink>
         </p>

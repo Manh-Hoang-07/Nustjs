@@ -7,7 +7,7 @@
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
           Hoặc
-          <NuxtLink to="/login" class="font-medium text-blue-600 hover:text-blue-500">
+          <NuxtLink to="/auth/login" class="font-medium text-blue-600 hover:text-blue-500">
             đăng nhập vào tài khoản hiện có
           </NuxtLink>
         </p>
@@ -200,7 +200,7 @@ const handleRegister = async () => {
       
       // Redirect to login after 3 seconds
       setTimeout(() => {
-        navigateTo('/login')
+        navigateTo('/auth/login')
       }, 3000)
     } else {
       error.value = result.message || 'Có lỗi xảy ra trong quá trình đăng ký'

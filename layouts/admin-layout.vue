@@ -117,7 +117,7 @@ const userName = computed(() => authStore.user?.name || 'Admin User');
 
 const logout = async () => {
   await authStore.logout();
-  await navigateTo('/login');
+  await navigateTo('/auth/login');
 };
 </script>
 

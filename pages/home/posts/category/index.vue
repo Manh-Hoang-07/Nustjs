@@ -4,9 +4,9 @@
     <div class="bg-white shadow-sm border-b">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="text-center">
-          <h1 class="text-4xl font-bold text-gray-900 mb-4">Blog & Tin tức</h1>
+          <h1 class="text-4xl font-bold text-gray-900 mb-4">{{ categoryName }}</h1>
           <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            Khám phá những bài viết mới nhất về công nghệ, phát triển web và những xu hướng mới trong ngành
+            Khám phá những bài viết mới nhất trong danh mục {{ categoryName.toLowerCase() }}
           </p>
         </div>
       </div>
@@ -27,15 +27,6 @@
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
               </div>
-              <select 
-                v-model="selectedCategory"
-                class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Tất cả danh mục</option>
-                <option v-for="category in categories" :key="category.id" :value="category.id">
-                  {{ category.name }}
-                </option>
-              </select>
               <select 
                 v-model="sortBy"
                 class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -85,7 +76,7 @@
                 <div class="p-6 lg:flex-1">
                   <div class="flex items-center text-sm text-gray-500 mb-2">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-3">
-                      {{ getCategoryName(post.category_id) }}
+                      {{ categoryName }}
                     </span>
                     <time :datetime="post.created_at">{{ formatDate(post.created_at) }}</time>
                     <span class="mx-2">•</span>
@@ -155,7 +146,7 @@
                 :key="category.id"
                 :to="`/posts/category/${category.slug || category.id}`"
                 class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                :class="{ 'bg-blue-50 text-blue-700': selectedCategory === category.id }"
+                :class="{ 'bg-blue-50 text-blue-700': currentCategoryId === category.id }"
               >
                 <span>{{ category.name }}</span>
                 <span class="text-sm text-gray-500">{{ category.post_count || 0 }}</span>
@@ -214,9 +205,11 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { usePosts } from '~/composables/data/usePosts'
-import Pagination from '~/components/Core/Navigation/Pagination.vue'
+import { useRoute } from 'vue-router'
+import { usePosts } from '../../../composables/usePosts.js'
+import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 
+const route = useRoute()
 const { 
   posts, 
   categories, 
@@ -230,24 +223,28 @@ const {
 
 // State
 const searchQuery = ref('')
-const selectedCategory = ref('')
 const sortBy = ref('latest')
 const currentPage = ref(1)
 const totalPages = ref(1)
 
 // Computed
+const currentCategoryId = computed(() => route.params.slug)
+const categoryName = computed(() => {
+  const category = categories.value.find(c => c.slug === currentCategoryId.value || c.id === currentCategoryId.value)
+  return category?.name || 'Danh mục'
+})
+
 const filteredPosts = computed(() => {
-  let filtered = posts.value
+  let filtered = posts.value.filter(post => 
+    post.category_id === currentCategoryId.value || 
+    post.category?.slug === currentCategoryId.value
+  )
   
   if (searchQuery.value) {
     filtered = filtered.filter(post => 
       post.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchQuery.value.toLowerCase())
     )
-  }
-  
-  if (selectedCategory.value) {
-    filtered = filtered.filter(post => post.category_id === selectedCategory.value)
   }
   
   // Sort posts
@@ -278,7 +275,7 @@ const loadPosts = async () => {
   try {
     await fetchPublicPosts({ 
       page: currentPage.value,
-      category: selectedCategory.value,
+      category: currentCategoryId.value,
       search: searchQuery.value,
       sort: sortBy.value
     })
@@ -292,11 +289,6 @@ const handlePageChange = (page) => {
   loadPosts()
 }
 
-const getCategoryName = (categoryId) => {
-  const category = categories.value.find(c => c.id === categoryId)
-  return category?.name || 'Không có danh mục'
-}
-
 const formatDate = (dateString) => {
   return new Intl.DateTimeFormat('vi-VN', {
     day: '2-digit',
@@ -306,7 +298,7 @@ const formatDate = (dateString) => {
 }
 
 // Watchers
-watch([searchQuery, selectedCategory, sortBy], () => {
+watch([searchQuery, sortBy], () => {
   currentPage.value = 1
   loadPosts()
 })
@@ -318,14 +310,19 @@ onMounted(async () => {
     loadPosts()
   ])
 })
+
+// Page meta
+definePageMeta({
+  layout: 'home'
+})
 </script>
 
 <style scoped>
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 </style>
-
