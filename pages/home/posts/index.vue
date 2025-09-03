@@ -208,7 +208,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiPosts } from '../../composables/useApiPosts.js'
-import { useTestApi } from '../../composables/useTestApi.js'
+
 import Pagination from '../../components/Core/Navigation/Pagination.vue'
 
 const { 
@@ -220,9 +220,6 @@ const {
   formatExcerpt
 } = useApiPosts()
 
-const { testWithMockData } = useTestApi()
-
-// Mock data cho categories và tags (có thể lấy từ API sau)
 const categories = ref([])
 const tags = ref([])
 
@@ -247,13 +244,6 @@ const recentPosts = computed(() => {
 // Methods
 const loadPosts = async () => {
   try {
-    console.log('🔄 Loading posts from API with filters...', {
-      page: currentPage.value,
-      category: selectedCategory.value,
-      search: searchQuery.value,
-      sort: sortBy.value
-    })
-    
     const result = await fetchPosts({ 
       page: currentPage.value,
       limit: 10,
@@ -264,61 +254,11 @@ const loadPosts = async () => {
     
     // Cập nhật pagination từ API response
     if (result.meta) {
-      console.log('📊 API Meta data:', result.meta)
       totalPages.value = result.meta.last_page || 1
       totalRecords.value = result.meta.total || 0
-      console.log('📊 Set totalRecords to:', totalRecords.value)
-    } else {
-      console.warn('⚠️ No meta data in API response')
     }
-    
-    console.log('✅ Posts loaded successfully:', posts.value.length, 'posts')
-    console.log('📊 Posts data:', posts.value)
-    console.log('📊 Total records:', totalRecords.value)
   } catch (err) {
-    console.error('❌ Error loading posts from API:', err)
-    
-    // Fallback: sử dụng mock data nếu API không hoạt động
-    console.log('🔄 API failed, using mock data as fallback...')
-    const mockData = testWithMockData()
-    
-    if (mockData && mockData.data) {
-      let filteredData = mockData.data
-      
-      // Apply local filtering cho mock data
-      if (selectedCategory.value) {
-        filteredData = filteredData.filter(post => 
-          post.categories && post.categories.some(cat => cat.id == selectedCategory.value)
-        )
-      }
-      
-      if (searchQuery.value) {
-        filteredData = filteredData.filter(post => 
-          post.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-          (post.excerpt && post.excerpt.toLowerCase().includes(searchQuery.value.toLowerCase()))
-        )
-      }
-      
-      // Sort mock data
-      filteredData = [...filteredData].sort((a, b) => {
-        switch (sortBy.value) {
-          case 'oldest':
-            return new Date(a.published_at || a.created_at) - new Date(b.published_at || b.created_at)
-          case 'popular':
-            return (b.view_count || 0) - (a.view_count || 0)
-          default: // latest
-            return new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at)
-        }
-      })
-      
-      posts.value = filteredData.map(post => ({
-        ...post,
-        formattedDate: formatDate(post.published_at || post.created_at),
-        formattedExcerpt: formatExcerpt(post.excerpt || post.content)
-      }))
-      totalRecords.value = posts.value.length
-      console.log('✅ Using mock data as fallback:', posts.value.length, 'posts')
-    }
+    console.error('Error loading posts:', err)
   }
 }
 
@@ -346,21 +286,18 @@ watch([searchQuery, selectedCategory, sortBy], () => {
 }, { deep: true })
 
 onMounted(async () => {
-  console.log('🎯 Posts page mounted, loading data...')
-  console.log('📊 Initial state:', { loading: loading.value, postsCount: posts.value.length })
   await loadPosts()
-  console.log('📊 After loadPosts:', { loading: loading.value, postsCount: posts.value.length })
   
-  // Tạo mock categories và tags từ posts data
-  const mockCategories = []
-  const mockTags = []
+  // Extract categories và tags từ posts data
+  const extractedCategories = []
+  const extractedTags = []
   
   posts.value.forEach(post => {
     // Extract categories
     if (post.categories && post.categories.length > 0) {
       post.categories.forEach(cat => {
-        if (!mockCategories.find(c => c.id === cat.id)) {
-          mockCategories.push({
+        if (!extractedCategories.find(c => c.id === cat.id)) {
+          extractedCategories.push({
             id: cat.id,
             name: cat.name,
             slug: cat.slug,
@@ -373,8 +310,8 @@ onMounted(async () => {
     // Extract tags
     if (post.tags && post.tags.length > 0) {
       post.tags.forEach(tag => {
-        if (!mockTags.find(t => t.id === tag.id)) {
-          mockTags.push({
+        if (!extractedTags.find(t => t.id === tag.id)) {
+          extractedTags.push({
             id: tag.id,
             name: tag.name,
             slug: tag.slug
@@ -384,13 +321,8 @@ onMounted(async () => {
     }
   })
   
-  categories.value = mockCategories
-  tags.value = mockTags
-  
-  console.log('✅ Categories and tags extracted from posts:', {
-    categories: categories.value.length,
-    tags: tags.value.length
-  })
+  categories.value = extractedCategories
+  tags.value = extractedTags
 })
 
 // Page meta

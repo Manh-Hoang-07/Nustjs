@@ -88,13 +88,8 @@ const fetchPosts = async (options = {}) => {
       params.sort = options.sort
     }
     
-    console.log('API Request params:', params) // Debug log
-    
     // Gọi API để lấy danh sách posts
     const response = await apiClient.get('/api/posts', { params })
-    
-    console.log('API Response:', response.data) // Debug log
-    console.log('API Response meta:', response.data?.meta) // Debug meta
     
     // Xử lý response data
     if (response.data && response.data.data) {
@@ -105,26 +100,17 @@ const fetchPosts = async (options = {}) => {
         cardGradient: getCardGradient(post.id),
         textColor: getTextColor(post.id)
       }))
-      console.log('✅ Posts processed and set:', posts.value.length, 'posts')
     } else {
-      console.warn('⚠️ No data in API response:', response.data)
       posts.value = []
     }
     
-    const result = {
+    return {
       data: posts.value,
       meta: response.data?.meta || null,
       links: response.data?.links || null
     }
-    
-    console.log('📊 Returning result:', result)
-    console.log('📊 Result meta:', result.meta)
-    
-    return result
   } catch (err) {
     error.value = 'Không thể tải danh sách tin tức'
-    console.error('Error fetching posts:', err)
-    console.error('Error details:', err.response?.data || err.message)
     return { data: [], meta: null, links: null }
   } finally {
     loading.value = false

@@ -31,7 +31,6 @@ export { setInterval } from '#app/compat/interval';
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
 export { useApiPosts } from '../composables/useApiPosts';
 export { usePosts } from '../composables/usePosts';
-export { useTestApi } from '../composables/useTestApi';
 export { Auth, authState } from '../utils/auth';
 export { debounce, throttle } from '../utils/debounce';
 export { default as formToFormData } from '../utils/formToFormData';

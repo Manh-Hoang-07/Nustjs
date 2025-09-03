@@ -199,7 +199,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiPosts } from '../../../composables/useApiPosts.js'
-import { useTestApi } from '../../../composables/useTestApi.js'
+
 import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 
 // Page meta
@@ -222,9 +222,8 @@ const {
   formatExcerpt
 } = useApiPosts()
 
-const { testWithMockData } = useTestApi()
 
-// Mock data cho categories và tags
+
 const categories = ref([])
 const tags = ref([])
 
@@ -253,7 +252,7 @@ const recentPosts = computed(() => {
 // Methods
 const loadPosts = async () => {
   try {
-    console.log('🔄 Loading posts for tag:', tagSlug)
+
     
     const result = await fetchPosts({ 
       page: currentPage.value,
@@ -268,49 +267,9 @@ const loadPosts = async () => {
       totalRecords.value = result.meta.total || 0
     }
     
-    console.log('✅ Posts loaded for tag:', posts.value.length, 'posts')
+
   } catch (err) {
-    console.error('❌ Error loading posts for tag:', err)
-    
-    // Fallback với mock data
-    const mockData = testWithMockData()
-    
-    if (mockData && mockData.data) {
-      let filteredData = mockData.data
-      
-      // Filter by tag
-      if (selectedTag.value) {
-        filteredData = filteredData.filter(post => 
-          post.tags && post.tags.some(tag => tag.id == selectedTag.value)
-        )
-      }
-      
-      // Apply search
-      if (searchQuery.value) {
-        filteredData = filteredData.filter(post => 
-          post.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-          (post.excerpt && post.excerpt.toLowerCase().includes(searchQuery.value.toLowerCase()))
-        )
-      }
-      
-      // Sort
-      filteredData = [...filteredData].sort((a, b) => {
-        switch (sortBy.value) {
-          case 'oldest':
-            return new Date(a.published_at || a.created_at) - new Date(b.published_at || b.created_at)
-          case 'popular':
-            return (b.view_count || 0) - (a.view_count || 0)
-          default:
-            return new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at)
-        }
-      })
-      
-      posts.value = filteredData.map(post => ({
-        ...post,
-        formattedDate: formatDate(post.published_at || post.created_at),
-        formattedExcerpt: formatExcerpt(post.excerpt || post.content)
-      }))
-    }
+    console.error('Error loading posts for tag:', err)
   }
 }
 
@@ -328,52 +287,8 @@ watch([searchQuery, sortBy], () => {
 }, { deep: true })
 
 onMounted(async () => {
-  console.log('🎯 Tag page mounted:', tagSlug)
-  
-  // Tìm tag ID từ slug
-  const mockData = testWithMockData()
-  if (mockData && mockData.data) {
-    // Extract tags
-    const mockTags = []
-    mockData.data.forEach(post => {
-      if (post.tags && post.tags.length > 0) {
-        post.tags.forEach(tag => {
-          if (!mockTags.find(t => t.id === tag.id)) {
-            mockTags.push({
-              id: tag.id,
-              name: tag.name,
-              slug: tag.slug
-            })
-          }
-        })
-      }
-    })
-    tags.value = mockTags
-    
-    // Extract categories
-    const mockCategories = []
-    mockData.data.forEach(post => {
-      if (post.categories && post.categories.length > 0) {
-        post.categories.forEach(cat => {
-          if (!mockCategories.find(c => c.id === cat.id)) {
-            mockCategories.push({
-              id: cat.id,
-              name: cat.name,
-              slug: cat.slug,
-              post_count: 1
-            })
-          }
-        })
-      }
-    })
-    categories.value = mockCategories
-    
-    // Tìm tag ID từ slug
-    const tag = tags.value.find(t => t.slug === tagSlug || t.id == tagSlug)
-    if (tag) {
-      selectedTag.value = tag.id
-    }
-  }
+  // Set tag ID từ slug (có thể cần API call để lấy tag ID)
+  selectedTag.value = tagSlug
   
   await loadPosts()
 })
