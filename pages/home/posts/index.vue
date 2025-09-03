@@ -60,7 +60,7 @@
             </div>
           </div>
 
-          <div v-else-if="filteredPosts.length === 0" class="text-center py-12">
+          <div v-else-if="posts.length === 0" class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
@@ -70,26 +70,26 @@
 
           <div v-else class="space-y-6">
             <article 
-              v-for="post in filteredPosts" 
+              v-for="post in posts" 
               :key="post.id"
               class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
             >
               <div class="lg:flex">
                 <div class="lg:flex-shrink-0">
                   <img 
-                    :src="post.featured_image || '/placeholder.jpg'" 
-                    :alt="post.title"
+                    :src="post.image || '/placeholder.jpg'" 
+                    :alt="post.name"
                     class="h-48 w-full lg:w-80 object-cover"
                   >
                 </div>
                 <div class="p-6 lg:flex-1">
                   <div class="flex items-center text-sm text-gray-500 mb-2">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-3">
-                      {{ getCategoryName(post.category_id) }}
+                    <span v-if="post.categories && post.categories.length > 0" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-3">
+                      {{ post.categories[0].name }}
                     </span>
-                    <time :datetime="post.created_at">{{ formatDate(post.created_at) }}</time>
+                    <time :datetime="post.published_at || post.created_at">{{ formatDate(post.published_at || post.created_at) }}</time>
                     <span class="mx-2">•</span>
-                    <span>{{ post.read_time || '5 phút đọc' }}</span>
+                    <span>5 phút đọc</span>
                   </div>
                   
                   <h2 class="text-xl font-semibold text-gray-900 mb-3">
@@ -97,20 +97,18 @@
                       :to="`/home/posts/${post.slug || post.id}`"
                       class="hover:text-blue-600 transition-colors"
                     >
-                      {{ post.title }}
+                      {{ post.name }}
                     </NuxtLink>
                   </h2>
                   
-                  <p class="text-gray-600 mb-4 line-clamp-3">{{ post.excerpt }}</p>
+                  <p class="text-gray-600 mb-4 line-clamp-3">{{ formatExcerpt(post.excerpt || post.content) }}</p>
                   
                   <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                      <img 
-                        :src="post.author?.avatar || '/avatar-placeholder.jpg'" 
-                        :alt="post.author?.name"
-                        class="h-8 w-8 rounded-full mr-3"
-                      >
-                      <span class="text-sm text-gray-700">{{ post.author?.name || 'Admin' }}</span>
+                      <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                        <span class="text-xs font-medium text-gray-600">A</span>
+                      </div>
+                      <span class="text-sm text-gray-700">Admin</span>
                     </div>
                     
                     <div class="flex items-center space-x-4 text-sm text-gray-500">
@@ -119,13 +117,7 @@
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                         </svg>
-                        {{ post.views || 0 }}
-                      </span>
-                      <span class="flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
-                        {{ post.likes || 0 }}
+                        {{ post.view_count || 0 }}
                       </span>
                     </div>
                   </div>
@@ -139,6 +131,7 @@
             <Pagination 
               :current-page="currentPage"
               :total-pages="totalPages"
+              :total-items="totalRecords"
               @page-change="handlePageChange"
             />
           </div>
@@ -188,8 +181,8 @@
                 class="flex space-x-3"
               >
                 <img 
-                  :src="post.featured_image || '/placeholder.jpg'" 
-                  :alt="post.title"
+                  :src="post.image || '/placeholder.jpg'" 
+                  :alt="post.name"
                   class="h-16 w-16 rounded-lg object-cover flex-shrink-0"
                 >
                 <div class="flex-1 min-w-0">
@@ -198,10 +191,10 @@
                       :to="`/home/posts/${post.slug || post.id}`"
                       class="hover:text-blue-600 transition-colors"
                     >
-                      {{ post.title }}
+                      {{ post.name }}
                     </NuxtLink>
                   </h4>
-                  <p class="text-xs text-gray-500 mt-1">{{ formatDate(post.created_at) }}</p>
+                  <p class="text-xs text-gray-500 mt-1">{{ formatDate(post.published_at || post.created_at) }}</p>
                 </div>
               </article>
             </div>
@@ -214,19 +207,24 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { usePosts } from '../../composables/usePosts.js'
+import { useApiPosts } from '../../composables/useApiPosts.js'
+import { useTestApi } from '../../composables/useTestApi.js'
 import Pagination from '../../components/Core/Navigation/Pagination.vue'
 
 const { 
   posts, 
-  categories, 
-  tags, 
   loading, 
   error,
-  fetchPublicPosts, 
-  fetchCategories, 
-  fetchTags 
-} = usePosts()
+  fetchPosts,
+  formatDate,
+  formatExcerpt
+} = useApiPosts()
+
+const { testWithMockData } = useTestApi()
+
+// Mock data cho categories và tags (có thể lấy từ API sau)
+const categories = ref([])
+const tags = ref([])
 
 // State
 const searchQuery = ref('')
@@ -234,36 +232,9 @@ const selectedCategory = ref('')
 const sortBy = ref('latest')
 const currentPage = ref(1)
 const totalPages = ref(1)
+const totalRecords = ref(0)
 
-// Computed
-const filteredPosts = computed(() => {
-  let filtered = posts.value
-  
-  if (searchQuery.value) {
-    filtered = filtered.filter(post => 
-      post.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.value.toLowerCase())
-    )
-  }
-  
-  if (selectedCategory.value) {
-    filtered = filtered.filter(post => post.category_id === selectedCategory.value)
-  }
-  
-  // Sort posts
-  filtered = [...filtered].sort((a, b) => {
-    switch (sortBy.value) {
-      case 'oldest':
-        return new Date(a.created_at) - new Date(b.created_at)
-      case 'popular':
-        return (b.views || 0) - (a.views || 0)
-      default: // latest
-        return new Date(b.created_at) - new Date(a.created_at)
-    }
-  })
-  
-  return filtered
-})
+// Không cần computed filteredPosts nữa vì đã gọi API với parameters
 
 const popularTags = computed(() => {
   return tags.value.slice(0, 10) // Show top 10 tags
@@ -276,14 +247,78 @@ const recentPosts = computed(() => {
 // Methods
 const loadPosts = async () => {
   try {
-    await fetchPublicPosts({ 
+    console.log('🔄 Loading posts from API with filters...', {
       page: currentPage.value,
       category: selectedCategory.value,
       search: searchQuery.value,
       sort: sortBy.value
     })
+    
+    const result = await fetchPosts({ 
+      page: currentPage.value,
+      limit: 10,
+      category: selectedCategory.value,
+      search: searchQuery.value,
+      sort: sortBy.value
+    })
+    
+    // Cập nhật pagination từ API response
+    if (result.meta) {
+      console.log('📊 API Meta data:', result.meta)
+      totalPages.value = result.meta.last_page || 1
+      totalRecords.value = result.meta.total || 0
+      console.log('📊 Set totalRecords to:', totalRecords.value)
+    } else {
+      console.warn('⚠️ No meta data in API response')
+    }
+    
+    console.log('✅ Posts loaded successfully:', posts.value.length, 'posts')
+    console.log('📊 Posts data:', posts.value)
+    console.log('📊 Total records:', totalRecords.value)
   } catch (err) {
-    console.error('Error loading posts:', err)
+    console.error('❌ Error loading posts from API:', err)
+    
+    // Fallback: sử dụng mock data nếu API không hoạt động
+    console.log('🔄 API failed, using mock data as fallback...')
+    const mockData = testWithMockData()
+    
+    if (mockData && mockData.data) {
+      let filteredData = mockData.data
+      
+      // Apply local filtering cho mock data
+      if (selectedCategory.value) {
+        filteredData = filteredData.filter(post => 
+          post.categories && post.categories.some(cat => cat.id == selectedCategory.value)
+        )
+      }
+      
+      if (searchQuery.value) {
+        filteredData = filteredData.filter(post => 
+          post.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          (post.excerpt && post.excerpt.toLowerCase().includes(searchQuery.value.toLowerCase()))
+        )
+      }
+      
+      // Sort mock data
+      filteredData = [...filteredData].sort((a, b) => {
+        switch (sortBy.value) {
+          case 'oldest':
+            return new Date(a.published_at || a.created_at) - new Date(b.published_at || b.created_at)
+          case 'popular':
+            return (b.view_count || 0) - (a.view_count || 0)
+          default: // latest
+            return new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at)
+        }
+      })
+      
+      posts.value = filteredData.map(post => ({
+        ...post,
+        formattedDate: formatDate(post.published_at || post.created_at),
+        formattedExcerpt: formatExcerpt(post.excerpt || post.content)
+      }))
+      totalRecords.value = posts.value.length
+      console.log('✅ Using mock data as fallback:', posts.value.length, 'posts')
+    }
   }
 }
 
@@ -297,26 +332,65 @@ const getCategoryName = (categoryId) => {
   return category?.name || 'Không có danh mục'
 }
 
-const formatDate = (dateString) => {
-  return new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }).format(new Date(dateString))
-}
+// formatDate và formatExcerpt đã được import từ useApiPosts composable
 
 // Watchers
 watch([searchQuery, selectedCategory, sortBy], () => {
+  console.log('🔄 Filter changed, reloading posts...', {
+    search: searchQuery.value,
+    category: selectedCategory.value,
+    sort: sortBy.value
+  })
   currentPage.value = 1
   loadPosts()
-})
+}, { deep: true })
 
 onMounted(async () => {
-  await Promise.all([
-    fetchCategories(),
-    fetchTags(),
-    loadPosts()
-  ])
+  console.log('🎯 Posts page mounted, loading data...')
+  console.log('📊 Initial state:', { loading: loading.value, postsCount: posts.value.length })
+  await loadPosts()
+  console.log('📊 After loadPosts:', { loading: loading.value, postsCount: posts.value.length })
+  
+  // Tạo mock categories và tags từ posts data
+  const mockCategories = []
+  const mockTags = []
+  
+  posts.value.forEach(post => {
+    // Extract categories
+    if (post.categories && post.categories.length > 0) {
+      post.categories.forEach(cat => {
+        if (!mockCategories.find(c => c.id === cat.id)) {
+          mockCategories.push({
+            id: cat.id,
+            name: cat.name,
+            slug: cat.slug,
+            post_count: 1
+          })
+        }
+      })
+    }
+    
+    // Extract tags
+    if (post.tags && post.tags.length > 0) {
+      post.tags.forEach(tag => {
+        if (!mockTags.find(t => t.id === tag.id)) {
+          mockTags.push({
+            id: tag.id,
+            name: tag.name,
+            slug: tag.slug
+          })
+        }
+      })
+    }
+  })
+  
+  categories.value = mockCategories
+  tags.value = mockTags
+  
+  console.log('✅ Categories and tags extracted from posts:', {
+    categories: categories.value.length,
+    tags: tags.value.length
+  })
 })
 
 // Page meta

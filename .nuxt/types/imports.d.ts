@@ -125,6 +125,7 @@ declare global {
   const unref: typeof import('vue')['unref']
   const updateAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']
   const useApiFormSubmit: typeof import('../../utils/useApiFormSubmit')['useApiFormSubmit']
+  const useApiPosts: typeof import('../../composables/useApiPosts')['useApiPosts']
   const useAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']
   const useAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']
   const useAttrs: typeof import('vue')['useAttrs']
@@ -197,6 +198,7 @@ declare global {
   const useSlots: typeof import('vue')['useSlots']
   const useState: typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
+  const useTestApi: typeof import('../../composables/useTestApi')['useTestApi']
   const useTransitionState: typeof import('vue')['useTransitionState']
   const useUrl: typeof import('../../utils/useUrl')['useUrl']
   const useUserStore: typeof import('../../stores/userStore')['useUserStore']
@@ -346,6 +348,7 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly updateAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']>
     readonly useApiFormSubmit: UnwrapRef<typeof import('../../utils/useApiFormSubmit')['useApiFormSubmit']>
+    readonly useApiPosts: UnwrapRef<typeof import('../../composables/useApiPosts')['useApiPosts']>
     readonly useAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']>
     readonly useAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
@@ -418,6 +421,7 @@ declare module 'vue' {
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
+    readonly useTestApi: UnwrapRef<typeof import('../../composables/useTestApi')['useTestApi']>
     readonly useTransitionState: UnwrapRef<typeof import('vue')['useTransitionState']>
     readonly useUrl: UnwrapRef<typeof import('../../utils/useUrl')['useUrl']>
     readonly useUserStore: UnwrapRef<typeof import('../../stores/userStore')['useUserStore']>
