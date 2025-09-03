@@ -15,6 +15,6 @@ export default defineNuxtPlugin(() => {
     }
     
     // Call original warn for other messages
-    originalWarn.apply(console, args)
+    //originalWarn.apply(console, args)
   }
 }) 

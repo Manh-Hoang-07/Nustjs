@@ -126,37 +126,26 @@ export const useAuthStore = defineStore('auth', () => {
 
   const fetchUserInfo = async (force = false) => {
     try {
-      console.log('fetchUserInfo called')
       isFetchingUser.value = true
       
       // Kiểm tra token trước
       const token = getTokenFromCookie()
-      console.log('Token in fetchUserInfo:', token ? 'exists' : 'not found')
       
       if (!token) {
-        console.log('No token in fetchUserInfo, setting auth to false')
         isAuthenticated.value = false
         user.value = null
         userRole.value = ''
         return
       }
       
-      console.log('Calling API /api/me...')
       const response = await apiClient.get('/api/me')
-      console.log('API response:', response.data)
       
       if (response.data.success) {
         user.value = response.data.data
         userRole.value = response.data.data.role || 'user'
         isAuthenticated.value = true
         lastFetchTime.value = Date.now()
-        console.log('User info updated:', {
-          user: user.value,
-          userRole: userRole.value,
-          isAuthenticated: isAuthenticated.value
-        })
       } else {
-        console.log('API call failed, setting auth to false')
         // Token không hợp lệ
         isAuthenticated.value = false
         user.value = null
@@ -164,18 +153,15 @@ export const useAuthStore = defineStore('auth', () => {
         removeTokenFromCookie()
       }
     } catch (error) {
-      console.error('Error in fetchUserInfo:', error)
       // Handle specific errors
       if (error.response?.status === 401) {
         // Token expired or invalid
-        console.log('401 error, setting auth to false')
         isAuthenticated.value = false
         user.value = null
         userRole.value = ''
         removeTokenFromCookie()
       } else if (error.response?.status === 403) {
         // User not authorized
-        console.log('403 error, setting auth to false')
         isAuthenticated.value = false
         user.value = null
         userRole.value = ''
