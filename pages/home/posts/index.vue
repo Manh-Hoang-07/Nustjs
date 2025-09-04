@@ -77,9 +77,10 @@
               <div class="lg:flex">
                 <div class="lg:flex-shrink-0">
                   <img 
-                    :src="post.image || '/placeholder.jpg'" 
+                    :src="post.image || '/default.svg'" 
                     :alt="post.name"
                     class="h-48 w-full lg:w-80 object-cover"
+                    @error="handleImageError"
                   >
                 </div>
                 <div class="p-6 lg:flex-1">
@@ -180,9 +181,10 @@
                 class="flex space-x-3"
               >
                 <img 
-                  :src="post.image || '/placeholder.jpg'" 
+                  :src="post.image || '/default.svg'" 
                   :alt="post.name"
                   class="h-16 w-16 rounded-lg object-cover flex-shrink-0"
+                  @error="handleImageError"
                 >
                 <div class="flex-1 min-w-0">
                   <h4 class="text-sm font-medium text-gray-900 line-clamp-2">
@@ -298,6 +300,11 @@ onMounted(async () => {
     fetchPopularTags(20) // Lấy 20 tags phổ biến
   ])
 })
+
+// Xử lý lỗi ảnh
+const handleImageError = (event) => {
+  event.target.src = '/default.svg'
+}
 
 // Page meta
 definePageMeta({

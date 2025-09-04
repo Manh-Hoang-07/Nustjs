@@ -68,9 +68,10 @@
               <div class="lg:flex">
                 <div class="lg:flex-shrink-0">
                   <img 
-                    :src="post.image || '/placeholder.jpg'" 
+                    :src="post.image || '/default.svg'" 
                     :alt="post.name"
                     class="h-48 w-full lg:w-80 object-cover"
+                    @error="handleImageError"
                   >
                 </div>
                 <div class="p-6 lg:flex-1">
@@ -312,6 +313,11 @@ onMounted(async () => {
     fetchPopularCategories(20)
   ])
 })
+
+// Xử lý lỗi ảnh
+const handleImageError = (event) => {
+  event.target.src = '/default.svg'
+}
 </script>
 
 <style scoped>

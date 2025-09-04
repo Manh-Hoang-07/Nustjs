@@ -32,9 +32,10 @@
       <!-- Hero Section -->
       <div class="relative h-96 lg:h-[500px]">
         <img 
-          :src="post.featured_image || '/placeholder.jpg'" 
+          :src="post.featured_image || '/default.svg'" 
           :alt="post.title"
           class="w-full h-full object-cover"
+          @error="handleImageError"
         >
         <div class="absolute inset-0 bg-black bg-opacity-40"></div>
         <div class="absolute inset-0 flex items-center justify-center">
@@ -158,9 +159,10 @@
               class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
             >
               <img 
-                :src="relatedPost.featured_image || '/placeholder.jpg'" 
+                :src="relatedPost.featured_image || '/default.svg'" 
                 :alt="relatedPost.title"
                 class="w-full h-48 object-cover"
+                @error="handleImageError"
               >
               <div class="p-6">
                 <div class="flex items-center text-sm text-gray-500 mb-2">
@@ -279,6 +281,11 @@ onMounted(async () => {
     loadPost()
   ])
 })
+
+// Xử lý lỗi ảnh
+const handleImageError = (event) => {
+  event.target.src = '/default.svg'
+}
 
 // Page meta
 definePageMeta({
