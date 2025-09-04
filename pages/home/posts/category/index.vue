@@ -138,18 +138,34 @@
         <!-- Sidebar -->
         <div class="lg:col-span-4 mt-8 lg:mt-0">
           <!-- Categories -->
-          <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Danh mục</h3>
+          <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-6 mb-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800">Danh mục</h3>
+            </div>
             <div class="space-y-2">
               <NuxtLink 
-                v-for="category in categories" 
+                v-for="(category, index) in categories" 
                 :key="category.id"
                 :to="`/posts/category/${category.slug || category.id}`"
-                class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                :class="{ 'bg-blue-50 text-blue-700': currentCategoryId === category.id }"
+                class="group flex items-center p-3 rounded-lg hover:shadow-md transition-all duration-300 transform hover:scale-105"
+                :class="currentCategoryId === category.id 
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
+                  : 'bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 border border-gray-100'"
               >
-                <span>{{ category.name }}</span>
-                <span class="text-sm text-gray-500">{{ category.post_count || 0 }}</span>
+                <div class="flex items-center">
+                  <div 
+                    class="w-2 h-2 rounded-full mr-3 transition-all duration-300"
+                    :class="currentCategoryId === category.id 
+                      ? 'bg-white' 
+                      : getCategoryColor(index)"
+                  ></div>
+                  <span class="font-medium">{{ category.name }}</span>
+                </div>
               </NuxtLink>
             </div>
           </div>
@@ -310,6 +326,21 @@ onMounted(async () => {
     loadPosts()
   ])
 })
+
+// Màu sắc cho categories
+const getCategoryColor = (index) => {
+  const colors = [
+    'bg-gradient-to-r from-blue-400 to-blue-500',
+    'bg-gradient-to-r from-green-400 to-green-500', 
+    'bg-gradient-to-r from-purple-400 to-purple-500',
+    'bg-gradient-to-r from-pink-400 to-pink-500',
+    'bg-gradient-to-r from-indigo-400 to-indigo-500',
+    'bg-gradient-to-r from-yellow-400 to-yellow-500',
+    'bg-gradient-to-r from-red-400 to-red-500',
+    'bg-gradient-to-r from-teal-400 to-teal-500'
+  ]
+  return colors[index % colors.length]
+}
 
 // Page meta
 definePageMeta({

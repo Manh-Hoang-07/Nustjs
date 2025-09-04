@@ -132,31 +132,55 @@
         <!-- Sidebar -->
         <div class="lg:col-span-4 mt-8 lg:mt-0">
           <!-- Categories -->
-          <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Danh mục</h3>
+          <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-lg border border-blue-100 p-6 mb-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800">Danh mục</h3>
+            </div>
             <div class="space-y-2">
               <NuxtLink 
-                v-for="category in categories" 
+                v-for="(category, index) in categories" 
                 :key="category.id"
                 :to="`/home/posts/category/${category.slug || category.id}`"
-                class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                class="group flex items-center p-3 rounded-lg hover:shadow-md transition-all duration-300 transform hover:scale-105"
+                :class="'bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 border border-gray-100'"
               >
-                <span>{{ category.name }}</span>
+                <div class="flex items-center">
+                  <div 
+                    class="w-2 h-2 rounded-full mr-3 transition-all duration-300"
+                    :class="getCategoryColor(index)"
+                  ></div>
+                  <span class="font-medium">{{ category.name }}</span>
+                </div>
               </NuxtLink>
             </div>
           </div>
 
           <!-- Popular Tags -->
-          <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Tags phổ biến</h3>
+          <div class="bg-gradient-to-br from-white to-purple-50 rounded-xl shadow-lg border border-purple-100 p-6 mb-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center mb-4">
+              <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800">Tags phổ biến</h3>
+            </div>
             <div class="flex flex-wrap gap-2">
               <NuxtLink 
-                v-for="tag in popularTags" 
+                v-for="(tag, index) in popularTags" 
                 :key="tag.id"
                 :to="`/home/posts/tag/${tag.slug || tag.id}`"
-                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
-                :class="{ 'bg-blue-100 text-blue-800': selectedTag === tag.id }"
+                class="group inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+                :class="selectedTag === tag.id 
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg' 
+                  : getTagColor(index)"
               >
+                <span class="mr-1">#</span>
                 {{ tag.name }}
               </NuxtLink>
             </div>
@@ -317,6 +341,38 @@ onMounted(async () => {
 // Xử lý lỗi ảnh
 const handleImageError = (event) => {
   event.target.src = '/default.svg'
+}
+
+// Màu sắc cho categories
+const getCategoryColor = (index) => {
+  const colors = [
+    'bg-gradient-to-r from-blue-400 to-blue-500',
+    'bg-gradient-to-r from-green-400 to-green-500', 
+    'bg-gradient-to-r from-purple-400 to-purple-500',
+    'bg-gradient-to-r from-pink-400 to-pink-500',
+    'bg-gradient-to-r from-indigo-400 to-indigo-500',
+    'bg-gradient-to-r from-yellow-400 to-yellow-500',
+    'bg-gradient-to-r from-red-400 to-red-500',
+    'bg-gradient-to-r from-teal-400 to-teal-500'
+  ]
+  return colors[index % colors.length]
+}
+
+// Màu sắc cho tags
+const getTagColor = (index) => {
+  const colors = [
+    'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 hover:from-blue-200 hover:to-blue-300',
+    'bg-gradient-to-r from-green-100 to-green-200 text-green-800 hover:from-green-200 hover:to-green-300',
+    'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 hover:from-purple-200 hover:to-purple-300',
+    'bg-gradient-to-r from-pink-100 to-pink-200 text-pink-800 hover:from-pink-200 hover:to-pink-300',
+    'bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-800 hover:from-indigo-200 hover:to-indigo-300',
+    'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 hover:from-yellow-200 hover:to-yellow-300',
+    'bg-gradient-to-r from-red-100 to-red-200 text-red-800 hover:from-red-200 hover:to-red-300',
+    'bg-gradient-to-r from-teal-100 to-teal-200 text-teal-800 hover:from-teal-200 hover:to-teal-300',
+    'bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 hover:from-orange-200 hover:to-orange-300',
+    'bg-gradient-to-r from-cyan-100 to-cyan-200 text-cyan-800 hover:from-cyan-200 hover:to-cyan-300'
+  ]
+  return colors[index % colors.length]
 }
 </script>
 
