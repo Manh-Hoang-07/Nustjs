@@ -141,7 +141,6 @@
                 class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <span>{{ category.name }}</span>
-                <span class="text-sm text-gray-500">{{ category.post_count || 0 }}</span>
               </NuxtLink>
             </div>
           </div>
@@ -199,6 +198,8 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiPosts } from '../../../composables/useApiPosts.js'
+import { useApiCategories } from '../../../composables/useApiCategories.js'
+import { useApiTags } from '../../../composables/useApiTags.js'
 
 import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 
@@ -224,8 +225,17 @@ const {
 
 
 
-const categories = ref([])
-const tags = ref([])
+const { 
+  categories, 
+  loading: categoriesLoading,
+  fetchPopularCategories 
+} = useApiCategories()
+
+const { 
+  tags, 
+  loading: tagsLoading,
+  fetchPopularTags 
+} = useApiTags()
 
 // State
 const searchQuery = ref('')
@@ -257,7 +267,7 @@ const loadPosts = async () => {
     const result = await fetchPosts({ 
       page: currentPage.value,
       limit: 10,
-      tag: selectedTag.value,
+      tag_id: selectedTag.value,
       search: searchQuery.value,
       sort: sortBy.value
     })
@@ -287,10 +297,20 @@ watch([searchQuery, sortBy], () => {
 }, { deep: true })
 
 onMounted(async () => {
-  // Set tag ID từ slug (có thể cần API call để lấy tag ID)
-  selectedTag.value = tagSlug
+  // Load tags trước để có thể tìm tag ID từ slug
+  await fetchPopularTags(20)
   
-  await loadPosts()
+  // Tìm tag ID từ slug
+  const tag = tags.value.find(t => t.slug === tagSlug)
+  if (tag) {
+    selectedTag.value = tag.id
+  }
+  
+  // Load posts và categories song song
+  await Promise.all([
+    loadPosts(),
+    fetchPopularCategories(20)
+  ])
 })
 </script>
 

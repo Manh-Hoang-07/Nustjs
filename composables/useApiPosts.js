@@ -75,11 +75,11 @@ const fetchPosts = async (options = {}) => {
     }
     
     // Thêm filtering parameters
-    if (options.category) {
-      params.category_id = options.category
+    if (options.category_id) {
+      params.category_id = options.category_id
     }
-    if (options.tag) {
-      params.tag_id = options.tag
+    if (options.tag_id) {
+      params.tag_id = options.tag_id
     }
     if (options.search) {
       params.search = options.search

@@ -142,7 +142,6 @@
                 :class="{ 'bg-blue-50 text-blue-700': selectedCategory === category.id }"
               >
                 <span>{{ category.name }}</span>
-                <span class="text-sm text-gray-500">{{ category.post_count || 0 }}</span>
               </NuxtLink>
             </div>
           </div>
@@ -199,6 +198,8 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiPosts } from '../../../composables/useApiPosts.js'
+import { useApiCategories } from '../../../composables/useApiCategories.js'
+import { useApiTags } from '../../../composables/useApiTags.js'
 
 import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 
@@ -224,8 +225,17 @@ const {
 
 
 
-const categories = ref([])
-const tags = ref([])
+const { 
+  categories, 
+  loading: categoriesLoading,
+  fetchPopularCategories 
+} = useApiCategories()
+
+const { 
+  tags, 
+  loading: tagsLoading,
+  fetchPopularTags 
+} = useApiTags()
 
 // State
 const searchQuery = ref('')
@@ -257,7 +267,7 @@ const loadPosts = async () => {
     const result = await fetchPosts({ 
       page: currentPage.value,
       limit: 10,
-      category: selectedCategory.value,
+      category_id: selectedCategory.value,
       search: searchQuery.value,
       sort: sortBy.value
     })
@@ -287,10 +297,20 @@ watch([searchQuery, sortBy], () => {
 }, { deep: true })
 
 onMounted(async () => {
-  // Set category ID từ slug (có thể cần API call để lấy category ID)
-  selectedCategory.value = categorySlug
+  // Load categories trước để có thể tìm category ID từ slug
+  await fetchPopularCategories(20)
   
-  await loadPosts()
+  // Tìm category ID từ slug
+  const category = categories.value.find(cat => cat.slug === categorySlug)
+  if (category) {
+    selectedCategory.value = category.id
+  }
+  
+  // Load posts và tags song song
+  await Promise.all([
+    loadPosts(),
+    fetchPopularTags(20)
+  ])
 })
 </script>
 

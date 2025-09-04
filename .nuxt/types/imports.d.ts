@@ -124,8 +124,10 @@ declare global {
   const tryUseNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']
   const unref: typeof import('vue')['unref']
   const updateAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']
+  const useApiCategories: typeof import('../../composables/useApiCategories')['useApiCategories']
   const useApiFormSubmit: typeof import('../../utils/useApiFormSubmit')['useApiFormSubmit']
   const useApiPosts: typeof import('../../composables/useApiPosts')['useApiPosts']
+  const useApiTags: typeof import('../../composables/useApiTags')['useApiTags']
   const useAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']
   const useAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']
   const useAttrs: typeof import('vue')['useAttrs']
@@ -346,8 +348,10 @@ declare module 'vue' {
     readonly tryUseNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly updateAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']>
+    readonly useApiCategories: UnwrapRef<typeof import('../../composables/useApiCategories')['useApiCategories']>
     readonly useApiFormSubmit: UnwrapRef<typeof import('../../utils/useApiFormSubmit')['useApiFormSubmit']>
     readonly useApiPosts: UnwrapRef<typeof import('../../composables/useApiPosts')['useApiPosts']>
+    readonly useApiTags: UnwrapRef<typeof import('../../composables/useApiTags')['useApiTags']>
     readonly useAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']>
     readonly useAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>

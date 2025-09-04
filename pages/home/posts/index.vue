@@ -151,7 +151,6 @@
                 :class="{ 'bg-blue-50 text-blue-700': selectedCategory === category.id }"
               >
                 <span>{{ category.name }}</span>
-                <span class="text-sm text-gray-500">{{ category.post_count || 0 }}</span>
               </NuxtLink>
             </div>
           </div>
@@ -208,6 +207,8 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiPosts } from '../../composables/useApiPosts.js'
+import { useApiCategories } from '../../composables/useApiCategories.js'
+import { useApiTags } from '../../composables/useApiTags.js'
 
 import Pagination from '../../components/Core/Navigation/Pagination.vue'
 
@@ -220,8 +221,17 @@ const {
   formatExcerpt
 } = useApiPosts()
 
-const categories = ref([])
-const tags = ref([])
+const { 
+  categories, 
+  loading: categoriesLoading,
+  fetchPopularCategories 
+} = useApiCategories()
+
+const { 
+  tags, 
+  loading: tagsLoading,
+  fetchPopularTags 
+} = useApiTags()
 
 // State
 const searchQuery = ref('')
@@ -247,7 +257,7 @@ const loadPosts = async () => {
     const result = await fetchPosts({ 
       page: currentPage.value,
       limit: 10,
-      category: selectedCategory.value,
+      category_id: selectedCategory.value,
       search: searchQuery.value,
       sort: sortBy.value
     })
@@ -276,53 +286,17 @@ const getCategoryName = (categoryId) => {
 
 // Watchers
 watch([searchQuery, selectedCategory, sortBy], () => {
-  console.log('🔄 Filter changed, reloading posts...', {
-    search: searchQuery.value,
-    category: selectedCategory.value,
-    sort: sortBy.value
-  })
   currentPage.value = 1
   loadPosts()
 }, { deep: true })
 
 onMounted(async () => {
-  await loadPosts()
-  
-  // Extract categories và tags từ posts data
-  const extractedCategories = []
-  const extractedTags = []
-  
-  posts.value.forEach(post => {
-    // Extract categories
-    if (post.categories && post.categories.length > 0) {
-      post.categories.forEach(cat => {
-        if (!extractedCategories.find(c => c.id === cat.id)) {
-          extractedCategories.push({
-            id: cat.id,
-            name: cat.name,
-            slug: cat.slug,
-            post_count: 1
-          })
-        }
-      })
-    }
-    
-    // Extract tags
-    if (post.tags && post.tags.length > 0) {
-      post.tags.forEach(tag => {
-        if (!extractedTags.find(t => t.id === tag.id)) {
-          extractedTags.push({
-            id: tag.id,
-            name: tag.name,
-            slug: tag.slug
-          })
-        }
-      })
-    }
-  })
-  
-  categories.value = extractedCategories
-  tags.value = extractedTags
+  // Load posts, categories và tags song song
+  await Promise.all([
+    loadPosts(),
+    fetchPopularCategories(20), // Lấy 20 categories phổ biến
+    fetchPopularTags(20) // Lấy 20 tags phổ biến
+  ])
 })
 
 // Page meta
