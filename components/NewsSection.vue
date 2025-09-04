@@ -130,7 +130,6 @@
 
 <script setup>
 import { useApiPosts } from '../composables/useApiPosts.js'
-import { useTestApi } from '../composables/useTestApi.js'
 
 // Props
 const props = defineProps({
@@ -154,29 +153,7 @@ const {
 
 // Fetch latest posts khi component mount
 onMounted(async () => {
-  try {
-    console.log('🔄 Fetching latest posts from API...')
-    await fetchLatestPosts(props.limit)
-    console.log('✅ Posts fetched successfully from API:', posts.value.length, 'posts')
-  } catch (error) {
-    console.error('❌ Error fetching latest posts from API:', error)
-    
-    // Fallback: sử dụng mock data nếu API không hoạt động
-    console.log('🔄 API failed, using mock data as fallback...')
-    const { testWithMockData } = useTestApi()
-    const mockData = testWithMockData()
-    
-    if (mockData && mockData.data) {
-      posts.value = mockData.data.slice(0, props.limit).map(post => ({
-        ...post,
-        formattedDate: formatDate(post.published_at || post.created_at),
-        formattedExcerpt: formatExcerpt(post.excerpt || post.content),
-        cardGradient: getCardGradient(post.id),
-        textColor: getTextColor(post.id)
-      }))
-      console.log('✅ Using mock data as fallback:', posts.value.length, 'posts')
-    }
-  }
+  await fetchLatestPosts(props.limit)
 })
 </script>
 
