@@ -199,56 +199,6 @@
               </NuxtLink>
             </div>
           </div>
-
-          <!-- Recent Posts -->
-          <div class="bg-gradient-to-br from-white to-green-50 rounded-xl shadow-lg border border-green-100 p-6 hover:shadow-xl transition-all duration-300">
-            <div class="flex items-center mb-4">
-              <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-3">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold text-gray-800">Bài viết gần đây</h3>
-            </div>
-            <div class="space-y-4">
-              <article 
-                v-for="(post, index) in recentPosts" 
-                :key="post.id"
-                class="group flex space-x-3 p-2 rounded-lg hover:bg-white hover:shadow-md transition-all duration-300 transform hover:scale-105"
-              >
-                <div class="relative">
-                  <img 
-                    :src="post.image || '/default.svg'" 
-                    :alt="post.name"
-                    class="h-16 w-16 rounded-lg object-cover flex-shrink-0 shadow-md group-hover:shadow-lg transition-all duration-300"
-                    @error="handleImageError"
-                  >
-                  <div 
-                    class="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    :class="getCategoryColor(index)"
-                  >
-                    {{ index + 1 }}
-                  </div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h4 class="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-green-600 transition-colors">
-                    <NuxtLink 
-                      :to="`/home/posts/${post.slug || post.id}`"
-                      class="hover:text-green-600 transition-colors"
-                    >
-                      {{ post.name }}
-                    </NuxtLink>
-                  </h4>
-                  <div class="flex items-center mt-1">
-                    <svg class="w-3 h-3 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <p class="text-xs text-gray-500">{{ formatDate(post.published_at || post.created_at) }}</p>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
         </div>
       </div>
     </div>
