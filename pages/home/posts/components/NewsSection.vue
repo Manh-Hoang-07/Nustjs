@@ -128,7 +128,9 @@
 </template>
 
 <script setup>
-import { useApiPosts } from '../composables/useApiPosts.js'
+import { ref, onMounted } from 'vue'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { formatDate } from '../../../utils/formatDate.js'
 
 // Props
 const props = defineProps({
@@ -138,17 +140,60 @@ const props = defineProps({
   }
 })
 
-// Sử dụng API posts composable
-const { 
-  posts,
-  loading,
-  error,
-  fetchLatestPosts,
-  formatDate,
-  formatExcerpt,
-  getCardGradient,
-  getTextColor
-} = useApiPosts()
+// Sử dụng API client
+const apiClient = useApiClient()
+
+// State
+const posts = ref([])
+const loading = ref(false)
+const error = ref(null)
+
+// Hàm format excerpt đơn giản
+const formatExcerpt = (text, maxLength = 150) => {
+  if (!text) return ''
+  const cleanText = text.replace(/<[^>]*>/g, '') // Remove HTML tags
+  return cleanText.length > maxLength 
+    ? cleanText.substring(0, maxLength) + '...'
+    : cleanText
+}
+
+// Hàm fetch latest posts
+const fetchLatestPosts = async (limit = 3) => {
+  loading.value = true
+  error.value = null
+  
+  try {
+    const response = await apiClient.get('/api/posts', {
+      params: {
+        limit: limit,
+        sort: 'latest'
+      }
+    })
+    
+    posts.value = response.data.data || response.data || []
+  } catch (err) {
+    console.error('Error fetching latest posts:', err)
+    error.value = 'Không thể tải tin tức'
+    posts.value = []
+  } finally {
+    loading.value = false
+  }
+}
+
+// Hàm get text color cho link
+const getTextColor = (index) => {
+  const colors = [
+    'text-blue-600 hover:text-blue-700',
+    'text-green-600 hover:text-green-700',
+    'text-purple-600 hover:text-purple-700',
+    'text-pink-600 hover:text-pink-700',
+    'text-indigo-600 hover:text-indigo-700',
+    'text-yellow-600 hover:text-yellow-700',
+    'text-red-600 hover:text-red-700',
+    'text-teal-600 hover:text-teal-700'
+  ]
+  return colors[index % colors.length]
+}
 
 // Fetch latest posts khi component mount
 onMounted(async () => {

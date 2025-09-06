@@ -22,6 +22,7 @@
               <div class="flex-1">
                 <input 
                   v-model="searchQuery"
+                  @input="debouncedFilterChange"
                   type="text" 
                   placeholder="Tìm kiếm bài viết..."
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -29,6 +30,7 @@
               </div>
               <select 
                 v-model="selectedCategory"
+                @change="handleFilterChange"
                 class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Tất cả danh mục</option>
@@ -38,6 +40,7 @@
               </select>
               <select 
                 v-model="sortBy"
+                @change="handleFilterChange"
                 class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="latest">Mới nhất</option>
@@ -128,7 +131,13 @@
           </div>
 
           <!-- Pagination -->
-          <Pagination />
+          <Pagination 
+            :current-page="pagination.current_page"
+            :total-pages="pagination.last_page"
+            :total-items="pagination.total"
+            :loading="loading"
+            @page-change="handlePageChange"
+          />
           
         </div>
 
@@ -247,48 +256,86 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue'
-import { useApiPosts } from '../../composables/useApiPosts.js'
-import { usePagination } from '../../composables/usePagination.js'
+import { computed, onMounted, ref } from 'vue'
+import { useApiClient } from '../../composables/api/useApiClient.js'
+import { useDataTable } from '../../composables/data/useDataTable.js'
 import Pagination from '../../components/Core/Navigation/Pagination.vue'
+import { debounce } from '../../utils/debounce.js'
+import { formatDate } from '../../utils/formatDate.js'
 
-const { 
-  posts, 
-  categories,
-  tags,
-  loading, 
-  fetchPosts,
-  fetchCategories,
-  fetchTags,
-  formatDate,
-  formatExcerpt
-} = useApiPosts()
+// Hàm format excerpt đơn giản
+const formatExcerpt = (text, maxLength = 150) => {
+  if (!text) return ''
+  const cleanText = text.replace(/<[^>]*>/g, '') // Remove HTML tags
+  return cleanText.length > maxLength 
+    ? cleanText.substring(0, maxLength) + '...'
+    : cleanText
+}
 
-// Pagination
+// Sử dụng API client có sẵn
+const apiClient = useApiClient()
+
+// Sử dụng useDataTable cho posts
 const {
-  searchQuery,
-  selectedCategory,
-  sortBy,
-  currentPage,
-  perPage,
-  totalPages,
-  totalRecords,
-  loading: paginationLoading,
-  data: paginationData,
-  hasPagination,
-  hasData,
-  showPagination,
-  hasFilters,
-  loadData,
-  setData,
-  getApiParams
-} = usePagination({
-  fetchFunction: fetchPosts,
-  autoLoad: true
+  items: posts,
+  loading,
+  error,
+  pagination,
+  fetchData: fetchPosts,
+  updateFilters,
+  changePage
+} = useDataTable('/api/posts', {
+  defaultFilters: {
+    search: '',
+    category_id: '',
+    sort: 'latest'
+  },
+  pageSize: 10
 })
 
-// Không cần computed filteredPosts nữa vì đã gọi API với parameters
+// State cho categories và tags
+const categories = ref([])
+const tags = ref([])
 
+// Search và filters
+const searchQuery = ref('')
+const selectedCategory = ref('')
+const sortBy = ref('latest')
+
+// Hàm fetch categories
+const fetchCategories = async () => {
+  try {
+    const response = await apiClient.get('/api/post-categories')
+    categories.value = response.data.data || response.data
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+  }
+}
+
+// Hàm fetch tags
+const fetchTags = async () => {
+  try {
+    const response = await apiClient.get('/api/post-tags')
+    tags.value = response.data.data || response.data
+  } catch (error) {
+    console.error('Error fetching tags:', error)
+  }
+}
+
+// Hàm load data với filters
+const loadData = async (params = {}) => {
+  const filters = {
+    search: searchQuery.value,
+    category_id: selectedCategory.value,
+    sort: sortBy.value,
+    ...params
+  }
+  
+  console.log('Loading posts with filters:', filters)
+  updateFilters(filters)
+}
+
+// Computed
 const popularTags = computed(() => {
   return tags.value.slice(0, 10) // Show top 10 tags
 })
@@ -297,24 +344,28 @@ const recentPosts = computed(() => {
   return posts.value.slice(0, 5) // Show 5 recent posts
 })
 
-// Watch for pagination data changes
-watch(paginationData, (newData) => {
-  if (newData && newData.length > 0) {
-    posts.value = newData
-  }
-}, { deep: true })
+// Handle filter changes - gọi API khi user thay đổi filter
+const handleFilterChange = () => {
+  loadData()
+}
 
+// Debounced version cho search input
+const debouncedFilterChange = debounce(handleFilterChange, 500)
 
-// formatDate và formatExcerpt đã được import từ useApiPosts composable
+// Handle page change
+const handlePageChange = (page) => {
+  changePage(page)
+}
 
 onMounted(async () => {
-  // Load categories và tags song song
+  // Load categories và tags trước
   await Promise.all([
     fetchCategories(),
     fetchTags()
   ])
   
-  // Pagination sẽ tự động load posts
+  // Load posts với filters hiện tại
+  await fetchPosts()
 })
 
 // Xử lý lỗi ảnh
@@ -369,4 +420,3 @@ definePageMeta({
   overflow: hidden;
 }
 </style>
-

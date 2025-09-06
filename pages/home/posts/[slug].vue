@@ -237,22 +237,79 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useApiPosts } from '../../composables/useApiPosts.js'
+import { useApiClient } from '../../composables/api/useApiClient.js'
 import HtmlContent from '../../components/Core/Content/HtmlContent.vue'
+import { formatDate } from '../../utils/formatDate.js'
 
 const route = useRoute()
-const { 
-  posts, 
-  categories, 
-  loading, 
-  error,
-  fetchPostBySlug, 
-  fetchPosts,
-  fetchCategories,
-  fetchRelatedPosts,
-  formatDate,
-  formatExcerpt
-} = useApiPosts()
+const apiClient = useApiClient()
+
+// State
+const loading = ref(false)
+const error = ref(null)
+const posts = ref([])
+const categories = ref([])
+
+// Hàm format excerpt đơn giản
+const formatExcerpt = (text, maxLength = 150) => {
+  if (!text) return ''
+  const cleanText = text.replace(/<[^>]*>/g, '') // Remove HTML tags
+  return cleanText.length > maxLength 
+    ? cleanText.substring(0, maxLength) + '...'
+    : cleanText
+}
+
+// Hàm fetch post by slug
+const fetchPostBySlug = async (slug) => {
+  try {
+    const response = await apiClient.get(`/api/posts/slug/${slug}`)
+    return response.data.data || response.data
+  } catch (err) {
+    // Nếu không tìm thấy bằng slug, thử tìm bằng ID
+    try {
+      const response = await apiClient.get(`/api/posts/${slug}`)
+      return response.data.data || response.data
+    } catch (idErr) {
+      return null
+    }
+  }
+}
+
+// Hàm fetch posts
+const fetchPosts = async (params = {}) => {
+  try {
+    const response = await apiClient.get('/api/posts', { params })
+    return response.data.data || response.data
+  } catch (err) {
+    return []
+  }
+}
+
+// Hàm fetch categories
+const fetchCategories = async () => {
+  try {
+    const response = await apiClient.get('/api/post-categories')
+    return response.data.data || response.data
+  } catch (err) {
+    return []
+  }
+}
+
+// Hàm fetch related posts
+const fetchRelatedPosts = async (postId, categoryId, limit = 3) => {
+  try {
+    const response = await apiClient.get('/api/posts', {
+      params: {
+        category_id: categoryId,
+        exclude: postId,
+        limit: limit
+      }
+    })
+    return response.data.data || response.data
+  } catch (err) {
+    return []
+  }
+}
 
 // State
 const post = ref(null)
@@ -265,6 +322,9 @@ const postSlug = computed(() => route.params.slug)
 
 // Methods
 const loadPost = async () => {
+  loading.value = true
+  error.value = null
+  
   try {
     // Try to fetch by slug first, then by ID if slug fails
     const fetchedPost = await fetchPostBySlug(postSlug.value)
@@ -284,6 +344,8 @@ const loadPost = async () => {
   } catch (err) {
     console.error('Error loading post:', err)
     error.value = 'Không thể tải bài viết. Vui lòng thử lại sau.'
+  } finally {
+    loading.value = false
   }
 }
 

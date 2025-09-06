@@ -82,8 +82,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { usePagination } from '../../../composables/usePagination.js'
-import { useApiPosts } from '../../../composables/useApiPosts.js'
+import usePagination from '../../../composables/ui/usePagination.js'
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/vue/24/solid'
 
 // Props
@@ -112,39 +111,131 @@ const props = defineProps({
 // Emits
 const emit = defineEmits(['page-change', 'data-loaded'])
 
-// API
-const { fetchPosts } = useApiPosts()
+// Debug props
+console.log('Pagination props:', {
+  currentPage: props.currentPage,
+  totalPages: props.totalPages,
+  totalItems: props.totalItems,
+  loading: props.loading
+})
 
 // Use pagination composable
 const {
-  searchQuery,
-  selectedCategory,
-  sortBy,
-  currentPage,
-  perPage,
-  totalPages,
-  totalRecords,
-  loading,
-  error,
-  data,
-  hasPagination,
-  hasData,
-  showPagination,
-  hasFilters,
-  loadData,
-  handlePageChange: paginationHandlePageChange,
-  setData,
-  getApiParams
-} = usePagination({
-  autoLoad: props.autoLoad,
-  fetchFunction: props.fetchFunction || fetchPosts,
-  searchParam: props.searchParam,
-  categoryParam: props.categoryParam,
-  sortParam: props.sortParam,
-  pageParam: props.pageParam,
-  perPageParam: props.perPageParam,
-  isAdmin: props.isAdmin
+  currentPage: paginationCurrentPage,
+  perPage: paginationPerPage,
+  total: paginationTotal,
+  setPage,
+  setTotal
+} = usePagination()
+
+// Local perPage variable
+const perPage = ref(10)
+
+// Local state
+const searchQuery = ref('')
+const selectedCategory = ref('')
+const sortBy = ref('latest')
+const currentPage = ref(props.currentPage)
+const totalPages = ref(props.totalPages)
+const totalRecords = ref(props.totalItems)
+const loading = ref(props.loading)
+const error = ref(null)
+const data = ref([])
+
+// Watch for props changes
+watch(() => props.totalPages, (newVal) => {
+  totalPages.value = newVal
+  console.log('totalPages updated from props:', newVal)
 })
+
+watch(() => props.currentPage, (newVal) => {
+  currentPage.value = newVal
+  console.log('currentPage updated from props:', newVal)
+})
+
+watch(() => props.totalItems, (newVal) => {
+  totalRecords.value = newVal
+  console.log('totalRecords updated from props:', newVal)
+})
+
+watch(() => props.loading, (newVal) => {
+  loading.value = newVal
+  console.log('loading updated from props:', newVal)
+})
+
+// Computed properties
+const hasPagination = computed(() => {
+  console.log('hasPagination check - totalPages:', totalPages.value, 'currentPage:', currentPage.value)
+  // Fallback: nếu totalPages không có, kiểm tra totalRecords
+  if (totalPages.value === undefined || totalPages.value === null) {
+    return totalRecords.value > 10 // Nếu có hơn 10 bản ghi thì có pagination
+  }
+  return totalPages.value > 1
+})
+const hasData = computed(() => data.value.length > 0)
+const showPagination = computed(() => {
+  const show = hasPagination.value && !loading.value
+  console.log('showPagination:', show, 'hasPagination:', hasPagination.value, 'loading:', loading.value, 'totalPages:', totalPages.value)
+  return show
+})
+const hasFilters = computed(() => searchQuery.value || selectedCategory.value || sortBy.value !== 'latest')
+
+// Load data function
+const loadData = async () => {
+  if (props.fetchFunction) {
+    loading.value = true
+    try {
+      const result = await props.fetchFunction({
+        page: currentPage.value,
+        search: searchQuery.value,
+        category_id: selectedCategory.value,
+        sort: sortBy.value
+      })
+      
+      if (result) {
+        data.value = result.data || result
+        if (result.meta) {
+          totalPages.value = result.meta.last_page || 1
+          totalRecords.value = result.meta.total || 0
+        }
+        emit('data-loaded', result)
+      }
+    } catch (err) {
+      error.value = err.message || 'Lỗi tải dữ liệu'
+    } finally {
+      loading.value = false
+    }
+  }
+}
+
+// Handle page change
+const handlePageChange = (page) => {
+  if (page === '...' || page === currentPage.value || loading.value) return
+  
+  currentPage.value = page
+  setPage(page)
+  
+  if (props.autoLoad) {
+    loadData()
+  }
+  
+  emit('page-change', page)
+}
+
+// Set data
+const setData = (newData) => {
+  data.value = newData
+}
+
+// Get API params
+const getApiParams = () => {
+  return {
+    page: currentPage.value,
+    search: searchQuery.value,
+    category_id: selectedCategory.value,
+    sort: sortBy.value
+  }
+}
 
 // Computed
 const inputPage = ref(currentPage.value)
@@ -153,12 +244,6 @@ watch(() => currentPage.value, (val) => {
 })
 
 // Methods
-const handlePageChange = (page) => {
-  if (page === '...') return
-  
-  paginationHandlePageChange(page)
-  emit('page-change', page)
-}
 
 const jumpToPage = () => {
   let page = inputPage.value
@@ -193,7 +278,6 @@ defineExpose({
   selectedCategory,
   sortBy,
   currentPage,
-  perPage,
   totalPages,
   totalRecords,
   loading,
@@ -205,7 +289,9 @@ defineExpose({
   hasFilters,
   loadData,
   setData,
-  getApiParams
+  getApiParams,
+  handlePageChange,
+  jumpToPage
 })
 </script>
 

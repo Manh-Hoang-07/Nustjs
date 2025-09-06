@@ -35,7 +35,6 @@ interface _GlobalComponents {
     'LayoutHeaderBar': typeof import("../components/Layout/Header/HeaderBar.vue")['default']
     'LayoutSectionsCustomSection': typeof import("../components/Layout/Sections/CustomSection.vue")['default']
     'LayoutSidebarMenu': typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']
-    'NewsSection': typeof import("../components/NewsSection.vue")['default']
     'UserCardsUserCard': typeof import("../components/User/Cards/UserCard.vue")['default']
     'NuxtWelcome': typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
     'NuxtLayout': typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
@@ -85,7 +84,6 @@ interface _GlobalComponents {
     'LazyLayoutHeaderBar': LazyComponent<typeof import("../components/Layout/Header/HeaderBar.vue")['default']>
     'LazyLayoutSectionsCustomSection': LazyComponent<typeof import("../components/Layout/Sections/CustomSection.vue")['default']>
     'LazyLayoutSidebarMenu': LazyComponent<typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']>
-    'LazyNewsSection': LazyComponent<typeof import("../components/NewsSection.vue")['default']>
     'LazyUserCardsUserCard': LazyComponent<typeof import("../components/User/Cards/UserCard.vue")['default']>
     'LazyNuxtWelcome': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
     'LazyNuxtLayout': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
@@ -141,7 +139,6 @@ export const CoreTableDataTable: typeof import("../components/Core/Table/DataTab
 export const LayoutHeaderBar: typeof import("../components/Layout/Header/HeaderBar.vue")['default']
 export const LayoutSectionsCustomSection: typeof import("../components/Layout/Sections/CustomSection.vue")['default']
 export const LayoutSidebarMenu: typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']
-export const NewsSection: typeof import("../components/NewsSection.vue")['default']
 export const UserCardsUserCard: typeof import("../components/User/Cards/UserCard.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
@@ -191,7 +188,6 @@ export const LazyCoreTableDataTable: LazyComponent<typeof import("../components/
 export const LazyLayoutHeaderBar: LazyComponent<typeof import("../components/Layout/Header/HeaderBar.vue")['default']>
 export const LazyLayoutSectionsCustomSection: LazyComponent<typeof import("../components/Layout/Sections/CustomSection.vue")['default']>
 export const LazyLayoutSidebarMenu: LazyComponent<typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']>
-export const LazyNewsSection: LazyComponent<typeof import("../components/NewsSection.vue")['default']>
 export const LazyUserCardsUserCard: LazyComponent<typeof import("../components/User/Cards/UserCard.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>

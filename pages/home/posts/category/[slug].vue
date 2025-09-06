@@ -119,14 +119,13 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="totalPages > 1" class="mt-8">
-            <Pagination 
-              :current-page="currentPage"
-              :total-pages="totalPages"
-              :total-items="totalRecords"
-              @page-change="handlePageChange"
-            />
-          </div>
+          <Pagination 
+            :current-page="pagination.current_page"
+            :total-pages="pagination.last_page"
+            :total-items="pagination.total"
+            :loading="loading"
+            @page-change="handlePageChange"
+          />
         </div>
 
         <!-- Sidebar -->
@@ -224,9 +223,9 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useApiPosts } from '../../../composables/useApiPosts.js'
-import { useApiCategories } from '../../../composables/useApiCategories.js'
-import { useApiTags } from '../../../composables/useApiTags.js'
+import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { useDataTable } from '../../../composables/data/useDataTable.js'
+import { formatDate } from '../../../utils/formatDate.js'
 
 import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 
@@ -240,39 +239,84 @@ definePageMeta({
 const route = useRoute()
 const categorySlug = route.params.slug
 
-// Sử dụng composables
-const { 
-  posts,
+// Sử dụng API client
+const apiClient = useApiClient()
+
+// Sử dụng useDataTable cho posts
+const {
+  items: posts,
   loading,
-  fetchPosts,
-  formatDate,
-  formatExcerpt
-} = useApiPosts()
+  error,
+  pagination,
+  fetchData: fetchPosts,
+  updateFilters,
+  changePage
+} = useDataTable('/api/posts', {
+  defaultFilters: {
+    category_slug: categorySlug,
+    search: '',
+    sort: 'latest'
+  },
+  pageSize: 10
+})
 
+// State cho categories và tags
+const categories = ref([])
+const tags = ref([])
+const currentCategory = ref(null)
 
+// Hàm format excerpt đơn giản
+const formatExcerpt = (text, maxLength = 150) => {
+  if (!text) return ''
+  const cleanText = text.replace(/<[^>]*>/g, '') // Remove HTML tags
+  return cleanText.length > maxLength 
+    ? cleanText.substring(0, maxLength) + '...'
+    : cleanText
+}
 
-const { 
-  categories, 
-  fetchPopularCategories 
-} = useApiCategories()
+// Hàm fetch categories
+const fetchPopularCategories = async () => {
+  try {
+    const response = await apiClient.get('/api/post-categories')
+    categories.value = response.data.data || response.data
+  } catch (error) {
+    console.error('Error fetching categories:', error)
+  }
+}
 
-const { 
-  tags, 
-  fetchPopularTags 
-} = useApiTags()
+// Hàm fetch tags
+const fetchPopularTags = async () => {
+  try {
+    const response = await apiClient.get('/api/post-tags')
+    tags.value = response.data.data || response.data
+  } catch (error) {
+    console.error('Error fetching tags:', error)
+  }
+}
+
+// Hàm fetch category by slug
+const fetchCategoryBySlug = async (slug) => {
+  try {
+    const response = await apiClient.get(`/api/post-categories/slug/${slug}`)
+    return response.data.data || response.data
+  } catch (err) {
+    // Nếu không tìm thấy bằng slug, thử tìm bằng ID
+    try {
+      const response = await apiClient.get(`/api/post-categories/${slug}`)
+      return response.data.data || response.data
+    } catch (idErr) {
+      return null
+    }
+  }
+}
 
 // State
 const searchQuery = ref('')
 const sortBy = ref('latest')
-const currentPage = ref(1)
-const totalPages = ref(1)
-const totalRecords = ref(0)
-const selectedCategory = ref('')
 
 // Computed
 const categoryName = computed(() => {
-  const category = categories.value.find(c => c.slug === categorySlug || c.id == categorySlug)
-  return category?.name || 'Danh mục'
+  return currentCategory.value?.name || 'Danh mục'
 })
 
 const popularTags = computed(() => {
@@ -285,56 +329,39 @@ const recentPosts = computed(() => {
 
 // Methods
 const loadPosts = async () => {
-  try {
-
-    
-    const result = await fetchPosts({ 
-      page: currentPage.value,
-      limit: 10,
-      category_id: selectedCategory.value,
-      search: searchQuery.value,
-      sort: sortBy.value
-    })
-    
-    if (result.meta) {
-      totalPages.value = result.meta.last_page || 1
-      totalRecords.value = result.meta.total || 0
-    }
-    
-
-  } catch (err) {
-    console.error('Error loading posts for category:', err)
+  const filters = {
+    search: searchQuery.value,
+    sort: sortBy.value
   }
+  
+  updateFilters(filters)
 }
 
 const handlePageChange = (page) => {
-  currentPage.value = page
-  loadPosts()
+  changePage(page)
 }
 
-// formatDate và formatExcerpt đã được import từ useApiPosts composable
 
 // Watchers
 watch([searchQuery, sortBy], () => {
-  currentPage.value = 1
   loadPosts()
-}, { deep: true })
+})
 
 onMounted(async () => {
-  // Load categories trước để có thể tìm category ID từ slug
-  await fetchPopularCategories(20)
+  // Load categories và tags trước
+  await Promise.all([
+    fetchPopularCategories(),
+    fetchPopularTags()
+  ])
   
-  // Tìm category ID từ slug
-  const category = categories.value.find(cat => cat.slug === categorySlug)
+  // Tìm category hiện tại
+  const category = await fetchCategoryBySlug(categorySlug)
   if (category) {
-    selectedCategory.value = category.id
+    currentCategory.value = category
   }
   
-  // Load posts và tags song song
-  await Promise.all([
-    loadPosts(),
-    fetchPopularTags(20)
-  ])
+  // Load posts cho category
+  await fetchPosts()
 })
 
 // Xử lý lỗi ảnh

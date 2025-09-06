@@ -124,10 +124,7 @@ declare global {
   const tryUseNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']
   const unref: typeof import('vue')['unref']
   const updateAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']
-  const useApiCategories: typeof import('../../composables/useApiCategories')['useApiCategories']
   const useApiFormSubmit: typeof import('../../utils/useApiFormSubmit')['useApiFormSubmit']
-  const useApiPosts: typeof import('../../composables/useApiPosts')['useApiPosts']
-  const useApiTags: typeof import('../../composables/useApiTags')['useApiTags']
   const useAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']
   const useAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']
   const useAttrs: typeof import('vue')['useAttrs']
@@ -151,9 +148,7 @@ declare global {
   const useModel: typeof import('vue')['useModel']
   const useNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']
   const useNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']
-  const usePagination: typeof import('../../composables/usePagination')['usePagination']
   const usePinia: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['usePinia']
-  const usePosts: typeof import('../../composables/usePosts')['usePosts']
   const usePreviewMode: typeof import('../../node_modules/nuxt/dist/app/composables/preview')['usePreviewMode']
   const useRequestEvent: typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestEvent']
   const useRequestFetch: typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestFetch']
@@ -349,10 +344,7 @@ declare module 'vue' {
     readonly tryUseNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly updateAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']>
-    readonly useApiCategories: UnwrapRef<typeof import('../../composables/useApiCategories')['useApiCategories']>
     readonly useApiFormSubmit: UnwrapRef<typeof import('../../utils/useApiFormSubmit')['useApiFormSubmit']>
-    readonly useApiPosts: UnwrapRef<typeof import('../../composables/useApiPosts')['useApiPosts']>
-    readonly useApiTags: UnwrapRef<typeof import('../../composables/useApiTags')['useApiTags']>
     readonly useAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']>
     readonly useAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
@@ -376,9 +368,7 @@ declare module 'vue' {
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
     readonly useNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']>
-    readonly usePagination: UnwrapRef<typeof import('../../composables/usePagination')['usePagination']>
     readonly usePinia: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['usePinia']>
-    readonly usePosts: UnwrapRef<typeof import('../../composables/usePosts')['usePosts']>
     readonly usePreviewMode: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preview')['usePreviewMode']>
     readonly useRequestEvent: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestEvent']>
     readonly useRequestFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestFetch']>

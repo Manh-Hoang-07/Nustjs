@@ -29,11 +29,6 @@ export { withCtx, withDirectives, withKeys, withMemo, withModifiers, withScopeId
 export { requestIdleCallback, cancelIdleCallback } from '#app/compat/idle-callback';
 export { setInterval } from '#app/compat/interval';
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
-export { useApiCategories } from '../composables/useApiCategories';
-export { useApiPosts } from '../composables/useApiPosts';
-export { useApiTags } from '../composables/useApiTags';
-export { usePagination } from '../composables/usePagination';
-export { usePosts } from '../composables/usePosts';
 export { Auth, authState } from '../utils/auth';
 export { debounce, throttle } from '../utils/debounce';
 export { default as formToFormData } from '../utils/formToFormData';
