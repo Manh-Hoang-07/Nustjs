@@ -113,8 +113,7 @@ class PerformanceMonitor {
   logMetric(name, duration) {
     if (!this.isEnabled) return
     
-    const color = duration > 1000 ? '🔴' : duration > 500 ? '🟡' : '🟢'
-    console.log(`${color} ${name}: ${duration.toFixed(2)}ms`)
+    // Performance measurement completed
   }
 
   // Add observer for performance events
@@ -248,7 +247,6 @@ class PerformanceMonitor {
     if (!this.isEnabled) return
     
     // Send to your analytics service
-    console.log('Performance data:', data)
     
     // Example: Send to Google Analytics
     if (window.gtag) {

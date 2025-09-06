@@ -81,7 +81,6 @@ export const useEnumStore = defineStore('enum', () => {
       
       // Fallback to static enum
       if (STATIC_ENUMS[type]) {
-        console.warn(`Using static enum for ${type} as fallback`)
         enums.value[type] = STATIC_ENUMS[type]
         return STATIC_ENUMS[type]
       }

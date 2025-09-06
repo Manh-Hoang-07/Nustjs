@@ -78,7 +78,6 @@ export function useDataTable(endpoint, options = {}) {
   const fetchData = async (params = {}) => {
     // Prevent multiple simultaneous API calls
     if (loading.value) {
-      console.warn('API call already in progress, skipping...')
       return
     }
     

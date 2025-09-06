@@ -71,12 +71,6 @@ const authStore = useAuthStore();
 // Kiểm tra quyền truy cập - để middleware xử lý
 onMounted(async () => {
   // Middleware sẽ xử lý authentication
-  console.log('Admin layout mounted, auth state:', {
-    isAuthenticated: authStore.isAuthenticated,
-    isAdmin: authStore.isAdmin,
-    user: authStore.user,
-    userRole: authStore.userRole
-  })
 });
 
 // Đặt sidebarOpen mặc định là true

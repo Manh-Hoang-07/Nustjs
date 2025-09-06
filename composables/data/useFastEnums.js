@@ -68,7 +68,6 @@ export function useFastEnums() {
       
       // Fallback to static enum if available
       if (STATIC_ENUMS[type]) {
-        console.warn(`Using static enum for ${type} as fallback`)
         return STATIC_ENUMS[type]
       }
       

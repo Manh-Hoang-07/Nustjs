@@ -61,8 +61,7 @@ api.interceptors.response.use(
     
     // Xử lý lỗi authentication
     if (error.response?.status === 401 || error.response?.status === 403) {
-      // Không cần xóa localStorage nữa, chỉ log
-      console.warn('Authentication error detected:', error.response?.data)
+      // Authentication error detected
     }
     
     return Promise.reject(error)

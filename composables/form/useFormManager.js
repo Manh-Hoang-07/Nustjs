@@ -128,7 +128,6 @@ export default function useFormManager(initialData = {}, options = {}) {
 
   const submit = async (customData = null) => {
     if (!onSubmit) {
-      console.warn('No submit handler provided')
       return
     }
 

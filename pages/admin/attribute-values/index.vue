@@ -162,8 +162,6 @@ const showDeleteModal = ref(false)
 // Fetch data
 onMounted(async () => {
   await fetchData()
-  // Debug: Log dữ liệu để kiểm tra cấu trúc
-  console.log('Attribute values data:', items.value)
 })
 
 // Filter handlers

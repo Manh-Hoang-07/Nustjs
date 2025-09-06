@@ -128,14 +128,7 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="totalPages > 1 || posts.length > perPage" class="mt-8">
-            <Pagination 
-              :current-page="currentPage"
-              :total-pages="totalPages"
-              :total-items="totalRecords"
-              @page-change="handlePageChange"
-            />
-          </div>
+          <Pagination />
           
         </div>
 
@@ -254,8 +247,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useApiPosts } from '../../composables/useApiPosts.js'
+import { usePagination } from '../../composables/usePagination.js'
 import Pagination from '../../components/Core/Navigation/Pagination.vue'
 
 const { 
@@ -271,14 +265,28 @@ const {
   formatExcerpt
 } = useApiPosts()
 
-// State
-const searchQuery = ref('')
-const selectedCategory = ref('')
-const sortBy = ref('latest')
-const currentPage = ref(1)
-const totalPages = ref(1)
-const totalRecords = ref(0)
-const perPage = ref(10)
+// Pagination
+const {
+  searchQuery,
+  selectedCategory,
+  sortBy,
+  currentPage,
+  perPage,
+  totalPages,
+  totalRecords,
+  loading: paginationLoading,
+  data: paginationData,
+  hasPagination,
+  hasData,
+  showPagination,
+  hasFilters,
+  loadData,
+  setData,
+  getApiParams
+} = usePagination({
+  fetchFunction: fetchPosts,
+  autoLoad: true
+})
 
 // Không cần computed filteredPosts nữa vì đã gọi API với parameters
 
@@ -290,50 +298,12 @@ const recentPosts = computed(() => {
   return posts.value.slice(0, 5) // Show 5 recent posts
 })
 
-// Methods
-const loadPosts = async () => {
-  try {
-    const result = await fetchPosts({ 
-      page: currentPage.value,
-      per_page: perPage.value,
-      category_id: selectedCategory.value,
-      search: searchQuery.value,
-      sort: sortBy.value
-    })
-    
-    console.log('API Response:', result)
-    
-    // Cập nhật pagination từ API response
-    if (result && result.meta) {
-      totalPages.value = result.meta.last_page || result.meta.total_pages || 1
-      totalRecords.value = result.meta.total || result.meta.total_count || 0
-      console.log('Using meta data:', result.meta)
-    } else if (result && result.data) {
-      // Fallback nếu không có meta data
-      totalPages.value = Math.ceil((result.data.length || 0) / perPage.value)
-      totalRecords.value = result.data.length || 0
-      console.log('Using fallback calculation')
-    } else {
-      // Fallback cuối cùng
-      totalPages.value = Math.ceil((posts.value.length || 0) / perPage.value)
-      totalRecords.value = posts.value.length || 0
-      console.log('Using posts length fallback')
-    }
-    
-    console.log('Final pagination data:', { 
-      totalPages: totalPages.value, 
-      totalRecords: totalRecords.value,
-      postsLength: posts.value.length 
-    })
-  } catch (err) {
-    console.error('Error loading posts:', err)
+// Watch for pagination data changes
+watch(paginationData, (newData) => {
+  if (newData && newData.length > 0) {
+    posts.value = newData
   }
-}
-
-const handlePageChange = (page) => {
-  currentPage.value = page
-  loadPosts()
-}
+}, { deep: true })
 
 const getCategoryName = (categoryId) => {
   const category = categories.value.find(c => c.id === categoryId)
@@ -342,34 +312,14 @@ const getCategoryName = (categoryId) => {
 
 // formatDate và formatExcerpt đã được import từ useApiPosts composable
 
-// Watchers
-watch([searchQuery, selectedCategory, sortBy], () => {
-  currentPage.value = 1
-  loadPosts()
-}, { deep: true })
-
 onMounted(async () => {
-  // Load posts, categories và tags song song
+  // Load categories và tags song song
   await Promise.all([
-    loadPosts(),
     fetchCategories(),
     fetchTags()
   ])
   
-  // Debug pagination
-  console.log('Initial pagination state:', {
-    currentPage: currentPage.value,
-    totalPages: totalPages.value,
-    totalRecords: totalRecords.value,
-    postsLength: posts.value.length
-  })
-  
-  // Nếu không có pagination data, tạo mock data để test
-  if (totalPages.value <= 1 && posts.value.length > perPage.value) {
-    totalPages.value = Math.ceil(posts.value.length / perPage.value)
-    totalRecords.value = posts.value.length
-    console.log('Created mock pagination data for testing')
-  }
+  // Pagination sẽ tự động load posts
 })
 
 // Xử lý lỗi ảnh

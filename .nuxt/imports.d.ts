@@ -32,6 +32,7 @@ export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
 export { useApiCategories } from '../composables/useApiCategories';
 export { useApiPosts } from '../composables/useApiPosts';
 export { useApiTags } from '../composables/useApiTags';
+export { usePagination } from '../composables/usePagination';
 export { usePosts } from '../composables/usePosts';
 export { Auth, authState } from '../utils/auth';
 export { debounce, throttle } from '../utils/debounce';
