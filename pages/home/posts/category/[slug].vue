@@ -244,7 +244,6 @@ const categorySlug = route.params.slug
 const { 
   posts,
   loading,
-  error,
   fetchPosts,
   formatDate,
   formatExcerpt
@@ -254,13 +253,11 @@ const {
 
 const { 
   categories, 
-  loading: categoriesLoading,
   fetchPopularCategories 
 } = useApiCategories()
 
 const { 
   tags, 
-  loading: tagsLoading,
   fetchPopularTags 
 } = useApiTags()
 

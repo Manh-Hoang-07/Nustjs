@@ -257,7 +257,6 @@ const {
   categories,
   tags,
   loading, 
-  error,
   fetchPosts,
   fetchCategories,
   fetchTags,
@@ -305,10 +304,6 @@ watch(paginationData, (newData) => {
   }
 }, { deep: true })
 
-const getCategoryName = (categoryId) => {
-  const category = categories.value.find(c => c.id === categoryId)
-  return category?.name || 'Không có danh mục'
-}
 
 // formatDate và formatExcerpt đã được import từ useApiPosts composable
 

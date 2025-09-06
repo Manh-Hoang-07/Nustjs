@@ -160,6 +160,7 @@
 </template>
 
 <script setup>
+import { computed, ref } from 'vue'
 import { useUserNavigation } from '../../composables/navigation/useUserNavigation.js'
 
 // Page meta
@@ -186,20 +187,6 @@ const userRole = computed(() => authStore.userRole)
 
 // Breadcrumb cho trang hiện tại
 const breadcrumb = computed(() => getBreadcrumb())
-
-// Handle logout
-const handleLogout = async () => {
-  await authStore.logout()
-  await navigateTo('/auth/login')
-}
-
-// Tìm kiếm sản phẩm
-const searchQuery = ref('')
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    navigateTo(`/home/products?search=${encodeURIComponent(searchQuery.value)}`)
-  }
-}
 
 // Lấy danh mục sản phẩm từ navigation
 const categories = computed(() => {

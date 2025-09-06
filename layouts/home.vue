@@ -223,6 +223,7 @@
 </template>
 
 <script setup>
+import { computed, watch } from 'vue'
 import { useUserNavigation } from '../composables/navigation/useUserNavigation.js'
 
 // Sử dụng auth store
@@ -246,11 +247,6 @@ watch(() => route.path, (newPath) => {
   currentPath.value = newPath
 }, { immediate: true })
 
-// Handle logout
-const handleLogout = async () => {
-  await authStore.logout()
-  await navigateTo('/auth/login')
-}
 </script>
 
 <style scoped>
