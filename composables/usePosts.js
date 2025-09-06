@@ -150,6 +150,83 @@ const mockPosts = ref([
     status: 'published'
   },
   {
+    id: 8,
+    title: 'Responsive Design với CSS Media Queries',
+    slug: 'responsive-design-voi-css-media-queries',
+    excerpt: 'Hướng dẫn chi tiết về responsive design sử dụng CSS Media Queries để tạo ra website tương thích với mọi thiết bị.',
+    content: `
+      <h2>Giới thiệu về Responsive Design</h2>
+      <p>Responsive design là phương pháp thiết kế web cho phép website tự động điều chỉnh layout và nội dung để phù hợp với kích thước màn hình khác nhau.</p>
+      
+      <h3>CSS Media Queries</h3>
+      <p>Media queries là công cụ chính để tạo responsive design. Chúng cho phép áp dụng CSS dựa trên các đặc điểm của thiết bị.</p>
+      
+      <h3>Breakpoints phổ biến</h3>
+      <ul>
+        <li>Mobile: 320px - 768px</li>
+        <li>Tablet: 768px - 1024px</li>
+        <li>Desktop: 1024px trở lên</li>
+      </ul>
+    `,
+    featured_image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=400&fit=crop',
+    category_id: 1,
+    author: {
+      id: 8,
+      name: 'Lê Thị H',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face'
+    },
+    tags: [
+      { id: 10, name: 'CSS', slug: 'css' },
+      { id: 24, name: 'Responsive', slug: 'responsive' },
+      { id: 25, name: 'Media Queries', slug: 'media-queries' },
+      { id: 13, name: 'Layout', slug: 'layout' }
+    ],
+    created_at: '2024-01-08T14:20:00Z',
+    updated_at: '2024-01-08T14:20:00Z',
+    read_time: '6 phút đọc',
+    views: 1200,
+    likes: 89,
+    status: 'published'
+  },
+  {
+    id: 9,
+    title: 'JavaScript ES6+ Features cho Frontend Developer',
+    slug: 'javascript-es6-features-cho-frontend-developer',
+    excerpt: 'Khám phá các tính năng mới của JavaScript ES6+ giúp code frontend ngắn gọn, dễ đọc và hiệu quả hơn.',
+    content: `
+      <h2>Giới thiệu về ES6+</h2>
+      <p>ES6 (ECMAScript 2015) và các phiên bản sau đó đã mang đến nhiều tính năng mới giúp JavaScript trở nên mạnh mẽ và dễ sử dụng hơn.</p>
+      
+      <h3>Arrow Functions</h3>
+      <p>Arrow functions cung cấp cú pháp ngắn gọn hơn cho việc viết functions và tự động bind context.</p>
+      
+      <h3>Destructuring</h3>
+      <p>Destructuring cho phép trích xuất dữ liệu từ arrays và objects một cách dễ dàng.</p>
+      
+      <h3>Template Literals</h3>
+      <p>Template literals giúp tạo strings với biến và expressions một cách trực quan hơn.</p>
+    `,
+    featured_image: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?w=800&h=400&fit=crop',
+    category_id: 1,
+    author: {
+      id: 9,
+      name: 'Trần Văn I',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face'
+    },
+    tags: [
+      { id: 2, name: 'JavaScript', slug: 'javascript' },
+      { id: 26, name: 'ES6', slug: 'es6' },
+      { id: 27, name: 'Modern JavaScript', slug: 'modern-javascript' },
+      { id: 3, name: 'Frontend', slug: 'frontend' }
+    ],
+    created_at: '2024-01-07T10:15:00Z',
+    updated_at: '2024-01-07T10:15:00Z',
+    read_time: '11 phút đọc',
+    views: 980,
+    likes: 67,
+    status: 'published'
+  },
+  {
     id: 5,
     title: 'TypeScript: Từ cơ bản đến nâng cao',
     slug: 'typescript-tu-co-ban-den-nang-cao',
@@ -227,6 +304,50 @@ const mockPosts = ref([
     views: 750,
     likes: 45,
     status: 'published'
+  },
+  {
+    id: 2078,
+    title: 'Nobis Asperiores Fuga Eum Ut - Hướng dẫn phát triển web hiện đại',
+    slug: 'nobis-asperiores-fuga-eum-ut-2078',
+    excerpt: 'Khám phá những xu hướng mới nhất trong phát triển web, từ responsive design đến progressive web apps và microservices.',
+    content: `
+      <h2>Giới thiệu về phát triển web hiện đại</h2>
+      <p>Trong thời đại công nghệ phát triển nhanh chóng, việc nắm bắt các xu hướng mới trong phát triển web là vô cùng quan trọng. Bài viết này sẽ giúp bạn cập nhật những kiến thức mới nhất.</p>
+      
+      <h3>Responsive Design</h3>
+      <p>Responsive design không còn là một lựa chọn mà là một yêu cầu bắt buộc. Với sự đa dạng của các thiết bị, website cần phải hoạt động tốt trên mọi kích thước màn hình.</p>
+      
+      <h3>Progressive Web Apps (PWA)</h3>
+      <p>PWA kết hợp tốt nhất của web và mobile apps, mang lại trải nghiệm người dùng tuyệt vời với khả năng hoạt động offline và push notifications.</p>
+      
+      <h3>Microservices Architecture</h3>
+      <p>Kiến trúc microservices giúp ứng dụng dễ dàng scale và maintain hơn, đặc biệt phù hợp với các dự án lớn và phức tạp.</p>
+      
+      <h3>Performance Optimization</h3>
+      <p>Tối ưu hóa hiệu suất là chìa khóa để giữ chân người dùng. Core Web Vitals và các metrics khác đóng vai trò quan trọng trong SEO và UX.</p>
+      
+      <h3>Kết luận</h3>
+      <p>Phát triển web hiện đại đòi hỏi sự cập nhật liên tục và nắm bắt xu hướng. Hãy luôn học hỏi và thử nghiệm những công nghệ mới để tạo ra những sản phẩm tốt nhất.</p>
+    `,
+    featured_image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop',
+    category_id: 1,
+    author: {
+      id: 7,
+      name: 'Nguyễn Văn G',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face'
+    },
+    tags: [
+      { id: 20, name: 'Web Development', slug: 'web-development' },
+      { id: 21, name: 'Modern Web', slug: 'modern-web' },
+      { id: 22, name: 'PWA', slug: 'pwa' },
+      { id: 23, name: 'Performance', slug: 'performance' }
+    ],
+    created_at: '2024-01-09T15:20:00Z',
+    updated_at: '2024-01-09T15:20:00Z',
+    read_time: '15 phút đọc',
+    views: 2100,
+    likes: 156,
+    status: 'published'
   }
 ])
 
@@ -236,7 +357,7 @@ const mockCategories = ref([
     name: 'Frontend Development',
     slug: 'frontend-development',
     description: 'Các bài viết về phát triển giao diện người dùng',
-    post_count: 2,
+    post_count: 5,
     created_at: '2024-01-01T00:00:00Z'
   },
   {
@@ -310,6 +431,11 @@ const fetchPublicPosts = async (options = {}) => {
       )
     }
     
+    // Exclude specific post
+    if (options.exclude) {
+      filteredPosts = filteredPosts.filter(post => post.id !== options.exclude)
+    }
+    
     // Filter by tag
     if (options.tag) {
       filteredPosts = filteredPosts.filter(post => 
@@ -371,14 +497,15 @@ const fetchPostBySlug = async (slug) => {
     const post = mockPosts.value.find(p => p.slug === slug || p.id === slug)
     
     if (!post) {
-      throw new Error('Bài viết không tồn tại')
+      error.value = 'Bài viết không tồn tại'
+      return null
     }
     
     return post
   } catch (err) {
     error.value = err.message || 'Không thể tải bài viết'
     console.error('Error fetching post:', err)
-    throw err
+    return null
   } finally {
     loading.value = false
   }

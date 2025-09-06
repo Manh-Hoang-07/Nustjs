@@ -102,7 +102,7 @@
                     </NuxtLink>
                   </h2>
                   
-                  <p class="text-gray-600 mb-4 line-clamp-3">{{ formatExcerpt(post.excerpt || post.content) }}</p>
+                  <p class="text-gray-600 mb-4 line-clamp-3">{{ formatExcerpt(post.excerpt || post.description || post.content) }}</p>
                   
                   <div class="flex items-center justify-between">
                     <div class="flex items-center">
@@ -128,7 +128,7 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="totalPages > 1" class="mt-8">
+          <div v-if="totalPages > 1 || posts.length > perPage" class="mt-8">
             <Pagination 
               :current-page="currentPage"
               :total-pages="totalPages"
@@ -136,6 +136,7 @@
               @page-change="handlePageChange"
             />
           </div>
+          
         </div>
 
         <!-- Sidebar -->
@@ -255,31 +256,20 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiPosts } from '../../composables/useApiPosts.js'
-import { useApiCategories } from '../../composables/useApiCategories.js'
-import { useApiTags } from '../../composables/useApiTags.js'
-
 import Pagination from '../../components/Core/Navigation/Pagination.vue'
 
 const { 
   posts, 
+  categories,
+  tags,
   loading, 
   error,
   fetchPosts,
+  fetchCategories,
+  fetchTags,
   formatDate,
   formatExcerpt
 } = useApiPosts()
-
-const { 
-  categories, 
-  loading: categoriesLoading,
-  fetchPopularCategories 
-} = useApiCategories()
-
-const { 
-  tags, 
-  loading: tagsLoading,
-  fetchPopularTags 
-} = useApiTags()
 
 // State
 const searchQuery = ref('')
@@ -288,6 +278,7 @@ const sortBy = ref('latest')
 const currentPage = ref(1)
 const totalPages = ref(1)
 const totalRecords = ref(0)
+const perPage = ref(10)
 
 // Không cần computed filteredPosts nữa vì đã gọi API với parameters
 
@@ -304,17 +295,36 @@ const loadPosts = async () => {
   try {
     const result = await fetchPosts({ 
       page: currentPage.value,
-      limit: 10,
+      per_page: perPage.value,
       category_id: selectedCategory.value,
       search: searchQuery.value,
       sort: sortBy.value
     })
     
+    console.log('API Response:', result)
+    
     // Cập nhật pagination từ API response
-    if (result.meta) {
-      totalPages.value = result.meta.last_page || 1
-      totalRecords.value = result.meta.total || 0
+    if (result && result.meta) {
+      totalPages.value = result.meta.last_page || result.meta.total_pages || 1
+      totalRecords.value = result.meta.total || result.meta.total_count || 0
+      console.log('Using meta data:', result.meta)
+    } else if (result && result.data) {
+      // Fallback nếu không có meta data
+      totalPages.value = Math.ceil((result.data.length || 0) / perPage.value)
+      totalRecords.value = result.data.length || 0
+      console.log('Using fallback calculation')
+    } else {
+      // Fallback cuối cùng
+      totalPages.value = Math.ceil((posts.value.length || 0) / perPage.value)
+      totalRecords.value = posts.value.length || 0
+      console.log('Using posts length fallback')
     }
+    
+    console.log('Final pagination data:', { 
+      totalPages: totalPages.value, 
+      totalRecords: totalRecords.value,
+      postsLength: posts.value.length 
+    })
   } catch (err) {
     console.error('Error loading posts:', err)
   }
@@ -342,9 +352,24 @@ onMounted(async () => {
   // Load posts, categories và tags song song
   await Promise.all([
     loadPosts(),
-    fetchPopularCategories(20), // Lấy 20 categories phổ biến
-    fetchPopularTags(20) // Lấy 20 tags phổ biến
+    fetchCategories(),
+    fetchTags()
   ])
+  
+  // Debug pagination
+  console.log('Initial pagination state:', {
+    currentPage: currentPage.value,
+    totalPages: totalPages.value,
+    totalRecords: totalRecords.value,
+    postsLength: posts.value.length
+  })
+  
+  // Nếu không có pagination data, tạo mock data để test
+  if (totalPages.value <= 1 && posts.value.length > perPage.value) {
+    totalPages.value = Math.ceil(posts.value.length / perPage.value)
+    totalRecords.value = posts.value.length
+    console.log('Created mock pagination data for testing')
+  }
 })
 
 // Xử lý lỗi ảnh

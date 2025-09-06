@@ -9,20 +9,42 @@
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="min-h-screen flex items-center justify-center">
-      <div class="text-center">
-        <svg class="mx-auto h-12 w-12 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-        </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">Không thể tải bài viết</h3>
-        <p class="mt-1 text-sm text-gray-500">{{ error }}</p>
-        <div class="mt-6">
-          <NuxtLink 
-            to="/home/posts"
-            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Quay lại danh sách
-          </NuxtLink>
+    <div v-else-if="error" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+      <div class="max-w-md w-full mx-auto text-center">
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+          <!-- Error Icon -->
+          <div class="w-20 h-20 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          
+          <!-- Error Message -->
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Không thể tải bài viết</h3>
+          <p class="text-gray-600 mb-6">{{ error }}</p>
+          
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <NuxtLink 
+              to="/home/posts"
+              class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Quay lại danh sách
+            </NuxtLink>
+            
+            <button 
+              @click="loadPost"
+              class="inline-flex items-center px-6 py-3 border border-gray-300 text-sm font-semibold rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-md"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Thử lại
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -149,39 +171,62 @@
       </div>
 
       <!-- Related Posts -->
-      <div v-if="relatedPosts.length > 0" class="bg-gray-50 py-12">
+      <div class="bg-gray-50 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Bài viết liên quan</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Có bài viết liên quan -->
+          <div v-if="relatedPosts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <article 
               v-for="relatedPost in relatedPosts" 
               :key="relatedPost.id"
-              class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-200"
+              class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 transform hover:scale-105"
             >
               <img 
-                :src="relatedPost.featured_image || '/default.svg'" 
-                :alt="relatedPost.title"
+                :src="relatedPost.featured_image || relatedPost.image || '/default.svg'" 
+                :alt="relatedPost.title || relatedPost.name || 'Bài viết'"
                 class="w-full h-48 object-cover"
                 @error="handleImageError"
               >
               <div class="p-6">
                 <div class="flex items-center text-sm text-gray-500 mb-2">
                   <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-3">
-                    {{ getCategoryName(relatedPost.category_id) }}
+                    {{ getCategoryName(relatedPost.category_id) || relatedPost.category?.name || 'Không có danh mục' }}
                   </span>
-                  <time :datetime="relatedPost.created_at">{{ formatDate(relatedPost.created_at) }}</time>
+                  <time :datetime="relatedPost.created_at || relatedPost.published_at">
+                    {{ formatDate(relatedPost.created_at || relatedPost.published_at) }}
+                  </time>
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                   <NuxtLink 
-                    :to="`/posts/${relatedPost.slug || relatedPost.id}`"
+                    :to="`/home/posts/${relatedPost.slug || relatedPost.id}`"
                     class="hover:text-blue-600 transition-colors"
                   >
-                    {{ relatedPost.title }}
+                    {{ relatedPost.title || relatedPost.name || 'Không có tiêu đề' }}
                   </NuxtLink>
                 </h3>
-                <p class="text-gray-600 line-clamp-3">{{ relatedPost.excerpt }}</p>
+                <p class="text-gray-600 line-clamp-3">
+                  {{ relatedPost.excerpt || relatedPost.description || (relatedPost.content ? relatedPost.content.substring(0, 150) + '...' : '') || 'Không có mô tả' }}
+                </p>
               </div>
             </article>
+          </div>
+          
+          <!-- Không có bài viết liên quan -->
+          <div v-else class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có bài viết liên quan</h3>
+            <p class="text-gray-600 mb-6">Hiện tại chưa có bài viết nào khác trong danh mục này.</p>
+            <NuxtLink 
+              to="/home/posts"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+            >
+              Xem tất cả bài viết
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -192,7 +237,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { usePosts } from '../../composables/usePosts.js'
+import { useApiPosts } from '../../composables/useApiPosts.js'
 import HtmlContent from '../../components/Core/Content/HtmlContent.vue'
 
 const route = useRoute()
@@ -202,9 +247,12 @@ const {
   loading, 
   error,
   fetchPostBySlug, 
-  fetchPublicPosts,
-  fetchCategories 
-} = usePosts()
+  fetchPosts,
+  fetchCategories,
+  fetchRelatedPosts,
+  formatDate,
+  formatExcerpt
+} = useApiPosts()
 
 // State
 const post = ref(null)
@@ -219,7 +267,14 @@ const postSlug = computed(() => route.params.slug)
 const loadPost = async () => {
   try {
     // Try to fetch by slug first, then by ID if slug fails
-    post.value = await fetchPostBySlug(postSlug.value)
+    const fetchedPost = await fetchPostBySlug(postSlug.value)
+    
+    if (!fetchedPost) {
+      error.value = 'Bài viết không tồn tại'
+      return
+    }
+    
+    post.value = fetchedPost
     
     // Load related posts
     await loadRelatedPosts()
@@ -234,20 +289,25 @@ const loadPost = async () => {
 
 const loadRelatedPosts = async () => {
   try {
-    const response = await fetchPublicPosts({ 
-      category: post.value.category_id,
-      limit: 3,
-      exclude: post.value.id
-    })
-    relatedPosts.value = response.slice(0, 3)
+    if (!post.value) return
+    
+    // Lấy bài viết liên quan từ API
+    const related = await fetchRelatedPosts(
+      post.value.id, 
+      post.value.category_id, 
+      3
+    )
+    
+    relatedPosts.value = related
   } catch (err) {
     console.error('Error loading related posts:', err)
+    relatedPosts.value = []
   }
 }
 
 const loadNavigationPosts = async () => {
   try {
-    const allPosts = await fetchPublicPosts({ limit: 100 })
+    const allPosts = await fetchPosts({ limit: 100 })
     const currentIndex = allPosts.findIndex(p => p.id === post.value.id)
     
     if (currentIndex > 0) {
@@ -265,14 +325,6 @@ const loadNavigationPosts = async () => {
 const getCategoryName = (categoryId) => {
   const category = categories.value.find(c => c.id === categoryId)
   return category?.name || 'Không có danh mục'
-}
-
-const formatDate = (dateString) => {
-  return new Intl.DateTimeFormat('vi-VN', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  }).format(new Date(dateString))
 }
 
 onMounted(async () => {
