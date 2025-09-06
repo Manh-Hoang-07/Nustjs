@@ -1,6 +1,13 @@
 import { ref, watch, onMounted } from 'vue'
 import { useApiClient } from './useApiClient.js'
 
+/**
+ * Composable để fetch dữ liệu từ API một cách đơn giản, không cache
+ * @param {string} url - URL endpoint
+ * @param {Object} params - Query parameters
+ * @param {boolean} immediate - Có fetch ngay lập tức không
+ * @returns {Object} - { data, loading, error, fetchData }
+ */
 export default function useApiFetch(url, params = ref({}), immediate = true) {
   const api = useApiClient()
   const data = ref(null)
