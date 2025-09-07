@@ -235,7 +235,7 @@ function fetchEnums() {
 
 async function loadRoles() {
   try {
-    const response = await fetch(endpoints.roles.list)
+    const response = await apiClient.get(endpoints.roles.list)
     const data = await response.json()
     if (data.success) {
       roleEnums.value = data.data

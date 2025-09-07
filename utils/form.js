@@ -1,5 +1,5 @@
 import { reactive, computed } from 'vue'
-import axios from 'axios'
+import apiClient from '../api/apiClient'
 
 // ===== FORM TO FORMDATA =====
 export function formToFormData(form, options = {}) {
@@ -125,7 +125,7 @@ export function useApiFormSubmit({ endpoint, emit, onClose, eventName = 'created
         ? formToFormData(form, { method })
         : formToFormData(form)
 
-      const response = await axios.post(endpoint, dataToSend)
+      const response = await apiClient.post(endpoint, dataToSend)
       emit(eventName)
       if (onClose) onClose()
       return response
