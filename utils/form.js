@@ -1,4 +1,37 @@
-export default function validateForm(form, rules) {
+import { reactive, computed } from 'vue'
+import axios from 'axios'
+
+// ===== FORM TO FORMDATA =====
+export function formToFormData(form, options = {}) {
+  const submitData = new FormData()
+  // Nếu là update (PUT/PATCH), thêm _method vào FormData
+  if (options.method && (options.method.toLowerCase() === 'put' || options.method.toLowerCase() === 'patch')) {
+    submitData.append('_method', options.method.toUpperCase())
+  }
+  for (const key in form) {
+    if (options.exclude && options.exclude.includes(key)) continue
+
+    // Nếu là boolean true cho remove_xxx, append 1
+    if (key.startsWith('remove_') && form[key]) {
+      submitData.append(key, 1)
+      continue
+    }
+    // Nếu giá trị null/undefined, append chuỗi rỗng
+    if (form[key] === null || form[key] === undefined) {
+      submitData.append(key, '')
+      continue
+    }
+    // Nếu là chuỗi rỗng, có thể bỏ qua (tùy chọn)
+    if (form[key] === '' && options.skipEmpty) continue
+
+    // Mặc định: append cả string (đường dẫn) hoặc file object
+    submitData.append(key, form[key])
+  }
+  return submitData
+}
+
+// ===== FORM VALIDATION =====
+export function validateForm(form, rules) {
   const newErrors = {}
 
   for (const field in rules) {
@@ -68,4 +101,47 @@ export default function validateForm(form, rules) {
   }
 
   return newErrors
-} 
+}
+
+// ===== FORM DEFAULTS =====
+export function useFormDefaults(props, objectName, fallback = {}) {
+  return computed(() => {
+    const obj = props[objectName] || {}
+    return { ...fallback, ...obj }
+  })
+}
+
+// ===== API FORM SUBMIT =====
+export function useApiFormSubmit({ endpoint, emit, onClose, eventName = 'created', method = 'post' }) {
+  const apiErrors = reactive({})
+
+  async function submit(form) {
+    try {
+      // Xóa lỗi cũ
+      Object.keys(apiErrors).forEach(key => delete apiErrors[key])
+
+      // Luôn tạo mới FormData và append _method nếu là update
+      const dataToSend = (method === 'put' || method === 'patch')
+        ? formToFormData(form, { method })
+        : formToFormData(form)
+
+      const response = await axios.post(endpoint, dataToSend)
+      emit(eventName)
+      if (onClose) onClose()
+      return response
+    } catch (error) {
+      if (error.response?.status === 422 && error.response?.data?.errors) {
+        const errors = error.response.data.errors
+        for (const field in errors) {
+          apiErrors[field] = Array.isArray(errors[field]) ? errors[field][0] : errors[field]
+        }
+      }
+      throw error
+    }
+  }
+
+  return { apiErrors, submit }
+}
+
+// Default export for backward compatibility
+export default formToFormData

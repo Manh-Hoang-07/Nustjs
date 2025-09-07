@@ -164,8 +164,7 @@ import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
 import endpoints from '../../../api/endpoints.js'
 import { useDataTable } from '../../../composables/data/useDataTable'
 import { useToast } from '../../../composables/ui/useToast'
-import { formatDate } from '../../../utils/formatDate'
-import { formatCurrency } from '../../../utils/formatCurrency.js'
+import { formatDate, formatCurrency } from '../../../utils/formatters.js'
 
 // Lazy load all components
 const ProductFilter = defineAsyncComponent(() => import('./filter.vue'))

@@ -223,7 +223,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
 import { useDataTable } from '../../../composables/data/useDataTable.js'
-import { formatDate } from '../../../utils/formatDate.js'
+import { formatDate } from '../../../utils/formatters.js'
 
 import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 

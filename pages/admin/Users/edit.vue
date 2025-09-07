@@ -18,7 +18,7 @@
 import UserForm from './form.vue'
 import endpoints from '../../../api/endpoints.js'
 import { ref, watch } from 'vue'
-import { useApiFormSubmit } from '../../../utils/useApiFormSubmit.js'
+import { useApiFormSubmit } from '../../../utils/form.js'
 import apiClient from '../../../api/apiClient.js'
 
 const props = defineProps({

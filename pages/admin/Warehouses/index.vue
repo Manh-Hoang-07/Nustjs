@@ -136,7 +136,7 @@ import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import Actions from '../../../components/Core/Actions/Actions.vue'
 import { getEnumLabel } from '../../../constants/enums.js'
 import endpoints from '../../../api/endpoints.js'
-import { formatDate } from '../../../utils/formatDate.js'
+import { formatDate } from '../../../utils/formatters.js'
 
 // Lazy load components
 const CreateWarehouse = defineAsyncComponent(() => import('./create.vue'))

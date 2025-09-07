@@ -39,7 +39,7 @@ import Modal from '../../../components/Core/Modal/Modal.vue'
 import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
 import MultipleSelect from '../../../components/Core/Select/MultipleSelect.vue'
 import endpoints from '../../../api/endpoints.js'
-import { useApiFormSubmit } from '../../../utils/useApiFormSubmit.js'
+import { useApiFormSubmit } from '../../../utils/form.js'
 import apiClient from '../../../api/apiClient.js'
 
 const props = defineProps({

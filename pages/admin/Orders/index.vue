@@ -127,7 +127,7 @@ import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import Actions from '../../../components/Core/Actions/Actions.vue'
 import endpoints from '../../../api/endpoints.js'
-import { formatDate } from '../../../utils/formatDate.js'
+import { formatDate } from '../../../utils/formatters.js'
 
 // Lazy load components
 const CreateOrder = defineAsyncComponent(() => import('./create.vue'))

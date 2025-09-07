@@ -139,7 +139,6 @@ import { ref, computed, reactive, watch, onMounted } from 'vue'
 import Modal from '../../../components/Core/Modal/Modal.vue'
 import endpoints from '../../../api/endpoints.js'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
-import { useApiCache } from '../../../composables/api/useApiCache.js'
 
 const api = useApiClient()
 const { $loadMultiselect } = useNuxtApp()
@@ -179,7 +178,9 @@ const statusOptions = computed(() => {
   const options = {}
   if (Array.isArray(props.statusEnums)) {
     props.statusEnums.forEach(enumItem => {
-      options[enumItem.value] = enumItem.label
+      if (enumItem && enumItem.value !== undefined) {
+        options[enumItem.value] = enumItem.label
+      }
     })
   }
   return options
@@ -187,6 +188,9 @@ const statusOptions = computed(() => {
 
 // Permission options cho multiselect
 const permissionOptions = computed(() => {
+  if (!permissions.value || !Array.isArray(permissions.value)) {
+    return []
+  }
   return permissions.value.map(permission => ({
     value: permission.id,
     label: permission.display_name || permission.name
@@ -208,15 +212,9 @@ const fetchParentOptions = async () => {
 const permissions = ref([])
 const loadingPermissions = ref(false)
 const fetchPermissions = async () => {
-  const { cachedApiCall } = useApiCache()
-  
   loadingPermissions.value = true
   try {
-    const response = await cachedApiCall(
-      'permissions-list',
-      () => api.get(endpoints.permissions.list, { params: { per_page: 1000 } }),
-      false
-    )
+    const response = await api.get(endpoints.permissions.list, { params: { per_page: 1000 } })
     permissions.value = response.data.data || []
   } catch (error) {
     
@@ -266,10 +264,15 @@ watch(() => props.role, (newVal) => {
     // Xử lý permissions
     if (newVal.permissions && Array.isArray(newVal.permissions)) {
       // Chuyển đổi permissions thành array of objects cho multiselect
-      formData.permissions = newVal.permissions.map(p => ({
-        value: p.id || p,
-        label: p.display_name || p.name
-      }))
+      formData.permissions = newVal.permissions.map(p => {
+        if (typeof p === 'object' && p !== null) {
+          return {
+            value: p.id || p,
+            label: p.display_name || p.name
+          }
+        }
+        return { value: p, label: p }
+      })
     } else {
       formData.permissions = []
     }

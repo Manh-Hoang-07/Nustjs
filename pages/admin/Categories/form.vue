@@ -67,9 +67,8 @@ import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
 import FormField from '../../../components/Core/Form/FormField.vue'
 import endpoints from '../../../api/endpoints.js'
 
-import { useFormDefaults } from '../../../utils/useFormDefaults.js'
-import { useUrl } from '../../../utils/useUrl.js'
-import formToFormData from '../../../utils/formToFormData.js'
+import { useFormDefaults } from '../../../utils/form.js'
+import { formToFormData } from '../../../utils/form.js'
 import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
 import CKEditorUltimate from '../../../components/Core/Content/CKEditorUltimate.vue'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
@@ -158,6 +157,6 @@ const statusOptions = computed(() =>
     label: opt.label
   }))
 )
-const imageUrl = useUrl(props, 'category', 'image')
+const imageUrl = computed(() => props.category?.image || null)
 </script> 
 

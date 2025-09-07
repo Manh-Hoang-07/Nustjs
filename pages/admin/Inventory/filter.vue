@@ -94,7 +94,7 @@
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
 import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
-import { debounce } from '../../../utils/debounce.js'
+import { debounce } from '../../../utils/optimization.js'
 import { getEnumSync } from '../../../constants/enums.js'
 
 const props = defineProps({

@@ -229,7 +229,7 @@ import VariantForm from './variant-form.vue'
 import ImageForm from './image-form.vue'
 import endpoints from '../../../api/endpoints.js'
 
-import { formatCurrency } from '../../../utils/formatCurrency.js'
+import { formatCurrency } from '../../../utils/formatters.js'
 import { getEnumSync } from '../../../constants/enums.js'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
 

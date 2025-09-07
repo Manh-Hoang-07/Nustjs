@@ -57,9 +57,8 @@ import { ref, computed, watch } from 'vue'
 import Modal from '../../../components/Core/Modal/Modal.vue'
 import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
 import FormField from '../../../components/Core/Form/FormField.vue'
-import { useFormDefaults } from '../../../utils/useFormDefaults.js'
-import { useUrl } from '../../../utils/useUrl.js'
-import formToFormData from '../../../utils/formToFormData.js'
+import { useFormDefaults } from '../../../utils/form.js'
+import { formToFormData } from '../../../utils/form.js'
 import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
 
 const props = defineProps({
@@ -92,7 +91,7 @@ const defaultValues = useFormDefaults(props, 'brand', {
   image: null,
   remove_image: false
 })
-const imageUrl = useUrl(props, 'brand', 'image')
+const imageUrl = computed(() => props.brand?.image || null)
 const validationRules = computed(() => ({
   name: [
     { required: 'Tên thương hiệu là bắt buộc.' },

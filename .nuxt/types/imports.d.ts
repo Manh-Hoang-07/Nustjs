@@ -2,7 +2,7 @@
 export {}
 declare global {
   const Auth: typeof import('../../utils/auth')['Auth']
-  const PerformancePlugin: typeof import('../../utils/performance')['PerformancePlugin']
+  const PerformancePlugin: typeof import('../../utils/optimization')['PerformancePlugin']
   const abortNavigation: typeof import('../../node_modules/nuxt/dist/app/composables/router')['abortNavigation']
   const acceptHMRUpdate: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['acceptHMRUpdate']
   const addRouteMiddleware: typeof import('../../node_modules/nuxt/dist/app/composables/router')['addRouteMiddleware']
@@ -12,11 +12,11 @@ declare global {
   const clearError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['clearError']
   const clearNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['clearNuxtData']
   const clearNuxtState: typeof import('../../node_modules/nuxt/dist/app/composables/state')['clearNuxtState']
-  const compressImage: typeof import('../../utils/imageOptimization')['compressImage']
+  const compressImage: typeof import('../../utils/optimization')['compressImage']
   const computed: typeof import('vue')['computed']
   const createError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['createError']
   const customRef: typeof import('vue')['customRef']
-  const debounce: typeof import('../../utils/debounce')['debounce']
+  const debounce: typeof import('../../utils/optimization')['debounce']
   const defineAppConfig: typeof import('../../node_modules/nuxt/dist/app/nuxt')['defineAppConfig']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
@@ -32,26 +32,28 @@ declare global {
   const defineStore: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['defineStore']
   const effect: typeof import('vue')['effect']
   const effectScope: typeof import('vue')['effectScope']
-  const formToFormData: typeof import('../../utils/formToFormData')['default']
-  const formatCurrency: typeof import('../../utils/formatCurrency')['default']
-  const formatDate: typeof import('../../utils/formatDate')['formatDate']
-  const formatNumber: typeof import('../../utils/formatCurrency')['formatNumber']
-  const generatePlaceholder: typeof import('../../utils/imageOptimization')['generatePlaceholder']
-  const generateSizes: typeof import('../../utils/imageOptimization')['generateSizes']
-  const generateSrcSet: typeof import('../../utils/imageOptimization')['generateSrcSet']
+  const form: typeof import('../../utils/form')['default']
+  const formToFormData: typeof import('../../utils/form')['formToFormData']
+  const formatCurrency: typeof import('../../utils/formatters')['formatCurrency']
+  const formatDate: typeof import('../../utils/formatters')['formatDate']
+  const formatNumber: typeof import('../../utils/formatters')['formatNumber']
+  const formatters: typeof import('../../utils/formatters')['default']
+  const generatePlaceholder: typeof import('../../utils/optimization')['generatePlaceholder']
+  const generateSizes: typeof import('../../utils/optimization')['generateSizes']
+  const generateSrcSet: typeof import('../../utils/optimization')['generateSrcSet']
   const getAppManifest: typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
-  const getDominantColor: typeof import('../../utils/imageOptimization')['getDominantColor']
-  const getImageDimensions: typeof import('../../utils/imageOptimization')['getImageDimensions']
-  const getPerformanceMetrics: typeof import('../../utils/performance')['getPerformanceMetrics']
-  const getPerformanceReport: typeof import('../../utils/performance')['getPerformanceReport']
+  const getDominantColor: typeof import('../../utils/optimization')['getDominantColor']
+  const getImageDimensions: typeof import('../../utils/optimization')['getImageDimensions']
+  const getPerformanceMetrics: typeof import('../../utils/optimization')['getPerformanceMetrics']
+  const getPerformanceReport: typeof import('../../utils/optimization')['getPerformanceReport']
   const getRouteRules: typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getRouteRules']
   const h: typeof import('vue')['h']
   const hasInjectionContext: typeof import('vue')['hasInjectionContext']
   const inject: typeof import('vue')['inject']
   const injectHead: typeof import('../../node_modules/nuxt/dist/app/composables/head')['injectHead']
-  const isImageLoaded: typeof import('../../utils/imageOptimization')['isImageLoaded']
+  const isImageLoaded: typeof import('../../utils/optimization')['isImageLoaded']
   const isNuxtError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['isNuxtError']
   const isPrerendered: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['isPrerendered']
   const isProxy: typeof import('vue')['isProxy']
@@ -61,12 +63,12 @@ declare global {
   const isShallow: typeof import('vue')['isShallow']
   const isVue2: typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue2']
   const isVue3: typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue3']
-  const lazyLoadImage: typeof import('../../utils/imageOptimization')['lazyLoadImage']
+  const lazyLoadImage: typeof import('../../utils/optimization')['lazyLoadImage']
   const loadPayload: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['loadPayload']
   const markRaw: typeof import('vue')['markRaw']
-  const measureApiCall: typeof import('../../utils/performance')['measureApiCall']
-  const measureComponentRender: typeof import('../../utils/performance')['measureComponentRender']
-  const measureTime: typeof import('../../utils/performance')['measureTime']
+  const measureApiCall: typeof import('../../utils/optimization')['measureApiCall']
+  const measureComponentRender: typeof import('../../utils/optimization')['measureComponentRender']
+  const measureTime: typeof import('../../utils/optimization')['measureTime']
   const mergeModels: typeof import('vue')['mergeModels']
   const navigateTo: typeof import('../../node_modules/nuxt/dist/app/composables/router')['navigateTo']
   const nextTick: typeof import('vue')['nextTick']
@@ -88,12 +90,12 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
-  const optimizeImageUrl: typeof import('../../utils/imageOptimization')['optimizeImageUrl']
-  const performance: typeof import('../../utils/performance')['default']
+  const optimization: typeof import('../../utils/optimization')['default']
+  const optimizeImageUrl: typeof import('../../utils/optimization')['optimizeImageUrl']
   const prefetchComponents: typeof import('../../node_modules/nuxt/dist/app/composables/preload')['prefetchComponents']
   const preloadComponents: typeof import('../../node_modules/nuxt/dist/app/composables/preload')['preloadComponents']
-  const preloadImage: typeof import('../../utils/imageOptimization')['preloadImage']
-  const preloadImages: typeof import('../../utils/imageOptimization')['preloadImages']
+  const preloadImage: typeof import('../../utils/optimization')['preloadImage']
+  const preloadImages: typeof import('../../utils/optimization')['preloadImages']
   const preloadPayload: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['preloadPayload']
   const preloadRouteComponents: typeof import('../../node_modules/nuxt/dist/app/composables/preload')['preloadRouteComponents']
   const prerenderRoutes: typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['prerenderRoutes']
@@ -115,7 +117,7 @@ declare global {
   const shallowRef: typeof import('vue')['shallowRef']
   const showError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['showError']
   const storeToRefs: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['storeToRefs']
-  const throttle: typeof import('../../utils/debounce')['throttle']
+  const throttle: typeof import('../../utils/optimization')['throttle']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
@@ -124,7 +126,7 @@ declare global {
   const tryUseNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']
   const unref: typeof import('vue')['unref']
   const updateAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']
-  const useApiFormSubmit: typeof import('../../utils/useApiFormSubmit')['useApiFormSubmit']
+  const useApiFormSubmit: typeof import('../../utils/form')['useApiFormSubmit']
   const useAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']
   const useAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']
   const useAttrs: typeof import('vue')['useAttrs']
@@ -136,7 +138,7 @@ declare global {
   const useEnumStore: typeof import('../../stores/enumStore')['useEnumStore']
   const useError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['useError']
   const useFetch: typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useFetch']
-  const useFormDefaults: typeof import('../../utils/useFormDefaults')['useFormDefaults']
+  const useFormDefaults: typeof import('../../utils/form')['useFormDefaults']
   const useHead: typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHead']
   const useHeadSafe: typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHeadSafe']
   const useHydration: typeof import('../../node_modules/nuxt/dist/app/composables/hydrate')['useHydration']
@@ -197,9 +199,8 @@ declare global {
   const useState: typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
   const useTransitionState: typeof import('vue')['useTransitionState']
-  const useUrl: typeof import('../../utils/useUrl')['useUrl']
   const useUserStore: typeof import('../../stores/userStore')['useUserStore']
-  const validateForm: typeof import('../../utils/validateForm')['default']
+  const validateForm: typeof import('../../utils/form')['validateForm']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
@@ -222,7 +223,7 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface ComponentCustomProperties {
     readonly Auth: UnwrapRef<typeof import('../../utils/auth')['Auth']>
-    readonly PerformancePlugin: UnwrapRef<typeof import('../../utils/performance')['PerformancePlugin']>
+    readonly PerformancePlugin: UnwrapRef<typeof import('../../utils/optimization')['PerformancePlugin']>
     readonly abortNavigation: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['abortNavigation']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['acceptHMRUpdate']>
     readonly addRouteMiddleware: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['addRouteMiddleware']>
@@ -232,11 +233,11 @@ declare module 'vue' {
     readonly clearError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['clearError']>
     readonly clearNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['clearNuxtData']>
     readonly clearNuxtState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['clearNuxtState']>
-    readonly compressImage: UnwrapRef<typeof import('../../utils/imageOptimization')['compressImage']>
+    readonly compressImage: UnwrapRef<typeof import('../../utils/optimization')['compressImage']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['createError']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
-    readonly debounce: UnwrapRef<typeof import('../../utils/debounce')['debounce']>
+    readonly debounce: UnwrapRef<typeof import('../../utils/optimization')['debounce']>
     readonly defineAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['defineAppConfig']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
@@ -252,26 +253,28 @@ declare module 'vue' {
     readonly defineStore: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['defineStore']>
     readonly effect: UnwrapRef<typeof import('vue')['effect']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
-    readonly formToFormData: UnwrapRef<typeof import('../../utils/formToFormData')['default']>
-    readonly formatCurrency: UnwrapRef<typeof import('../../utils/formatCurrency')['default']>
-    readonly formatDate: UnwrapRef<typeof import('../../utils/formatDate')['formatDate']>
-    readonly formatNumber: UnwrapRef<typeof import('../../utils/formatCurrency')['formatNumber']>
-    readonly generatePlaceholder: UnwrapRef<typeof import('../../utils/imageOptimization')['generatePlaceholder']>
-    readonly generateSizes: UnwrapRef<typeof import('../../utils/imageOptimization')['generateSizes']>
-    readonly generateSrcSet: UnwrapRef<typeof import('../../utils/imageOptimization')['generateSrcSet']>
+    readonly form: UnwrapRef<typeof import('../../utils/form')['default']>
+    readonly formToFormData: UnwrapRef<typeof import('../../utils/form')['formToFormData']>
+    readonly formatCurrency: UnwrapRef<typeof import('../../utils/formatters')['formatCurrency']>
+    readonly formatDate: UnwrapRef<typeof import('../../utils/formatters')['formatDate']>
+    readonly formatNumber: UnwrapRef<typeof import('../../utils/formatters')['formatNumber']>
+    readonly formatters: UnwrapRef<typeof import('../../utils/formatters')['default']>
+    readonly generatePlaceholder: UnwrapRef<typeof import('../../utils/optimization')['generatePlaceholder']>
+    readonly generateSizes: UnwrapRef<typeof import('../../utils/optimization')['generateSizes']>
+    readonly generateSrcSet: UnwrapRef<typeof import('../../utils/optimization')['generateSrcSet']>
     readonly getAppManifest: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
-    readonly getDominantColor: UnwrapRef<typeof import('../../utils/imageOptimization')['getDominantColor']>
-    readonly getImageDimensions: UnwrapRef<typeof import('../../utils/imageOptimization')['getImageDimensions']>
-    readonly getPerformanceMetrics: UnwrapRef<typeof import('../../utils/performance')['getPerformanceMetrics']>
-    readonly getPerformanceReport: UnwrapRef<typeof import('../../utils/performance')['getPerformanceReport']>
+    readonly getDominantColor: UnwrapRef<typeof import('../../utils/optimization')['getDominantColor']>
+    readonly getImageDimensions: UnwrapRef<typeof import('../../utils/optimization')['getImageDimensions']>
+    readonly getPerformanceMetrics: UnwrapRef<typeof import('../../utils/optimization')['getPerformanceMetrics']>
+    readonly getPerformanceReport: UnwrapRef<typeof import('../../utils/optimization')['getPerformanceReport']>
     readonly getRouteRules: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getRouteRules']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly hasInjectionContext: UnwrapRef<typeof import('vue')['hasInjectionContext']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectHead: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/head')['injectHead']>
-    readonly isImageLoaded: UnwrapRef<typeof import('../../utils/imageOptimization')['isImageLoaded']>
+    readonly isImageLoaded: UnwrapRef<typeof import('../../utils/optimization')['isImageLoaded']>
     readonly isNuxtError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['isNuxtError']>
     readonly isPrerendered: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['isPrerendered']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
@@ -281,12 +284,12 @@ declare module 'vue' {
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
     readonly isVue2: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue2']>
     readonly isVue3: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue3']>
-    readonly lazyLoadImage: UnwrapRef<typeof import('../../utils/imageOptimization')['lazyLoadImage']>
+    readonly lazyLoadImage: UnwrapRef<typeof import('../../utils/optimization')['lazyLoadImage']>
     readonly loadPayload: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['loadPayload']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
-    readonly measureApiCall: UnwrapRef<typeof import('../../utils/performance')['measureApiCall']>
-    readonly measureComponentRender: UnwrapRef<typeof import('../../utils/performance')['measureComponentRender']>
-    readonly measureTime: UnwrapRef<typeof import('../../utils/performance')['measureTime']>
+    readonly measureApiCall: UnwrapRef<typeof import('../../utils/optimization')['measureApiCall']>
+    readonly measureComponentRender: UnwrapRef<typeof import('../../utils/optimization')['measureComponentRender']>
+    readonly measureTime: UnwrapRef<typeof import('../../utils/optimization')['measureTime']>
     readonly mergeModels: UnwrapRef<typeof import('vue')['mergeModels']>
     readonly navigateTo: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['navigateTo']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
@@ -308,12 +311,12 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
-    readonly optimizeImageUrl: UnwrapRef<typeof import('../../utils/imageOptimization')['optimizeImageUrl']>
-    readonly performance: UnwrapRef<typeof import('../../utils/performance')['default']>
+    readonly optimization: UnwrapRef<typeof import('../../utils/optimization')['default']>
+    readonly optimizeImageUrl: UnwrapRef<typeof import('../../utils/optimization')['optimizeImageUrl']>
     readonly prefetchComponents: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preload')['prefetchComponents']>
     readonly preloadComponents: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preload')['preloadComponents']>
-    readonly preloadImage: UnwrapRef<typeof import('../../utils/imageOptimization')['preloadImage']>
-    readonly preloadImages: UnwrapRef<typeof import('../../utils/imageOptimization')['preloadImages']>
+    readonly preloadImage: UnwrapRef<typeof import('../../utils/optimization')['preloadImage']>
+    readonly preloadImages: UnwrapRef<typeof import('../../utils/optimization')['preloadImages']>
     readonly preloadPayload: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['preloadPayload']>
     readonly preloadRouteComponents: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preload')['preloadRouteComponents']>
     readonly prerenderRoutes: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['prerenderRoutes']>
@@ -335,7 +338,7 @@ declare module 'vue' {
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
     readonly showError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['showError']>
     readonly storeToRefs: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['storeToRefs']>
-    readonly throttle: UnwrapRef<typeof import('../../utils/debounce')['throttle']>
+    readonly throttle: UnwrapRef<typeof import('../../utils/optimization')['throttle']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
@@ -344,7 +347,7 @@ declare module 'vue' {
     readonly tryUseNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly updateAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']>
-    readonly useApiFormSubmit: UnwrapRef<typeof import('../../utils/useApiFormSubmit')['useApiFormSubmit']>
+    readonly useApiFormSubmit: UnwrapRef<typeof import('../../utils/form')['useApiFormSubmit']>
     readonly useAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']>
     readonly useAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
@@ -356,7 +359,7 @@ declare module 'vue' {
     readonly useEnumStore: UnwrapRef<typeof import('../../stores/enumStore')['useEnumStore']>
     readonly useError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['useError']>
     readonly useFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useFetch']>
-    readonly useFormDefaults: UnwrapRef<typeof import('../../utils/useFormDefaults')['useFormDefaults']>
+    readonly useFormDefaults: UnwrapRef<typeof import('../../utils/form')['useFormDefaults']>
     readonly useHead: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHead']>
     readonly useHeadSafe: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHeadSafe']>
     readonly useHydration: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/hydrate')['useHydration']>
@@ -417,9 +420,8 @@ declare module 'vue' {
     readonly useState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
     readonly useTransitionState: UnwrapRef<typeof import('vue')['useTransitionState']>
-    readonly useUrl: UnwrapRef<typeof import('../../utils/useUrl')['useUrl']>
     readonly useUserStore: UnwrapRef<typeof import('../../stores/userStore')['useUserStore']>
-    readonly validateForm: UnwrapRef<typeof import('../../utils/validateForm')['default']>
+    readonly validateForm: UnwrapRef<typeof import('../../utils/form')['validateForm']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>

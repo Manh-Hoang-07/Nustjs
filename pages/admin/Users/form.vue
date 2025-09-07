@@ -163,8 +163,7 @@ import Modal from '../../../components/Core/Modal/Modal.vue'
 import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
 import FormField from '../../../components/Core/Form/FormField.vue'
 import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
-import { useFormDefaults } from '../../../utils/useFormDefaults.js'
-import { useUrl } from '../../../utils/useUrl.js'
+import { useFormDefaults } from '../../../utils/form.js'
 
 const props = defineProps({
   show: Boolean,
@@ -227,7 +226,7 @@ const defaultValues = computed(() => {
   }
 })
 
-const imageUrl = useUrl(props, 'user', 'image')
+const imageUrl = computed(() => props.user?.image || null)
 
 const validationRules = computed(() => ({
   username: [

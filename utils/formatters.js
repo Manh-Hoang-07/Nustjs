@@ -1,3 +1,5 @@
+// ===== CURRENCY FORMATTING =====
+
 // Format currency function
 export function formatCurrency(amount, currency = 'VND', locale = 'vi-VN') {
   if (amount === null || amount === undefined) return '';
@@ -26,4 +28,17 @@ export function formatNumber(number, locale = 'vi-VN') {
   }
 }
 
-export default formatCurrency; 
+// Default export for backward compatibility
+export default formatCurrency;
+
+// ===== DATE FORMATTING =====
+
+export function formatDate(date, format = 'dd/MM/yyyy') {
+  if (!date) return ''
+  const d = new Date(date)
+  if (format === 'yyyy-MM-dd') {
+    return d.toISOString().slice(0, 10)
+  }
+  // dd/MM/yyyy
+  return d.toLocaleDateString('vi-VN')
+}

@@ -520,7 +520,7 @@ import SearchableSelect from '../../../components/Core/Select/SearchableSelect.v
 import SearchableMultiSelect from '../../../components/Core/Select/SearchableMultiSelect.vue'
 import endpoints from '../../../api/endpoints.js'
 import apiClient from '../../../api/apiClient.js'
-import { useFormDefaults } from '../../../utils/useFormDefaults.js'
+import { useFormDefaults } from '../../../utils/form.js'
 import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
 
 const props = defineProps({

@@ -39,7 +39,7 @@
 
 <script setup>
 import { computed, ref, reactive, watch } from 'vue'
-import validateForm from '../../utils/validateForm.js'
+import { validateForm } from '../../utils/form.js'
 
 const props = defineProps({
   // Form data

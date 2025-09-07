@@ -1,5 +1,5 @@
 import { ref, computed, watch } from 'vue'
-import { debounce } from '../utils/debounce.js'
+import { debounce } from '../utils/optimization.js'
 
 /**
  * Composable để quản lý search với debouncing và caching
