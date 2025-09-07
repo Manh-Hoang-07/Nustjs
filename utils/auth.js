@@ -4,7 +4,7 @@ import { useApiClient } from '../composables/api/useApiClient.js'
 // Global auth state
 const isAuthenticated = ref(false)
 const user = ref(null)
-const userRole = ref('')
+const userPermissions = ref([])
 
 // Auth helper class giống Laravel
 class Auth {
@@ -61,40 +61,48 @@ class Auth {
   }
 
   /**
-   * Lấy role của user
+   * Lấy permissions của user
    */
-  static role() {
-    return userRole.value
+  static permissions() {
+    return userPermissions.value
   }
 
   /**
-   * Kiểm tra user có role admin không
+   * Kiểm tra user có permission admin không
    */
   static isAdmin() {
-    return userRole.value === 'admin'
+    return this.can('manage_settings') || this.can('manage_users')
   }
 
   /**
-   * Kiểm tra user có role user không
+   * Kiểm tra user có permission cơ bản không
    */
   static isUser() {
-    return userRole.value === 'user'
+    return this.can('view_dashboard')
   }
 
   /**
    * Kiểm tra user có permission không
    */
   static can(permission) {
-    if (!user.value || !user.value.permissions) return false
-    return user.value.permissions.includes(permission)
+    if (!userPermissions.value || !Array.isArray(userPermissions.value)) return false
+    return userPermissions.value.includes(permission)
   }
 
   /**
-   * Kiểm tra user có role không
+   * Kiểm tra user có bất kỳ permission nào trong danh sách không
    */
-  static hasRole(role) {
-    if (!user.value || !user.value.roles) return false
-    return user.value.roles.includes(role)
+  static canAny(permissions) {
+    if (!Array.isArray(permissions)) return false
+    return permissions.some(permission => this.can(permission))
+  }
+
+  /**
+   * Kiểm tra user có tất cả permissions trong danh sách không
+   */
+  static canAll(permissions) {
+    if (!Array.isArray(permissions)) return false
+    return permissions.every(permission => this.can(permission))
   }
 
   /**
@@ -103,7 +111,7 @@ class Auth {
   static async init() {
     const token = this.getTokenFromCookie()
     const storedUser = localStorage.getItem('user')
-    const storedRole = localStorage.getItem('userRole')
+    const storedPermissions = localStorage.getItem('userPermissions')
 
     if (token && storedUser) {
       try {
@@ -115,21 +123,21 @@ class Auth {
           // Cập nhật state
           isAuthenticated.value = true
           user.value = response.data.data
-          userRole.value = response.data.data.role
+          userPermissions.value = response.data.data.permissions || []
           
           // Cập nhật localStorage cho user info
           localStorage.setItem('user', JSON.stringify(response.data.data))
-          localStorage.setItem('userRole', response.data.data.role)
+          localStorage.setItem('userPermissions', JSON.stringify(response.data.data.permissions || []))
           
           return true
         } else {
           // Token không hợp lệ, chỉ xóa state, không gọi logout API
           isAuthenticated.value = false
           user.value = null
-          userRole.value = ''
+          userPermissions.value = []
           this.removeTokenFromCookie()
           localStorage.removeItem('user')
-          localStorage.removeItem('userRole')
+          localStorage.removeItem('userPermissions')
           return false
         }
       } catch (error) {
@@ -137,20 +145,20 @@ class Auth {
         // Chỉ xóa state, không gọi logout API
         isAuthenticated.value = false
         user.value = null
-        userRole.value = ''
+        userPermissions.value = []
         this.removeTokenFromCookie()
         localStorage.removeItem('user')
-        localStorage.removeItem('userRole')
+        localStorage.removeItem('userPermissions')
         return false
       }
     } else if (storedUser) {
       // Có user data nhưng không có token, chỉ xóa state
       isAuthenticated.value = false
       user.value = null
-      userRole.value = ''
+      userPermissions.value = []
       this.removeTokenFromCookie()
       localStorage.removeItem('user')
-      localStorage.removeItem('userRole')
+      localStorage.removeItem('userPermissions')
       return false
     }
 
@@ -204,12 +212,12 @@ class Auth {
       // Xóa state
       isAuthenticated.value = false
       user.value = null
-      userRole.value = ''
+      userPermissions.value = []
       
       // Xóa cookie và localStorage
       Auth.removeTokenFromCookie()
       localStorage.removeItem('user')
-      localStorage.removeItem('userRole')
+      localStorage.removeItem('userPermissions')
     }
   }
 
@@ -223,10 +231,10 @@ class Auth {
 
       if (response.data.success) {
         user.value = response.data.data
-        userRole.value = response.data.data.role
+        userPermissions.value = response.data.data.permissions || []
         
         localStorage.setItem('user', JSON.stringify(response.data.data))
-        localStorage.setItem('userRole', response.data.data.role)
+        localStorage.setItem('userPermissions', JSON.stringify(response.data.data.permissions || []))
         
         return true
       }
@@ -270,9 +278,15 @@ class Auth {
 const authState = {
   isAuthenticated: computed(() => isAuthenticated.value),
   user: computed(() => user.value),
-  userRole: computed(() => userRole.value),
-  isAdmin: computed(() => userRole.value === 'admin'),
-  isUser: computed(() => userRole.value === 'user')
+  userPermissions: computed(() => userPermissions.value),
+  isAdmin: computed(() => {
+    const permissions = userPermissions.value
+    return permissions.includes('manage_settings') || permissions.includes('manage_users')
+  }),
+  isUser: computed(() => {
+    const permissions = userPermissions.value
+    return permissions.includes('view_dashboard')
+  })
 }
 
 export { Auth, authState } 
