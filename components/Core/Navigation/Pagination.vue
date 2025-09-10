@@ -111,14 +111,6 @@ const props = defineProps({
 // Emits
 const emit = defineEmits(['page-change', 'data-loaded'])
 
-// Debug props
-console.log('Pagination props:', {
-  currentPage: props.currentPage,
-  totalPages: props.totalPages,
-  totalItems: props.totalItems,
-  loading: props.loading
-})
-
 // Use pagination composable
 const {
   currentPage: paginationCurrentPage,
@@ -145,27 +137,22 @@ const data = ref([])
 // Watch for props changes
 watch(() => props.totalPages, (newVal) => {
   totalPages.value = newVal
-  console.log('totalPages updated from props:', newVal)
 })
 
 watch(() => props.currentPage, (newVal) => {
   currentPage.value = newVal
-  console.log('currentPage updated from props:', newVal)
 })
 
 watch(() => props.totalItems, (newVal) => {
   totalRecords.value = newVal
-  console.log('totalRecords updated from props:', newVal)
 })
 
 watch(() => props.loading, (newVal) => {
   loading.value = newVal
-  console.log('loading updated from props:', newVal)
 })
 
 // Computed properties
 const hasPagination = computed(() => {
-  console.log('hasPagination check - totalPages:', totalPages.value, 'currentPage:', currentPage.value)
   // Fallback: nếu totalPages không có, kiểm tra totalRecords
   if (totalPages.value === undefined || totalPages.value === null) {
     return totalRecords.value > 10 // Nếu có hơn 10 bản ghi thì có pagination
@@ -175,7 +162,6 @@ const hasPagination = computed(() => {
 const hasData = computed(() => data.value.length > 0)
 const showPagination = computed(() => {
   const show = hasPagination.value && !loading.value
-  console.log('showPagination:', show, 'hasPagination:', hasPagination.value, 'loading:', loading.value, 'totalPages:', totalPages.value)
   return show
 })
 const hasFilters = computed(() => searchQuery.value || selectedCategory.value || sortBy.value !== 'latest')

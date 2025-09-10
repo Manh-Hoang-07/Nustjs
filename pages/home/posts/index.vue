@@ -281,7 +281,6 @@ const loadData = async (params = {}) => {
     ...params
   }
   
-  console.log('Loading posts with filters:', filters)
   updateFilters(filters)
 }
 

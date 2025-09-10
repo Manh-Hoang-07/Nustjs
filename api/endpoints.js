@@ -65,6 +65,12 @@ const endpoints = {
   posts: createResourceEndpoints('posts'),
   postCategories: createResourceEndpoints('post-categories'),
   postTags: createResourceEndpoints('post-tags'),
+  // Contact endpoints
+  contacts: createResourceEndpoints('contacts', {
+    updateStatus: id => `/api/admin/contacts/${id}/status`,
+    markResponded: id => `/api/admin/contacts/${id}/mark-responded`,
+    bulkUpdateStatus: '/api/admin/contacts/bulk-update-status'
+  }),
 };
 
 // Posts API endpoints
@@ -78,6 +84,15 @@ export const POSTS_ENDPOINTS = {
   PUBLIC_POSTS: '/api/posts',
   PUBLIC_POST_CATEGORIES: '/api/post-categories',
   PUBLIC_POST_TAGS: '/api/post-tags',
+};
+
+// Contact API endpoints
+export const CONTACT_ENDPOINTS = {
+  // Public endpoints
+  PUBLIC_CONTACTS: '/api/contacts',
+  
+  // Admin endpoints
+  ADMIN_CONTACTS: '/api/admin/contacts',
 };
 
 export default endpoints; 

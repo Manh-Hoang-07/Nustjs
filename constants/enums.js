@@ -46,6 +46,12 @@ export const ENUMS = {
     { id: 'valid', name: 'valid', value: 'valid', label: 'Còn hạn' },
     { id: 'expiring_soon', name: 'expiring_soon', value: 'expiring_soon', label: 'Sắp hết hạn' },
     { id: 'expired', name: 'expired', value: 'expired', label: 'Đã hết hạn' }
+  ],
+  contact_status: [
+    { id: 'pending', name: 'pending', value: 'pending', label: 'Chờ xử lý' },
+    { id: 'in_progress', name: 'in_progress', value: 'in_progress', label: 'Đang xử lý' },
+    { id: 'completed', name: 'completed', value: 'completed', label: 'Hoàn thành' },
+    { id: 'cancelled', name: 'cancelled', value: 'cancelled', label: 'Đã hủy' }
   ]
 }
 

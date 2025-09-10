@@ -140,6 +140,11 @@ export function useAdminNavigation() {
       ]
     },
     {
+      name: 'Liên hệ',
+      path: '/admin/contacts',
+      icon: '📞'
+    },
+    {
       name: 'Báo cáo',
       path: '/admin/reports',
       icon: '📈'

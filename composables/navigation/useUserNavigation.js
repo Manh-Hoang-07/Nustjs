@@ -79,7 +79,7 @@ export function useUserNavigation() {
     },
     {
       name: 'Liên hệ',
-      path: '/contact',
+      path: '/home/contact',
       icon: '📞'
     }
   ])

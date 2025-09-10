@@ -82,10 +82,6 @@ export function useDataTable(endpoint, options = {}) {
       return
     }
     
-    console.log('useDataTable fetchData called with params:', params)
-    console.log('Current filters:', filters)
-    console.log('Endpoint:', endpoint)
-    
     loading.value = true
     error.value = null
     
@@ -95,7 +91,6 @@ export function useDataTable(endpoint, options = {}) {
         ...params,
         per_page: pageSize
       }
-      console.log('Request params with per_page:', requestParams)
       const cacheKey = getCacheKey(requestParams)
       
       // Check cache first
@@ -115,9 +110,7 @@ export function useDataTable(endpoint, options = {}) {
       
       // Update state
       items.value = data
-      console.log('API response meta:', meta)
       Object.assign(pagination, meta)
-      console.log('Updated pagination:', pagination)
       
       // Cache result
       if (cacheEnabled) {

@@ -116,27 +116,14 @@
     </div>
 
     <!-- Phân trang -->
-    <div v-if="items.length > 0" class="mt-4 flex justify-between items-center">
-      <div class="text-sm text-gray-700">
-        Hiển thị {{ pagination.from || 0 }} đến {{ pagination.to || 0 }} trên tổng số {{ pagination.total || 0 }} bản ghi
-      </div>
-      <div class="flex space-x-1">
-        <button 
-          v-for="page in pagination.links" 
-          :key="page.label"
-          @click="changePage(page.url)"
-          :disabled="!page.url"
-          :class="[
-            'px-3 py-1 border rounded',
-            page.active 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-white text-gray-700 hover:bg-gray-50',
-            !page.url && 'opacity-50 cursor-not-allowed'
-          ]"
-          v-html="page.label"
-        ></button>
-      </div>
-    </div>
+    <Pagination 
+      v-if="items.length > 0"
+      :current-page="pagination.current_page"
+      :total-pages="pagination.last_page"
+      :total-items="pagination.total"
+      :loading="loading"
+      @page-change="handlePageChange"
+    />
 
     <!-- Modal thêm mới -->
     <CreateInventory
@@ -192,6 +179,7 @@ import { useToast } from '../../../composables/ui/useToast.js'
 import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
 import Actions from '../../../components/Core/Actions/Actions.vue'
+import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 import endpoints from '../../../api/endpoints.js'
 import apiClient from '../../../api/apiClient.js'
 
@@ -328,11 +316,7 @@ async function deleteInventory() {
   }
 }
 
-function changePage(url) {
-  if (!url) return
-  
-  const urlObj = new URL(url)
-  const page = urlObj.searchParams.get('page')
+function handlePageChange(page) {
   fetchData({ page })
 }
 

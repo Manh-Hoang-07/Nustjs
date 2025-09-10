@@ -55,27 +55,14 @@
       </table>
     </div>
     <!-- Phân trang -->
-    <div class="mt-4 flex justify-between items-center">
-      <div class="text-sm text-gray-700">
-        Hiển thị {{ pagination.from }} đến {{ pagination.to }} trên tổng số {{ pagination.total }} bản ghi
-      </div>
-      <div class="flex space-x-1">
-        <button 
-          v-for="page in pagination.links" 
-          :key="page.label"
-          @click="changePage(page.url)"
-          :disabled="!page.url"
-          :class="[
-            'px-3 py-1 border rounded',
-            page.active 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-white text-gray-700 hover:bg-gray-50',
-            !page.url && 'opacity-50 cursor-not-allowed'
-          ]"
-          v-html="page.label"
-        ></button>
-      </div>
-    </div>
+    <Pagination 
+      v-if="providers.length > 0"
+      :current-page="pagination.current_page"
+      :total-pages="pagination.last_page"
+      :total-items="pagination.total"
+      :loading="loading"
+      @page-change="handlePageChange"
+    />
     <!-- Modal thêm mới -->
     <ApiProviderForm
       v-if="showAddProvider"
@@ -111,6 +98,7 @@ import CustomSection from '/components/Layout/Sections/CustomSection.vue'
 import Modal from '../../../components/Core/Modal/Modal.vue'
 import EditApiModal from './edit.vue'
 import ApiProviderForm from './ApiProviderForm.vue'
+import Pagination from '../../../components/Core/Navigation/Pagination.vue'
 
 const showConfig = ref(false)
 const showAddProvider = ref(false)
@@ -185,10 +173,7 @@ async function fetchProviders(page = 1) {
 
 onMounted(fetchProviders)
 
-function changePage(url) {
-  if (!url) return
-  const urlObj = new URL(url, window.location.origin)
-  const page = urlObj.searchParams.get('page')
+function handlePageChange(page) {
   fetchProviders(page)
 }
 
