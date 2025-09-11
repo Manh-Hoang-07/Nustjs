@@ -19,57 +19,81 @@
       @update:filters="handleFilterUpdate" 
     />
 
-    <!-- Bảng dữ liệu -->
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="8" />
-      <table v-else class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khóa cấu hình</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên hiển thị</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá trị</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="config in items" :key="config.id">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ config.id }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ config.config_key }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ config.display_name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate" :title="config.config_value">
-              {{ config.config_value }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                {{ config.config_type }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span 
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                :class="getStatusClass(config.status)"
-              >
-                {{ getStatusLabel(config.status) }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <Actions 
-                :item="config"
-                @edit="openEditModal"
-                @delete="confirmDelete"
-              />
-            </td>
-          </tr>
-          <tr v-if="items.length === 0">
-            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
-              Không có dữ liệu
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Danh sách cấu hình dạng card -->
+    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-for="i in 6" :key="i" class="bg-white rounded-lg shadow-md p-6">
+        <SkeletonLoader type="card" />
+      </div>
+    </div>
+    
+    <div v-else-if="items.length === 0" class="text-center py-12">
+      <div class="text-gray-400 text-6xl mb-4">🔒</div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có cấu hình bảo mật</h3>
+      <p class="text-gray-500 mb-6">Hãy tạo cấu hình bảo mật đầu tiên cho hệ thống</p>
+      <button 
+        @click="openCreateModal"
+        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+      >
+        Thêm cấu hình bảo mật
+      </button>
+    </div>
+
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div 
+        v-for="config in items" 
+        :key="config.id"
+        class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6"
+      >
+        <!-- Header card -->
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex-1">
+            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ config.display_name }}</h3>
+            <p class="text-sm text-gray-500 font-mono">{{ config.config_key }}</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span 
+              class="px-2 py-1 text-xs font-semibold rounded-full" 
+              :class="getStatusClass(config.status)"
+            >
+              {{ getStatusLabel(config.status) }}
+            </span>
+            <Actions 
+              :item="config"
+              @edit="openEditModal"
+              @delete="confirmDelete"
+            />
+          </div>
+        </div>
+
+        <!-- Giá trị cấu hình -->
+        <div class="mb-4">
+          <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Giá trị</label>
+          <div class="mt-1 p-3 bg-gray-50 rounded-md">
+            <p class="text-sm text-gray-900 break-words">{{ config.config_value || 'Chưa có giá trị' }}</p>
+          </div>
+        </div>
+
+        <!-- Thông tin bổ sung -->
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex items-center space-x-4">
+            <span 
+              class="px-2 py-1 text-xs font-semibold rounded-full" 
+              :class="getGroupClass(config.config_group)"
+            >
+              {{ getGroupName(config.config_group) }}
+            </span>
+            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+              {{ config.config_type }}
+            </span>
+          </div>
+          <span class="text-gray-400 text-xs">ID: {{ config.id }}</span>
+        </div>
+
+        <!-- Mô tả nếu có -->
+        <div v-if="config.description" class="mt-4 pt-4 border-t border-gray-200">
+          <p class="text-sm text-gray-600">{{ config.description }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- Phân trang -->
@@ -227,6 +251,24 @@ function handlePageChange(page) {
 }
 
 // Helper functions
+function getGroupName(group) {
+  const groups = {
+    general: 'Cài đặt chung',
+    email: 'Cài đặt email',
+    security: 'Cài đặt bảo mật'
+  }
+  return groups[group] || group
+}
+
+function getGroupClass(group) {
+  const classes = {
+    general: 'bg-blue-100 text-blue-800',
+    email: 'bg-green-100 text-green-800',
+    security: 'bg-red-100 text-red-800'
+  }
+  return classes[group] || 'bg-gray-100 text-gray-800'
+}
+
 function getStatusLabel(status) {
   if (status === 'active') return 'Hoạt động'
   if (status === 'inactive') return 'Không hoạt động'
