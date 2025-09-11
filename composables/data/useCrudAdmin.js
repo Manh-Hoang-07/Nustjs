@@ -14,7 +14,7 @@ import { useApiClient } from '../api/useApiClient.js'
  * @returns {Object} - Các state và methods cho CRUD
  */
 export default function useCrudAdmin(options) {
-  const api = useApiClient()
+  const { apiClient: api } = useApiClient()
   
   // Destructure options với defaults
   const { 

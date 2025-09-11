@@ -1,55 +1,70 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Quản lý danh mục bài viết</h1>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Cài đặt Bảo mật</h1>
+        <p class="text-gray-600 mt-1">Quản lý các cấu hình bảo mật của hệ thống</p>
+      </div>
       <button 
         @click="openCreateModal" 
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-        Thêm danh mục mới
+        Thêm cấu hình bảo mật
       </button>
     </div>
 
     <!-- Bộ lọc -->
-    <CategoryFilter 
+    <SystemConfigFilter 
       :initial-filters="filters"
       @update:filters="handleFilterUpdate" 
     />
 
     <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="4" />
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="8" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên danh mục</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khóa cấu hình</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên hiển thị</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Giá trị</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="category in items" :key="category.id">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ category.id }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ category.name }}</td>
+          <tr v-for="config in items" :key="config.id">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ config.id }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ config.config_key }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ config.display_name }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 max-w-xs truncate" :title="config.config_value">
+              {{ config.config_value }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                {{ config.config_type }}
+              </span>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                :class="getStatusClass(category.status)"
+                :class="getStatusClass(config.status)"
               >
-                {{ getStatusLabel(category.status) }}
+                {{ getStatusLabel(config.status) }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <Actions 
-                :item="category"
+                :item="config"
                 @edit="openEditModal"
                 @delete="confirmDelete"
               />
             </td>
           </tr>
           <tr v-if="items.length === 0">
-            <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>
@@ -68,22 +83,20 @@
     />
 
     <!-- Modal thêm mới -->
-    <CreateCategory
+    <CreateSystemConfig
       v-if="showCreateModal"
       :show="showCreateModal"
-      :status-enums="statusEnums"
       :on-close="closeCreateModal"
-      @created="handleCategoryCreated"
+      @created="handleConfigCreated"
     />
 
     <!-- Modal chỉnh sửa -->
-    <EditCategory
+    <EditSystemConfig
       v-if="showEditModal"
       :show="showEditModal"
-      :category="selectedCategory"
-      :status-enums="statusEnums"
+      :config="selectedConfig"
       :on-close="closeEditModal"
-      @updated="handleCategoryUpdated"
+      @updated="handleConfigUpdated"
     />
 
     <!-- Modal xác nhận xóa -->
@@ -91,9 +104,9 @@
       v-if="showDeleteModal"
       :show="showDeleteModal"
       title="Xác nhận xóa"
-      :message="`Bạn có chắc chắn muốn xóa danh mục ${selectedCategory?.name || ''}?`"
+      :message="`Bạn có chắc chắn muốn xóa cấu hình ${selectedConfig?.config_key || ''}?`"
       :on-close="closeDeleteModal"
-      @confirm="deleteCategory"
+      @confirm="deleteConfig"
     />
   </div>
 </template>
@@ -106,20 +119,18 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { getEnumSync, getEnumLabel } from '../../../constants/enums.js'
-import { useDataTable } from '../../../composables/data/useDataTable.js'
-import { useToast } from '../../../composables/ui/useToast.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
-import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
-import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
-import Actions from '../../../components/Core/Actions/Actions.vue'
-import Pagination from '../../../components/Core/Navigation/Pagination.vue'
-import endpoints from '../../../api/endpoints.js'
+import { useDataTable } from '../../../../composables/data/useDataTable.js'
+import { useSystemConfig } from '../../../../composables/api'
+import { useToast } from '../../../../composables/ui/useToast.js'
+import SkeletonLoader from '../../../../components/Core/Loading/SkeletonLoader.vue'
+import ConfirmModal from '../../../../components/Core/Modal/ConfirmModal.vue'
+import Actions from '../../../../components/Core/Actions/Actions.vue'
+import Pagination from '../../../../components/Core/Navigation/Pagination.vue'
 
 // Lazy load components
-const CreateCategory = defineAsyncComponent(() => import('./create.vue'))
-const EditCategory = defineAsyncComponent(() => import('./edit.vue'))
-const CategoryFilter = defineAsyncComponent(() => import('./filter.vue'))
+const CreateSystemConfig = defineAsyncComponent(() => import('../create.vue'))
+const EditSystemConfig = defineAsyncComponent(() => import('../edit.vue'))
+const SystemConfigFilter = defineAsyncComponent(() => import('../filter.vue'))
 
 // Use composables
 const { 
@@ -130,20 +141,19 @@ const {
   fetchData, 
   updateFilters, 
   deleteItem 
-} = useDataTable(endpoints.postCategories.list, {
+} = useDataTable('/api/admin/system-configs', {
   defaultFilters: {
     search: '',
+    group: 'security',
     status: '',
     sort_by: 'created_at_desc'
   }
 })
 
 const { showSuccess, showError } = useToast()
-const { apiClient: api } = useApiClient()
 
 // State
-const selectedCategory = ref(null)
-const statusEnums = ref([])
+const selectedConfig = ref(null)
 
 // Modal state
 const showCreateModal = ref(false)
@@ -152,23 +162,10 @@ const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  // Load enums immediately (static)
-  fetchEnums()
-  
-  // Fetch categories
   await fetchData()
 })
 
-function fetchEnums() {
-  // Sử dụng static enum thay vì gọi API
-  statusEnums.value = [
-    { value: 'active', label: 'Hoạt động' },
-    { value: 'inactive', label: 'Không hoạt động' }
-  ]
-}
-
-
-
+// Filter handlers
 function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
@@ -182,46 +179,46 @@ function closeCreateModal() {
   showCreateModal.value = false
 }
 
-function openEditModal(category) {
-  selectedCategory.value = category
+function openEditModal(config) {
+  selectedConfig.value = config
   showEditModal.value = true
 }
 
 function closeEditModal() {
   showEditModal.value = false
-  selectedCategory.value = null
+  selectedConfig.value = null
 }
 
-function confirmDelete(category) {
-  selectedCategory.value = category
+function confirmDelete(config) {
+  selectedConfig.value = config
   showDeleteModal.value = true
 }
 
 function closeDeleteModal() {
   showDeleteModal.value = false
-  selectedCategory.value = null
+  selectedConfig.value = null
 }
 
 // Action handlers
-async function handleCategoryCreated() {
+async function handleConfigCreated() {
   await fetchData()
   closeCreateModal()
-  showSuccess('Danh mục đã được tạo thành công')
+  showSuccess('Cấu hình bảo mật đã được tạo thành công')
 }
 
-async function handleCategoryUpdated() {
+async function handleConfigUpdated() {
   await fetchData()
   closeEditModal()
-  showSuccess('Danh mục đã được cập nhật thành công')
+  showSuccess('Cấu hình bảo mật đã được cập nhật thành công')
 }
 
-async function deleteCategory() {
+async function deleteConfig() {
   try {
-    await deleteItem(selectedCategory.value.id)
+    await deleteItem(selectedConfig.value.id)
     closeDeleteModal()
-    showSuccess('Danh mục đã được xóa thành công')
+    showSuccess('Cấu hình bảo mật đã được xóa thành công')
   } catch (error) {
-    showError('Không thể xóa danh mục')
+    showError('Không thể xóa cấu hình bảo mật')
   }
 }
 
@@ -229,24 +226,17 @@ function handlePageChange(page) {
   fetchData({ page })
 }
 
-// Status helper functions
+// Helper functions
 function getStatusLabel(status) {
-  const statusMap = {
-    'active': 'Hoạt động',
-    'inactive': 'Không hoạt động'
-  }
-  return statusMap[status] || status || 'Không xác định'
+  if (status === 'active') return 'Hoạt động'
+  if (status === 'inactive') return 'Không hoạt động'
+  return status || 'Không xác định'
 }
 
 function getStatusClass(status) {
   if (status === 'active') return 'bg-green-100 text-green-800'
   if (status === 'inactive') return 'bg-red-100 text-red-800'
   return 'bg-gray-100 text-gray-800'
-}
-
-function formatDate(dateString) {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString('vi-VN')
 }
 </script>
 

@@ -223,7 +223,7 @@ const formatExcerpt = (text, maxLength = 150) => {
 }
 
 // Sử dụng API client có sẵn
-const apiClient = useApiClient()
+const { apiClient } = useApiClient()
 
 // Sử dụng useDataTable cho posts
 const {

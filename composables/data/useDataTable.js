@@ -2,7 +2,7 @@ import { ref, reactive, computed } from 'vue'
 import { useApiClient } from '../api/useApiClient.js'
 
 export function useDataTable(endpoint, options = {}) {
-  const apiClient = useApiClient()
+  const { apiClient } = useApiClient()
   const {
     defaultFilters = {},
     defaultSort = 'created_at_desc',

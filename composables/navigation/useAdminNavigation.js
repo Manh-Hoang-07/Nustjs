@@ -150,9 +150,30 @@ export function useAdminNavigation() {
       icon: '📈'
     },
     {
-      name: 'Cài đặt',
-      path: '/admin/settings',
-      icon: '⚙️'
+      name: 'Cấu hình hệ thống',
+      icon: '⚙️',
+      children: [
+        {
+          name: 'Cài đặt chung',
+          path: '/admin/system-configs/general',
+          icon: '🌐'
+        },
+        {
+          name: 'Cài đặt email',
+          path: '/admin/system-configs/email',
+          icon: '📧'
+        },
+        {
+          name: 'Cài đặt bảo mật',
+          path: '/admin/system-configs/security',
+          icon: '🔒'
+        },
+        {
+          name: 'Tất cả cấu hình',
+          path: '/admin/system-configs',
+          icon: '📋'
+        }
+      ]
     }
   ])
 

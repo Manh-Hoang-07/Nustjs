@@ -159,7 +159,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const apiClient = useApiClient()
+const { apiClient } = useApiClient()
 
 // State
 const selectedTag = ref(null)

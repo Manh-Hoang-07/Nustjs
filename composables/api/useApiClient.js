@@ -165,5 +165,7 @@ export function useApiClient(options = {}) {
     }
   }
 
-  return enhancedApi
+  return {
+    apiClient: enhancedApi
+  }
 } 

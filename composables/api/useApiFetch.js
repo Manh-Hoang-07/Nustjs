@@ -9,7 +9,7 @@ import { useApiClient } from './useApiClient.js'
  * @returns {Object} - { data, loading, error, fetchData }
  */
 export default function useApiFetch(url, params = ref({}), immediate = true) {
-  const api = useApiClient()
+  const { apiClient: api } = useApiClient()
   const data = ref(null)
   const loading = ref(false)
   const error = ref(null)

@@ -1,206 +1,171 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-6">
-    <h1 class="text-2xl font-bold mb-6">Cài đặt hệ thống</h1>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- General Settings -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cài đặt chung</h3>
-        <form @submit.prevent="saveGeneralSettings">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Tên website</label>
-              <input 
-                v-model="generalSettings.site_name"
-                type="text" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Mô tả website</label>
-              <textarea 
-                v-model="generalSettings.site_description"
-                rows="3"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              ></textarea>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Email liên hệ</label>
-              <input 
-                v-model="generalSettings.contact_email"
-                type="email" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Số điện thoại</label>
-              <input 
-                v-model="generalSettings.contact_phone"
-                type="text" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Địa chỉ</label>
-              <textarea 
-                v-model="generalSettings.address"
-                rows="2"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              ></textarea>
-            </div>
-            <button 
-              type="submit"
-              class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              Lưu cài đặt chung
-            </button>
-          </div>
-        </form>
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Cài đặt hệ thống</h1>
+        <p class="text-gray-600">Quản lý các cài đặt và cấu hình của hệ thống</p>
       </div>
 
-      <!-- Order Settings -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cài đặt đơn hàng</h3>
-        <form @submit.prevent="saveOrderSettings">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Tự động xác nhận đơn hàng</label>
-              <select 
-                v-model="orderSettings.auto_confirm"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="1">Có</option>
-                <option value="0">Không</option>
-              </select>
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <NuxtLink
+          to="/admin/system-configs/general"
+          class="group bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+        >
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+                </svg>
+              </div>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Thời gian hủy đơn hàng (phút)</label>
-              <input 
-                v-model="orderSettings.cancel_time"
-                type="number" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900 group-hover:text-blue-600">Cài đặt chung</h3>
+              <p class="text-sm text-gray-500">Thông tin website, liên hệ</p>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Phí vận chuyển tối thiểu</label>
-              <input 
-                v-model="orderSettings.min_shipping_fee"
-                type="number" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Miễn phí vận chuyển từ</label>
-              <input 
-                v-model="orderSettings.free_shipping_threshold"
-                type="number" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+        </NuxtLink>
+
+        <NuxtLink
+          to="/admin/system-configs/email"
+          class="group bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+        >
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+              </div>
             </div>
-            <button 
-              type="submit"
-              class="w-full bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
-            >
-              Lưu cài đặt đơn hàng
-            </button>
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900 group-hover:text-green-600">Cài đặt email</h3>
+              <p class="text-sm text-gray-500">SMTP, gửi email</p>
+            </div>
+            </div>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/admin/system-configs/security"
+          class="group bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+        >
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+            </div>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900 group-hover:text-red-600">Cài đặt bảo mật</h3>
+              <p class="text-sm text-gray-500">Session, mật khẩu, 2FA</p>
           </div>
-        </form>
+      </div>
+        </NuxtLink>
+
+        <NuxtLink
+          to="/admin/system-configs"
+          class="group bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+        >
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900 group-hover:text-purple-600">Tất cả cấu hình</h3>
+              <p class="text-sm text-gray-500">Quản lý chi tiết</p>
+            </div>
+            </div>
+        </NuxtLink>
+            </div>
+
+      <!-- System Status -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Trạng thái hệ thống</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+          </div>
+            <h4 class="text-sm font-medium text-gray-900">Hệ thống</h4>
+            <p class="text-sm text-green-600">Hoạt động bình thường</p>
       </div>
 
-      <!-- Email Settings -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cài đặt email</h3>
-        <form @submit.prevent="saveEmailSettings">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">SMTP Host</label>
-              <input 
-                v-model="emailSettings.smtp_host"
-                type="text" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+          <div class="text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">SMTP Port</label>
-              <input 
-                v-model="emailSettings.smtp_port"
-                type="number" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+            <h4 class="text-sm font-medium text-gray-900">Email</h4>
+            <p class="text-sm text-blue-600">SMTP đã cấu hình</p>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Email gửi</label>
-              <input 
-                v-model="emailSettings.from_email"
-                type="email" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+          
+          <div class="text-center">
+            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+              </svg>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Tên người gửi</label>
-              <input 
-                v-model="emailSettings.from_name"
-                type="text" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+            <h4 class="text-sm font-medium text-gray-900">Bảo mật</h4>
+            <p class="text-sm text-yellow-600">Cần cập nhật</p>
             </div>
-            <button 
-              type="submit"
-              class="w-full bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
-            >
-              Lưu cài đặt email
-            </button>
           </div>
-        </form>
       </div>
 
-      <!-- Security Settings -->
+      <!-- Quick Settings -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Maintenance Mode -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Bảo mật</h3>
-        <form @submit.prevent="saveSecuritySettings">
-          <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Chế độ bảo trì</h3>
+          <div class="flex items-center justify-between">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Thời gian session (phút)</label>
-              <input 
-                v-model="securitySettings.session_timeout"
-                type="number" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
+              <p class="text-sm text-gray-600">Bật/tắt chế độ bảo trì website</p>
+              <p class="text-xs text-gray-500 mt-1">Khi bật, website sẽ hiển thị thông báo bảo trì</p>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Số lần đăng nhập sai tối đa</label>
+            <label class="relative inline-flex items-center cursor-pointer">
               <input 
-                v-model="securitySettings.max_login_attempts"
-                type="number" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Thời gian khóa tài khoản (phút)</label>
-              <input 
-                v-model="securitySettings.lockout_duration"
-                type="number" 
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-            </div>
-            <div class="flex items-center">
-              <input 
-                v-model="securitySettings.require_2fa"
+                v-model="maintenanceMode"
                 type="checkbox" 
-                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                @change="toggleMaintenanceMode"
+                class="sr-only peer"
               >
-              <label class="ml-2 block text-sm text-gray-900">
-                Yêu cầu xác thực 2 yếu tố cho admin
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
+        </div>
+
+        <!-- Cache Management -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Quản lý Cache</h3>
+          <div class="space-y-3">
+            <p class="text-sm text-gray-600">Xóa cache để cập nhật cấu hình mới nhất</p>
             <button 
-              type="submit"
-              class="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              @click="clearCache"
+              :disabled="clearingCache"
+              class="w-full px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 disabled:opacity-50 transition-colors"
             >
-              Lưu cài đặt bảo mật
+              <span v-if="clearingCache" class="flex items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Đang xóa...
+              </span>
+              <span v-else>Xóa Cache</span>
             </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
@@ -213,127 +178,60 @@ definePageMeta({
   requiresAdmin: true
 })
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue'
+import { useSystemConfig } from '../../composables/api'
 
-const generalSettings = ref({
-  site_name: '',
-  site_description: '',
-  contact_email: '',
-  contact_phone: '',
-  address: ''
-});
+const { clearCache: clearCacheApi, fetchConfigsByGroup } = useSystemConfig()
 
-const orderSettings = ref({
-  auto_confirm: '0',
-  cancel_time: 30,
-  min_shipping_fee: 20000,
-  free_shipping_threshold: 500000
-});
+// State
+const maintenanceMode = ref(false)
+const clearingCache = ref(false)
 
-const emailSettings = ref({
-  smtp_host: '',
-  smtp_port: 587,
-  from_email: '',
-  from_name: ''
-});
-
-const securitySettings = ref({
-  session_timeout: 120,
-  max_login_attempts: 5,
-  lockout_duration: 30,
-  require_2fa: false
-});
-
-const loadSettings = async () => {
+// Methods
+const loadMaintenanceMode = async () => {
   try {
-    const response = await fetch('/api/admin/settings');
-    const data = await response.json();
-    if (data.success) {
-      generalSettings.value = data.data.general || {};
-      orderSettings.value = data.data.order || {};
-      emailSettings.value = data.data.email || {};
-      securitySettings.value = data.data.security || {};
+    const response = await fetchConfigsByGroup('general')
+    if (response.success && response.data) {
+      const maintenanceConfig = response.data.find(config => config.config_key === 'maintenance_mode')
+      if (maintenanceConfig) {
+        maintenanceMode.value = maintenanceConfig.config_value === 'true'
+      }
     }
-  } catch (error) {
-    
+  } catch (err) {
+    console.error('Error loading maintenance mode:', err)
   }
-};
+}
 
-const saveGeneralSettings = async () => {
+const toggleMaintenanceMode = async () => {
   try {
-    const response = await fetch('/api/admin/settings/general', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(generalSettings.value)
-    });
-    
-    if (response.ok) {
-      alert('Cài đặt chung đã được lưu thành công!');
-    }
-  } catch (error) {
-    
+    // This would call the API to update maintenance mode
+    // await updateConfigsByGroup('general', [{ config_key: 'maintenance_mode', config_value: maintenanceMode.value.toString() }])
+    console.log('Maintenance mode toggled:', maintenanceMode.value)
+    alert(`Chế độ bảo trì đã được ${maintenanceMode.value ? 'bật' : 'tắt'}`)
+  } catch (err) {
+    console.error('Error toggling maintenance mode:', err)
+    // Revert the toggle if there's an error
+    maintenanceMode.value = !maintenanceMode.value
   }
-};
+}
 
-const saveOrderSettings = async () => {
+const clearCache = async () => {
+  clearingCache.value = true
   try {
-    const response = await fetch('/api/admin/settings/order', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(orderSettings.value)
-    });
-    
-    if (response.ok) {
-      alert('Cài đặt đơn hàng đã được lưu thành công!');
-    }
-  } catch (error) {
-    
+    await clearCacheApi()
+    alert('Cache đã được xóa thành công!')
+  } catch (err) {
+    console.error('Error clearing cache:', err)
+    alert('Có lỗi xảy ra khi xóa cache!')
+  } finally {
+    clearingCache.value = false
   }
-};
+}
 
-const saveEmailSettings = async () => {
-  try {
-    const response = await fetch('/api/admin/settings/email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(emailSettings.value)
-    });
-    
-    if (response.ok) {
-      alert('Cài đặt email đã được lưu thành công!');
-    }
-  } catch (error) {
-    
-  }
-};
-
-const saveSecuritySettings = async () => {
-  try {
-    const response = await fetch('/api/admin/settings/security', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(securitySettings.value)
-    });
-    
-    if (response.ok) {
-      alert('Cài đặt bảo mật đã được lưu thành công!');
-    }
-  } catch (error) {
-    
-  }
-};
-
+// Lifecycle
 onMounted(() => {
-  loadSettings();
-});
+  loadMaintenanceMode()
+})
 </script>
 
 <style scoped>

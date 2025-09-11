@@ -140,7 +140,7 @@ import Modal from '../../../components/Core/Modal/Modal.vue'
 import endpoints from '../../../api/endpoints.js'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
 
-const api = useApiClient()
+const { apiClient: api } = useApiClient()
 const { $loadMultiselect } = useNuxtApp()
 
 // Lazy load Multiselect component
