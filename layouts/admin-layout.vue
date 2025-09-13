@@ -61,8 +61,10 @@
 <script setup>
 import { useAdminNavigation } from '../composables/navigation/useAdminNavigation.js'
 import { ref, computed, onMounted } from 'vue';
-import HeaderBar from '../components/Layout/Header/HeaderBar.vue';
-import SidebarMenu from '../components/Layout/Sidebar/SidebarMenu.vue';
+
+// Lazy load components để tăng performance
+const HeaderBar = defineAsyncComponent(() => import('../components/Layout/Header/HeaderBar.vue'))
+const SidebarMenu = defineAsyncComponent(() => import('../components/Layout/Sidebar/SidebarMenu.vue'))
 
 const router = useRouter();
 const route = useRoute();
@@ -71,6 +73,7 @@ const authStore = useAuthStore();
 // Kiểm tra quyền truy cập - để middleware xử lý
 onMounted(async () => {
   // Middleware sẽ xử lý authentication
+  // Không cần gọi API thêm ở đây
 });
 
 // Đặt sidebarOpen mặc định là true

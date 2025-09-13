@@ -184,7 +184,8 @@ export const useAuthStore = defineStore('auth', () => {
       return false
     }
 
-    if (isAuthenticated.value && user.value) {
+    // Nếu đã có user info và chưa hết hạn cache, không cần gọi API
+    if (isAuthenticated.value && user.value && (Date.now() - lastFetchTime.value) < fetchCacheDuration) {
       return true
     }
     

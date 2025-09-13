@@ -8,9 +8,14 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   const authStore = useAuthStore()
   
-  // Kiểm tra auth nếu chưa được khởi tạo
+  // Chỉ kiểm tra auth nếu chưa được khởi tạo và có token
   if (!authStore.isInitialized) {
-    await authStore.checkAuth()
+    const token = authStore.getTokenFromCookie()
+    if (token) {
+      await authStore.checkAuth()
+    } else {
+      authStore.isInitialized.value = true
+    }
   }
 
   // Tự động áp dụng middleware cho tất cả các route /admin/**

@@ -1,10 +1,20 @@
 <template>
   <div>
-    <!-- Page Header -->
-    <div class="mb-8">
-      <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-      <p class="text-gray-600">Tổng quan về hoạt động của hệ thống</p>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex items-center justify-center min-h-96">
+      <div class="text-center">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p class="text-gray-600">Đang tải dữ liệu...</p>
+      </div>
     </div>
+
+    <!-- Main Content -->
+    <div v-else>
+      <!-- Page Header -->
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p class="text-gray-600">Tổng quan về hoạt động của hệ thống</p>
+      </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -177,6 +187,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -189,6 +200,9 @@ definePageMeta({
   requiresAuth: true,
   requiresAdmin: true
 })
+
+// Loading state
+const isLoading = ref(true)
 
 // Data
 const stats = ref({
@@ -253,4 +267,12 @@ const getStatusText = (status) => {
   }
   return statusMap[status] || status
 }
+
+// Simulate loading data
+onMounted(() => {
+  // Simulate API call delay
+  setTimeout(() => {
+    isLoading.value = false
+  }, 500)
+})
 </script> 

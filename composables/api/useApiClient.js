@@ -12,7 +12,7 @@ export function useApiClient(options = {}) {
   const {
     retryAttempts = 0, // Tắt retry hoàn toàn
     retryDelay = 1000,
-    timeout = 30000,
+    timeout = 10000, // Giảm timeout từ 30s xuống 10s
     enableRetry = false // Tắt retry mặc định
   } = options
 
