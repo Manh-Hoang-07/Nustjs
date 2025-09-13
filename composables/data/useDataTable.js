@@ -6,7 +6,7 @@ export function useDataTable(endpoint, options = {}) {
   const {
     defaultFilters = {},
     defaultSort = 'created_at_desc',
-    cacheEnabled = true,
+    cacheEnabled = false,
     debounceTime = 300,
     pageSize = 10
   } = options

@@ -1,137 +1,218 @@
 <template>
   <div class="container mx-auto p-4">
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900">Cài đặt Bảo mật</h1>
-        <p class="text-gray-600 mt-1">Quản lý các cấu hình bảo mật của hệ thống</p>
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Cài đặt Bảo mật</h1>
+      <p class="text-gray-600 mt-1">Cấu hình các thông số bảo mật của hệ thống</p>
+    </div>
+
+    <!-- Form cấu hình bảo mật -->
+    <div class="bg-white rounded-lg shadow-md p-8">
+      <div v-if="loading" class="space-y-6">
+        <SkeletonLoader type="form" />
       </div>
-      <button 
-        @click="openCreateModal" 
-        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
-      >
-        Thêm cấu hình bảo mật
-      </button>
-    </div>
+      
+      <form v-else @submit.prevent="saveAllConfigs" class="space-y-8">
+        <!-- Cài đặt xác thực -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-6">Cài đặt xác thực</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Thời gian hết hạn token -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Thời gian hết hạn token (phút)
+              </label>
+              <input
+                v-model="configForm.token_expiry"
+                type="number"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="60"
+              />
+            </div>
 
-    <!-- Bộ lọc -->
-    <SystemConfigFilter 
-      :initial-filters="filters"
-      @update:filters="handleFilterUpdate" 
-    />
+            <!-- Số lần đăng nhập sai tối đa -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Số lần đăng nhập sai tối đa
+              </label>
+              <input
+                v-model="configForm.max_login_attempts"
+                type="number"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="5"
+              />
+            </div>
 
-    <!-- Danh sách cấu hình dạng card -->
-    <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div v-for="i in 6" :key="i" class="bg-white rounded-lg shadow-md p-6">
-        <SkeletonLoader type="card" />
-      </div>
-    </div>
-    
-    <div v-else-if="items.length === 0" class="text-center py-12">
-      <div class="text-gray-400 text-6xl mb-4">🔒</div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có cấu hình bảo mật</h3>
-      <p class="text-gray-500 mb-6">Hãy tạo cấu hình bảo mật đầu tiên cho hệ thống</p>
-      <button 
-        @click="openCreateModal"
-        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
-      >
-        Thêm cấu hình bảo mật
-      </button>
-    </div>
+            <!-- Thời gian khóa tài khoản (phút) -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Thời gian khóa tài khoản (phút)
+              </label>
+              <input
+                v-model="configForm.lockout_duration"
+                type="number"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="15"
+              />
+            </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div 
-        v-for="config in items" 
-        :key="config.id"
-        class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-6"
-      >
-        <!-- Header card -->
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex-1">
-            <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ config.display_name }}</h3>
-            <p class="text-sm text-gray-500 font-mono">{{ config.config_key }}</p>
-          </div>
-          <div class="flex items-center space-x-2">
-            <span 
-              class="px-2 py-1 text-xs font-semibold rounded-full" 
-              :class="getStatusClass(config.status)"
-            >
-              {{ getStatusLabel(config.status) }}
-            </span>
-            <Actions 
-              :item="config"
-              @edit="openEditModal"
-              @delete="confirmDelete"
-            />
-          </div>
-        </div>
-
-        <!-- Giá trị cấu hình -->
-        <div class="mb-4">
-          <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Giá trị</label>
-          <div class="mt-1 p-3 bg-gray-50 rounded-md">
-            <p class="text-sm text-gray-900 break-words">{{ config.config_value || 'Chưa có giá trị' }}</p>
+            <!-- Yêu cầu xác thực 2FA -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Yêu cầu xác thực 2FA
+              </label>
+              <select
+                v-model="configForm.require_2fa"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="false">Không</option>
+                <option value="true">Có</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <!-- Thông tin bổ sung -->
-        <div class="flex items-center justify-between text-sm">
-          <div class="flex items-center space-x-4">
-            <span 
-              class="px-2 py-1 text-xs font-semibold rounded-full" 
-              :class="getGroupClass(config.config_group)"
-            >
-              {{ getGroupName(config.config_group) }}
-            </span>
-            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-              {{ config.config_type }}
-            </span>
+        <!-- Cài đặt mật khẩu -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-6">Cài đặt mật khẩu</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Độ dài tối thiểu mật khẩu -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Độ dài tối thiểu mật khẩu
+              </label>
+              <input
+                v-model="configForm.min_password_length"
+                type="number"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="8"
+              />
+            </div>
+
+            <!-- Yêu cầu chữ hoa -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Yêu cầu chữ hoa
+              </label>
+              <select
+                v-model="configForm.require_uppercase"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="false">Không</option>
+                <option value="true">Có</option>
+              </select>
+            </div>
+
+            <!-- Yêu cầu chữ thường -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Yêu cầu chữ thường
+              </label>
+              <select
+                v-model="configForm.require_lowercase"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="false">Không</option>
+                <option value="true">Có</option>
+              </select>
+            </div>
+
+            <!-- Yêu cầu số -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Yêu cầu số
+              </label>
+              <select
+                v-model="configForm.require_numbers"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="false">Không</option>
+                <option value="true">Có</option>
+              </select>
+            </div>
+
+            <!-- Yêu cầu ký tự đặc biệt -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Yêu cầu ký tự đặc biệt
+              </label>
+              <select
+                v-model="configForm.require_special_chars"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="false">Không</option>
+                <option value="true">Có</option>
+              </select>
+            </div>
+
+            <!-- Thời gian hết hạn mật khẩu (ngày) -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Thời gian hết hạn mật khẩu (ngày)
+              </label>
+              <input
+                v-model="configForm.password_expiry_days"
+                type="number"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="90"
+              />
+            </div>
           </div>
-          <span class="text-gray-400 text-xs">ID: {{ config.id }}</span>
         </div>
 
-        <!-- Mô tả nếu có -->
-        <div v-if="config.description" class="mt-4 pt-4 border-t border-gray-200">
-          <p class="text-sm text-gray-600">{{ config.description }}</p>
+        <!-- Cài đặt phiên đăng nhập -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-6">Cài đặt phiên đăng nhập</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Thời gian hết hạn phiên (phút) -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Thời gian hết hạn phiên (phút)
+              </label>
+              <input
+                v-model="configForm.session_timeout"
+                type="number"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="30"
+              />
+            </div>
+
+            <!-- Cho phép đăng nhập đồng thời -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Cho phép đăng nhập đồng thời
+              </label>
+              <select
+                v-model="configForm.allow_concurrent_login"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="false">Không</option>
+                <option value="true">Có</option>
+              </select>
+            </div>
+          </div>
         </div>
-      </div>
+
+        <!-- Nút lưu -->
+        <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+          <button
+            type="button"
+            @click="resetForm"
+            class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            Đặt lại
+          </button>
+          <button
+            type="submit"
+            :disabled="saving"
+            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span v-if="saving">Đang lưu...</span>
+            <span v-else>Lưu cấu hình</span>
+          </button>
+        </div>
+      </form>
     </div>
 
-    <!-- Phân trang -->
-    <Pagination 
-      v-if="items.length > 0"
-      :current-page="pagination.current_page"
-      :total-pages="pagination.last_page"
-      :total-items="pagination.total"
-      :loading="loading"
-      @page-change="handlePageChange"
-    />
-
-    <!-- Modal thêm mới -->
-    <CreateSystemConfig
-      v-if="showCreateModal"
-      :show="showCreateModal"
-      :on-close="closeCreateModal"
-      @created="handleConfigCreated"
-    />
-
-    <!-- Modal chỉnh sửa -->
-    <EditSystemConfig
-      v-if="showEditModal"
-      :show="showEditModal"
-      :config="selectedConfig"
-      :on-close="closeEditModal"
-      @updated="handleConfigUpdated"
-    />
-
-    <!-- Modal xác nhận xóa -->
-    <ConfirmModal
-      v-if="showDeleteModal"
-      :show="showDeleteModal"
-      title="Xác nhận xóa"
-      :message="`Bạn có chắc chắn muốn xóa cấu hình ${selectedConfig?.config_key || ''}?`"
-      :on-close="closeDeleteModal"
-      @confirm="deleteConfig"
-    />
   </div>
 </template>
 
@@ -142,19 +223,11 @@ definePageMeta({
   requiresAdmin: true
 })
 
-import { ref, onMounted, defineAsyncComponent } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useDataTable } from '../../../../composables/data/useDataTable.js'
 import { useSystemConfig } from '../../../../composables/api'
 import { useToast } from '../../../../composables/ui/useToast.js'
 import SkeletonLoader from '../../../../components/Core/Loading/SkeletonLoader.vue'
-import ConfirmModal from '../../../../components/Core/Modal/ConfirmModal.vue'
-import Actions from '../../../../components/Core/Actions/Actions.vue'
-import Pagination from '../../../../components/Core/Navigation/Pagination.vue'
-
-// Lazy load components
-const CreateSystemConfig = defineAsyncComponent(() => import('../create.vue'))
-const EditSystemConfig = defineAsyncComponent(() => import('../edit.vue'))
-const SystemConfigFilter = defineAsyncComponent(() => import('../filter.vue'))
 
 // Use composables
 const { 
@@ -174,111 +247,113 @@ const {
   }
 })
 
+const { updateConfigsByGroup } = useSystemConfig()
 const { showSuccess, showError } = useToast()
 
 // State
 const selectedConfig = ref(null)
+const saving = ref(false)
 
-// Modal state
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const showDeleteModal = ref(false)
+// Form state
+const configForm = reactive({
+  token_expiry: '',
+  max_login_attempts: '',
+  lockout_duration: '',
+  require_2fa: 'false',
+  min_password_length: '',
+  require_uppercase: 'false',
+  require_lowercase: 'false',
+  require_numbers: 'false',
+  require_special_chars: 'false',
+  password_expiry_days: '',
+  session_timeout: '',
+  allow_concurrent_login: 'false'
+})
 
 // Fetch data
 onMounted(async () => {
   await fetchData()
+  loadConfigToForm()
 })
 
-// Filter handlers
-function handleFilterUpdate(newFilters) {
-  updateFilters(newFilters)
+// Load config data to form
+function loadConfigToForm() {
+  if (items.value && items.value.length > 0) {
+    items.value.forEach(config => {
+      switch (config.config_key) {
+        case 'token_expiry':
+          configForm.token_expiry = config.config_value || ''
+          break
+        case 'max_login_attempts':
+          configForm.max_login_attempts = config.config_value || ''
+          break
+        case 'lockout_duration':
+          configForm.lockout_duration = config.config_value || ''
+          break
+        case 'require_2fa':
+          configForm.require_2fa = config.config_value || 'false'
+          break
+        case 'min_password_length':
+          configForm.min_password_length = config.config_value || ''
+          break
+        case 'require_uppercase':
+          configForm.require_uppercase = config.config_value || 'false'
+          break
+        case 'require_lowercase':
+          configForm.require_lowercase = config.config_value || 'false'
+          break
+        case 'require_numbers':
+          configForm.require_numbers = config.config_value || 'false'
+          break
+        case 'require_special_chars':
+          configForm.require_special_chars = config.config_value || 'false'
+          break
+        case 'password_expiry_days':
+          configForm.password_expiry_days = config.config_value || ''
+          break
+        case 'session_timeout':
+          configForm.session_timeout = config.config_value || ''
+          break
+        case 'allow_concurrent_login':
+          configForm.allow_concurrent_login = config.config_value || 'false'
+          break
+      }
+    })
+  }
 }
 
-// Modal handlers
-function openCreateModal() {
-  showCreateModal.value = true
-}
-
-function closeCreateModal() {
-  showCreateModal.value = false
-}
-
-function openEditModal(config) {
-  selectedConfig.value = config
-  showEditModal.value = true
-}
-
-function closeEditModal() {
-  showEditModal.value = false
-  selectedConfig.value = null
-}
-
-function confirmDelete(config) {
-  selectedConfig.value = config
-  showDeleteModal.value = true
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false
-  selectedConfig.value = null
-}
-
-// Action handlers
-async function handleConfigCreated() {
-  await fetchData()
-  closeCreateModal()
-  showSuccess('Cấu hình bảo mật đã được tạo thành công')
-}
-
-async function handleConfigUpdated() {
-  await fetchData()
-  closeEditModal()
-  showSuccess('Cấu hình bảo mật đã được cập nhật thành công')
-}
-
-async function deleteConfig() {
+// Save all configs
+async function saveAllConfigs() {
+  saving.value = true
   try {
-    await deleteItem(selectedConfig.value.id)
-    closeDeleteModal()
-    showSuccess('Cấu hình bảo mật đã được xóa thành công')
+    const configs = {
+      token_expiry: configForm.token_expiry,
+      max_login_attempts: configForm.max_login_attempts,
+      lockout_duration: configForm.lockout_duration,
+      require_2fa: configForm.require_2fa,
+      min_password_length: configForm.min_password_length,
+      require_uppercase: configForm.require_uppercase,
+      require_lowercase: configForm.require_lowercase,
+      require_numbers: configForm.require_numbers,
+      require_special_chars: configForm.require_special_chars,
+      password_expiry_days: configForm.password_expiry_days,
+      session_timeout: configForm.session_timeout,
+      allow_concurrent_login: configForm.allow_concurrent_login
+    }
+    
+    await updateConfigsByGroup('security', configs)
+    showSuccess('Cấu hình bảo mật đã được lưu thành công')
+    await fetchData()
   } catch (error) {
-    showError('Không thể xóa cấu hình bảo mật')
+    showError('Không thể lưu cấu hình bảo mật')
+  } finally {
+    saving.value = false
   }
 }
 
-function handlePageChange(page) {
-  fetchData({ page })
-}
-
-// Helper functions
-function getGroupName(group) {
-  const groups = {
-    general: 'Cài đặt chung',
-    email: 'Cài đặt email',
-    security: 'Cài đặt bảo mật'
-  }
-  return groups[group] || group
-}
-
-function getGroupClass(group) {
-  const classes = {
-    general: 'bg-blue-100 text-blue-800',
-    email: 'bg-green-100 text-green-800',
-    security: 'bg-red-100 text-red-800'
-  }
-  return classes[group] || 'bg-gray-100 text-gray-800'
-}
-
-function getStatusLabel(status) {
-  if (status === 'active') return 'Hoạt động'
-  if (status === 'inactive') return 'Không hoạt động'
-  return status || 'Không xác định'
-}
-
-function getStatusClass(status) {
-  if (status === 'active') return 'bg-green-100 text-green-800'
-  if (status === 'inactive') return 'bg-red-100 text-red-800'
-  return 'bg-gray-100 text-gray-800'
+// Reset form
+function resetForm() {
+  loadConfigToForm()
 }
 </script>
 

@@ -1,9 +1,10 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">Cài đặt Chung</h1>
+        <h1 class="text-2xl font-bold text-gray-900">Cài đặt Chung</h1>
       <p class="text-gray-600 mt-1">Cấu hình thông tin cơ bản của website</p>
     </div>
+
 
 
     <!-- Form cấu hình chung -->
@@ -12,123 +13,73 @@
         <SkeletonLoader type="form" />
       </div>
       
-      <form v-else @submit.prevent="saveAllConfigs" class="space-y-8">
-        <!-- Thông tin website -->
-        <div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-6">Thông tin website</h3>
+      <!-- Thông báo khi chưa có dữ liệu -->
+      <div v-else-if="!loading && sortedItems.length === 0" class="text-center py-8">
+        <p class="text-gray-500">Không có dữ liệu cấu hình để hiển thị</p>
+        <button @click="fetchData" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Tải lại dữ liệu
+        </button>
+      </div>
+      
+      <form v-else-if="sortedItems.length > 0" @submit.prevent="saveAllConfigs" class="space-y-8">
+        <!-- Render form động từ dữ liệu API -->
+        <div v-for="(config, index) in sortedItems" :key="config.id" class="mb-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Tên website -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Tên website <span class="text-red-500">*</span>
+                {{ config.display_name }}
+                <span v-if="config.is_required" class="text-red-500">*</span>
               </label>
-              <input
-                v-model="configForm.site_name"
-                type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Website Name"
-                required
-              />
-            </div>
-
-            <!-- Mô tả website -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Mô tả website
-              </label>
-              <input
-                v-model="configForm.site_description"
-                type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Mô tả website"
-              />
-            </div>
-
-            <!-- Logo website -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Logo website
-              </label>
-              <div class="flex">
+              
+              <!-- Input text/email -->
+              <template v-if="config.config_type === 'string' || config.config_type === 'email'">
                 <input
-                  v-model="configForm.site_logo"
-                  type="text"
-                  class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="/images/logo.png"
+                  v-model="configForm[config.config_key]"
+                  :type="config.config_type === 'email' ? 'email' : 'text'"
+                  :placeholder="config.description || ''"
+                  :required="config.is_required"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <button
-                  type="button"
-                  class="px-4 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-md hover:bg-gray-200 focus:outline-none"
-                >
-                  Chọn file
-                </button>
-              </div>
-            </div>
-
-            <!-- Favicon -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Favicon
-              </label>
-              <div class="flex">
-                <input
-                  v-model="configForm.site_favicon"
-                  type="text"
-                  class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="/images/favicon.ico"
+              </template>
+              
+              <!-- Input file -->
+              <template v-else-if="config.config_type === 'file'">
+                <ImageUploader
+                  v-model="configForm[config.config_key]"
+                  :default-url="config.config_value"
                 />
-                <button
-                  type="button"
-                  class="px-4 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-md hover:bg-gray-200 focus:outline-none"
-                >
-                  Chọn file
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Thông tin liên hệ -->
-        <div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-6">Thông tin liên hệ</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Email liên hệ -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Email liên hệ
-              </label>
-              <input
-                v-model="configForm.contact_email"
-                type="email"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="contact@website.com"
-              />
-            </div>
-
-            <!-- Số điện thoại -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Số điện thoại
-              </label>
-              <input
-                v-model="configForm.contact_phone"
-                type="tel"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="0123456789"
-              />
-            </div>
-
-            <!-- Địa chỉ -->
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Địa chỉ
-              </label>
-              <input
-                v-model="configForm.contact_address"
-                type="text"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="123 Đường ABC, Quận XYZ, TP.HCM"
-              />
+              </template>
+              
+              <!-- Checkbox boolean -->
+              <template v-else-if="config.config_type === 'boolean'">
+                <div class="flex items-center">
+                  <input
+                    v-model="configForm[config.config_key]"
+                    type="checkbox"
+                    :id="config.config_key"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label :for="config.config_key" class="ml-2 block text-sm text-gray-700">
+                    {{ config.display_name }}
+                  </label>
+                </div>
+              </template>
+              
+              <!-- Textarea cho description dài -->
+              <template v-else-if="config.config_type === 'textarea'">
+                <textarea
+                  v-model="configForm[config.config_key]"
+                  :placeholder="config.description || ''"
+                  :required="config.is_required"
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                ></textarea>
+              </template>
+              
+              <!-- Description -->
+              <p v-if="config.description" class="text-sm text-gray-500 mt-1">
+                {{ config.description }}
+              </p>
             </div>
           </div>
         </div>
@@ -164,11 +115,12 @@ definePageMeta({
   requiresAdmin: true
 })
 
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useDataTable } from '../../../../composables/data/useDataTable.js'
 import { useSystemConfig } from '../../../../composables/api'
 import { useToast } from '../../../../composables/ui/useToast.js'
 import SkeletonLoader from '../../../../components/Core/Loading/SkeletonLoader.vue'
+import ImageUploader from '../../../../components/Core/Image/ImageUploader.vue'
 
 // Use composables
 const { 
@@ -191,20 +143,21 @@ const {
 const { updateConfigsByGroup } = useSystemConfig()
 const { showSuccess, showError } = useToast()
 
+// Computed để sắp xếp items theo sort_order và lọc active
+const sortedItems = computed(() => {
+  if (!items.value) return []
+  // Lọc chỉ các item có status = 'active' và sắp xếp theo sort_order
+  return [...items.value]
+    .filter(item => item.status === 'active')
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+})
+
 // State
 const selectedConfig = ref(null)
 const saving = ref(false)
 
-// Form state
-const configForm = reactive({
-  site_name: '',
-  site_description: '',
-  site_logo: '',
-  site_favicon: '',
-  contact_email: '',
-  contact_phone: '',
-  contact_address: ''
-})
+// Form state - sẽ được khởi tạo động từ API
+const configForm = reactive({})
 
 // Modal state
 const showCreateModal = ref(false)
@@ -213,56 +166,41 @@ const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  await fetchData()
-  loadConfigToForm()
+  try {
+    await fetchData()
+    loadConfigToForm()
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
 })
 
-// Load config data to form
+// Load config data to form - khởi tạo động từ API
 function loadConfigToForm() {
-  if (items.value && items.value.length > 0) {
-    items.value.forEach(config => {
-      switch (config.config_key) {
-        case 'site_name':
-          configForm.site_name = config.config_value || ''
-          break
-        case 'site_description':
-          configForm.site_description = config.config_value || ''
-          break
-        case 'site_logo':
-          configForm.site_logo = config.config_value || ''
-          break
-        case 'site_favicon':
-          configForm.site_favicon = config.config_value || ''
-          break
-        case 'contact_email':
-          configForm.contact_email = config.config_value || ''
-          break
-        case 'contact_phone':
-          configForm.contact_phone = config.config_value || ''
-          break
-        case 'contact_address':
-          configForm.contact_address = config.config_value || ''
-          break
+  if (sortedItems.value && sortedItems.value.length > 0) {
+    // Xóa tất cả properties cũ
+    Object.keys(configForm).forEach(key => {
+      delete configForm[key]
+    })
+    
+    // Khởi tạo form với dữ liệu từ API (chỉ các item active)
+    sortedItems.value.forEach(config => {
+      if (config.config_type === 'boolean') {
+        // Với boolean, ưu tiên config_value trước, sau đó mới đến value
+        configForm[config.config_key] = config.config_value === 'true' || config.value === true
+      } else {
+        // Với các kiểu khác, ưu tiên config_value (giá trị thực tế) trước
+        configForm[config.config_key] = config.config_value || config.value || config.default_value || ''
       }
     })
   }
 }
 
-// Save all configs
+// Save all configs - gửi tất cả dữ liệu từ form động
 async function saveAllConfigs() {
   saving.value = true
   try {
-    const configs = {
-      site_name: configForm.site_name,
-      site_description: configForm.site_description,
-      site_logo: configForm.site_logo,
-      site_favicon: configForm.site_favicon,
-      contact_email: configForm.contact_email,
-      contact_phone: configForm.contact_phone,
-      contact_address: configForm.contact_address
-    }
-    
-    await updateConfigsByGroup('general', configs)
+    // Gửi toàn bộ configForm object
+    await updateConfigsByGroup('general', configForm)
     showSuccess('Cấu hình chung đã được lưu thành công')
     await fetchData()
   } catch (error) {
