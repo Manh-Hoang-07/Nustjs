@@ -174,6 +174,27 @@ export function useAdminNavigation() {
           icon: '📋'
         }
       ]
+    },
+    {
+      name: 'Cấu hình hệ thống V2',
+      icon: '🔧',
+      children: [
+        {
+          name: 'Cài đặt chung V2',
+          path: '/admin/system-configs-v2/general',
+          icon: '🌐'
+        },
+        {
+          name: 'Cài đặt email V2',
+          path: '/admin/system-configs-v2/email',
+          icon: '📧'
+        },
+        {
+          name: 'Cấu hình theo Key V2',
+          path: '/admin/system-configs-v2/key',
+          icon: '🔑'
+        }
+      ]
     }
   ])
 

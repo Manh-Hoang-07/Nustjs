@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { useApiClient } from '../composables/api/useApiClient.js'
 
 export const useAuthStore = defineStore('auth', () => {
-  const apiClient = useApiClient()
+  const { apiClient } = useApiClient()
   
   // State
   const isAuthenticated = ref(false)
