@@ -35,6 +35,7 @@ export { default as formatters, formatCurrency, formatNumber, formatDate } from 
 export { default as optimization, debounce, throttle, lazyLoadImage, generateSrcSet, generateSizes, optimizeImageUrl, preloadImage, preloadImages, getImageDimensions, compressImage, generatePlaceholder, isImageLoaded, getDominantColor, PerformancePlugin, measureTime, measureApiCall, measureComponentRender, getPerformanceMetrics, getPerformanceReport } from '../utils/optimization';
 export { useAuthStore } from '../stores/auth';
 export { useEnumStore } from '../stores/enumStore';
+export { useSystemConfigStore } from '../stores/systemConfig';
 export { useUserStore } from '../stores/userStore';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { useColorMode } from '../node_modules/@nuxtjs/color-mode/dist/runtime/composables';

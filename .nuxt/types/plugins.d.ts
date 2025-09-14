@@ -24,7 +24,8 @@ type NuxtAppInjections =
   InjectionType<typeof import("../../plugins/auth.client.js")> &
   InjectionType<typeof import("../../plugins/disable-admin-prefetch.client")> &
   InjectionType<typeof import("../../plugins/lazy-multiselect.client.js")> &
-  InjectionType<typeof import("../../plugins/suppress-warnings.client.js")>
+  InjectionType<typeof import("../../plugins/suppress-warnings.client.js")> &
+  InjectionType<typeof import("../../plugins/system-config.client.js")>
 
 declare module '#app' {
   interface NuxtApp extends NuxtAppInjections { }

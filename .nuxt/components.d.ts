@@ -32,6 +32,7 @@ interface _GlobalComponents {
     'CoreSelectSearchableMultiSelect': typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']
     'CoreSelectSearchableSelect': typeof import("../components/Core/Select/SearchableSelect.vue")['default']
     'CoreTableDataTable': typeof import("../components/Core/Table/DataTable.vue")['default']
+    'LayoutFooterSystemFooter': typeof import("../components/Layout/Footer/SystemFooter.vue")['default']
     'LayoutHeaderBar': typeof import("../components/Layout/Header/HeaderBar.vue")['default']
     'LayoutSectionsCustomSection': typeof import("../components/Layout/Sections/CustomSection.vue")['default']
     'LayoutSidebarMenu': typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']
@@ -81,6 +82,7 @@ interface _GlobalComponents {
     'LazyCoreSelectSearchableMultiSelect': LazyComponent<typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']>
     'LazyCoreSelectSearchableSelect': LazyComponent<typeof import("../components/Core/Select/SearchableSelect.vue")['default']>
     'LazyCoreTableDataTable': LazyComponent<typeof import("../components/Core/Table/DataTable.vue")['default']>
+    'LazyLayoutFooterSystemFooter': LazyComponent<typeof import("../components/Layout/Footer/SystemFooter.vue")['default']>
     'LazyLayoutHeaderBar': LazyComponent<typeof import("../components/Layout/Header/HeaderBar.vue")['default']>
     'LazyLayoutSectionsCustomSection': LazyComponent<typeof import("../components/Layout/Sections/CustomSection.vue")['default']>
     'LazyLayoutSidebarMenu': LazyComponent<typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']>
@@ -136,6 +138,7 @@ export const CoreSelectMultipleSelect: typeof import("../components/Core/Select/
 export const CoreSelectSearchableMultiSelect: typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']
 export const CoreSelectSearchableSelect: typeof import("../components/Core/Select/SearchableSelect.vue")['default']
 export const CoreTableDataTable: typeof import("../components/Core/Table/DataTable.vue")['default']
+export const LayoutFooterSystemFooter: typeof import("../components/Layout/Footer/SystemFooter.vue")['default']
 export const LayoutHeaderBar: typeof import("../components/Layout/Header/HeaderBar.vue")['default']
 export const LayoutSectionsCustomSection: typeof import("../components/Layout/Sections/CustomSection.vue")['default']
 export const LayoutSidebarMenu: typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']
@@ -185,6 +188,7 @@ export const LazyCoreSelectMultipleSelect: LazyComponent<typeof import("../compo
 export const LazyCoreSelectSearchableMultiSelect: LazyComponent<typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']>
 export const LazyCoreSelectSearchableSelect: LazyComponent<typeof import("../components/Core/Select/SearchableSelect.vue")['default']>
 export const LazyCoreTableDataTable: LazyComponent<typeof import("../components/Core/Table/DataTable.vue")['default']>
+export const LazyLayoutFooterSystemFooter: LazyComponent<typeof import("../components/Layout/Footer/SystemFooter.vue")['default']>
 export const LazyLayoutHeaderBar: LazyComponent<typeof import("../components/Layout/Header/HeaderBar.vue")['default']>
 export const LazyLayoutSectionsCustomSection: LazyComponent<typeof import("../components/Layout/Sections/CustomSection.vue")['default']>
 export const LazyLayoutSidebarMenu: LazyComponent<typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']>
