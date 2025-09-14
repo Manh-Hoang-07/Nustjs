@@ -106,9 +106,6 @@
          </NuxtLink>
       </div>
     </nav>
-    <div class="p-4 border-t border-slate-700">
-      <slot name="user"></slot>
-    </div>
   </aside>
 </template>
 
