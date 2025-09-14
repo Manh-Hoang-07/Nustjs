@@ -131,8 +131,8 @@
                 </div>
                 <div class="flex-1">
                   <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-2 group-hover/contact:text-blue-600 transition-colors duration-300">Email</h3>
-                  <p class="text-sm lg:text-base text-gray-600 hover:text-blue-500 transition-colors duration-300">support@example.com</p>
-                  <p class="text-sm lg:text-base text-gray-600 hover:text-blue-500 transition-colors duration-300">info@example.com</p>
+                  <p v-if="siteInfo.email" class="text-sm lg:text-base text-gray-600 hover:text-blue-500 transition-colors duration-300">{{ siteInfo.email }}</p>
+                  <p v-else class="text-sm lg:text-base text-gray-500">Thông tin email đang được cập nhật...</p>
                 </div>
               </div>
 
@@ -145,8 +145,8 @@
                 </div>
                 <div class="flex-1">
                   <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-2 group-hover/contact:text-green-600 transition-colors duration-300">Điện thoại</h3>
-                  <p class="text-sm lg:text-base text-gray-600 hover:text-green-500 transition-colors duration-300">+84 123 456 789</p>
-                  <p class="text-sm lg:text-base text-gray-600 hover:text-green-500 transition-colors duration-300">+84 987 654 321</p>
+                  <p v-if="siteInfo.phone" class="text-sm lg:text-base text-gray-600 hover:text-green-500 transition-colors duration-300">{{ siteInfo.phone }}</p>
+                  <p v-else class="text-sm lg:text-base text-gray-500">Thông tin điện thoại đang được cập nhật...</p>
                 </div>
               </div>
 
@@ -160,8 +160,8 @@
                 </div>
                 <div class="flex-1">
                   <h3 class="text-lg lg:text-xl font-bold text-gray-900 mb-2 group-hover/contact:text-purple-600 transition-colors duration-300">Địa chỉ</h3>
-                  <p class="text-sm lg:text-base text-gray-600 hover:text-purple-500 transition-colors duration-300">123 Đường ABC, Quận XYZ</p>
-                  <p class="text-sm lg:text-base text-gray-600 hover:text-purple-500 transition-colors duration-300">Hà Nội, Việt Nam</p>
+                  <p v-if="siteInfo.address" class="text-sm lg:text-base text-gray-600 hover:text-purple-500 transition-colors duration-300">{{ siteInfo.address }}</p>
+                  <p v-else class="text-sm lg:text-base text-gray-500">Thông tin địa chỉ đang được cập nhật...</p>
                 </div>
               </div>
 
@@ -233,8 +233,12 @@ import { ref, reactive, computed } from 'vue'
 import { CONTACT_ENDPOINTS } from '@/api/endpoints'
 import api from '@/api/apiClient'
 import { useToast } from '@/composables/ui/useToast'
+import { useSystemConfigInfo } from '@/composables/system/useSystemConfig'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
+
+// Sử dụng system config
+const { siteInfo } = useSystemConfigInfo()
 
 // Page meta
 definePageMeta({
