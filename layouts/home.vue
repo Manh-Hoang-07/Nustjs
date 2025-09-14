@@ -224,7 +224,7 @@
 
 <script setup>
 import { computed, watch } from 'vue'
-import { useUserNavigation } from '../composables/navigation/useUserNavigation.js'
+import { useUserNavigation } from '@/composables/navigation/useUserNavigation'
 
 // Sử dụng auth store
 const authStore = useAuthStore()

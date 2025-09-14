@@ -123,12 +123,12 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import VariantForm from './variant-form.vue'
-import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
-import Actions from '../../../components/Core/Actions/Actions.vue'
-import endpoints from '../../../api/endpoints.js'
+import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
+import Actions from '@/components/Core/Actions/Actions.vue'
+import endpoints from '@/api/endpoints'
 
-import { formatCurrency } from '../../../utils/formatters.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { formatCurrency } from '@/utils/formatters'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const api = useApiClient()
 

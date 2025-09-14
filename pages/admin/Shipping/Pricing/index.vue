@@ -169,11 +169,11 @@ definePageMeta({
 })
 
 import { ref, onMounted } from 'vue'
-import api from '../../../../api/apiClient.js'
-import endpoints from '../../../../api/endpoints.js'
+import api from '@/api/apiClient'
+import endpoints from '@/api/endpoints'
 import PricingRuleForm from './PricingRuleForm.vue'
 import CustomSection from '/components/Layout/Sections/CustomSection.vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import Modal from '@/components/Core/Modal/Modal.vue'
 
 const showEditPricing = ref(false)
 const serviceId = ref('')

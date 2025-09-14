@@ -207,11 +207,11 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
-import { useApiClient } from '../../composables/api/useApiClient.js'
-import { useDataTable } from '../../composables/data/useDataTable.js'
-import Pagination from '../../components/Core/Navigation/Pagination.vue'
-import { debounce } from '../../utils/optimization.js'
-import { formatDate } from '../../utils/formatters.js'
+import { useApiClient } from '@/composables/api/useApiClient'
+import { useDataTable } from '@/composables/data/useDataTable'
+import Pagination from '@/components/Core/Navigation/Pagination.vue'
+import { debounce } from '@/utils/optimization'
+import { formatDate } from '@/utils/formatters'
 
 // Hàm format excerpt đơn giản
 const formatExcerpt = (text, maxLength = 150) => {

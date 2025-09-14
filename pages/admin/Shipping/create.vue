@@ -5,9 +5,9 @@
 </template>
 <script setup>
 import Form from './form.vue'
-import api from '../../../api/apiClient.js'
-import endpoints from '../../../api/endpoints.js'
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import api from '@/api/apiClient'
+import endpoints from '@/api/endpoints'
+import Modal from '@/components/Core/Modal/Modal.vue'
 import { computed } from 'vue'
 const props = defineProps({
   show: Boolean,

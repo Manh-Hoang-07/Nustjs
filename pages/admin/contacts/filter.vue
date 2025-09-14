@@ -123,7 +123,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { getEnumSync } from '../../../constants/enums.js'
+import { getEnumSync } from '@/constants/enums'
 import { debounce } from 'lodash-es'
 
 // Props

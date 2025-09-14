@@ -35,12 +35,12 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
-import MultipleSelect from '../../../components/Core/Select/MultipleSelect.vue'
-import endpoints from '../../../api/endpoints.js'
-import { useApiFormSubmit } from '../../../utils/form.js'
-import apiClient from '../../../api/apiClient.js'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
+import MultipleSelect from '@/components/Core/Select/MultipleSelect.vue'
+import endpoints from '@/api/endpoints'
+import { useApiFormSubmit } from '@/utils/form'
+import apiClient from '@/api/apiClient'
 
 const props = defineProps({
   show: Boolean,

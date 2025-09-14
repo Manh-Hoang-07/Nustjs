@@ -511,17 +511,17 @@
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue'
-import { getEnumSync } from '../../../constants/enums.js'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
-import FormField from '../../../components/Core/Form/FormField.vue'
-import MultipleSelect from '../../../components/Core/Select/MultipleSelect.vue'
-import SearchableSelect from '../../../components/Core/Select/SearchableSelect.vue'
-import SearchableMultiSelect from '../../../components/Core/Select/SearchableMultiSelect.vue'
-import endpoints from '../../../api/endpoints.js'
-import apiClient from '../../../api/apiClient.js'
-import { useFormDefaults } from '../../../utils/form.js'
-import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
+import { getEnumSync } from '@/constants/enums'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
+import FormField from '@/components/Core/Form/FormField.vue'
+import MultipleSelect from '@/components/Core/Select/MultipleSelect.vue'
+import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
+import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
+import endpoints from '@/api/endpoints'
+import apiClient from '@/api/apiClient'
+import { useFormDefaults } from '@/utils/form'
+import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 
 const props = defineProps({
   show: Boolean,

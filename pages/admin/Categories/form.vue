@@ -62,16 +62,16 @@
 </template>
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
-import FormField from '../../../components/Core/Form/FormField.vue'
-import endpoints from '../../../api/endpoints.js'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
+import FormField from '@/components/Core/Form/FormField.vue'
+import endpoints from '@/api/endpoints'
 
-import { useFormDefaults } from '../../../utils/form.js'
-import { formToFormData } from '../../../utils/form.js'
-import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
-import CKEditorUltimate from '../../../components/Core/Content/CKEditorUltimate.vue'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { useFormDefaults } from '@/utils/form'
+import { formToFormData } from '@/utils/form'
+import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
+import CKEditorUltimate from '@/components/Core/Content/CKEditorUltimate.vue'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const api = useApiClient()
 

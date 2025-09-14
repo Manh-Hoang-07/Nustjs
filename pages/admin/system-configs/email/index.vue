@@ -143,18 +143,18 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { useDataTable } from '../../../../composables/data/useDataTable.js'
-import { useSystemConfig } from '../../../../composables/api'
-import { useToast } from '../../../../composables/ui/useToast.js'
-import SkeletonLoader from '../../../../components/Core/Loading/SkeletonLoader.vue'
-import ConfirmModal from '../../../../components/Core/Modal/ConfirmModal.vue'
-import Actions from '../../../../components/Core/Actions/Actions.vue'
-import Pagination from '../../../../components/Core/Navigation/Pagination.vue'
+import { useDataTable } from '@/composables/data/useDataTable'
+import { useSystemConfig } from '@/composables/api'
+import { useToast } from '@/composables/ui/useToast'
+import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
+import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
+import Actions from '@/components/Core/Actions/Actions.vue'
+import Pagination from '@/components/Core/Navigation/Pagination.vue'
 
 // Lazy load components
-const CreateSystemConfig = defineAsyncComponent(() => import('../create.vue'))
-const EditSystemConfig = defineAsyncComponent(() => import('../edit.vue'))
-const SystemConfigFilter = defineAsyncComponent(() => import('../filter.vue'))
+const CreateSystemConfig = defineAsyncComponent(() => import('./create.vue'))
+const EditSystemConfig = defineAsyncComponent(() => import('./edit.vue'))
+const SystemConfigFilter = defineAsyncComponent(() => import('./filter.vue'))
 
 // Use composables
 const { 

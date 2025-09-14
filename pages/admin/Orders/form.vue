@@ -51,10 +51,10 @@
 </template>
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue'
-import { getEnumSync } from '../../../constants/enums.js'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import endpoints from '../../../api/endpoints.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { getEnumSync } from '@/constants/enums'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import endpoints from '@/api/endpoints'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 
 const api = useApiClient()

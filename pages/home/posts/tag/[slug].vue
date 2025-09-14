@@ -221,11 +221,11 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
-import { useDataTable } from '../../../composables/data/useDataTable.js'
-import { formatDate } from '../../../utils/formatters.js'
+import { useApiClient } from '@/composables/api/useApiClient'
+import { useDataTable } from '@/composables/data/useDataTable'
+import { formatDate } from '@/utils/formatters'
 
-import Pagination from '../../../components/Core/Navigation/Pagination.vue'
+import Pagination from '@/components/Core/Navigation/Pagination.vue'
 
 // Page meta
 definePageMeta({

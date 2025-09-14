@@ -14,9 +14,9 @@
 
 <script setup>
 import ImportInventoryForm from './import-form.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 import { ref, reactive, watch } from 'vue'
-import apiClient from '../../../api/apiClient.js'
+import apiClient from '@/api/apiClient'
 
 const props = defineProps({
   show: Boolean,

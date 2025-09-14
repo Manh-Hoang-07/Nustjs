@@ -96,9 +96,9 @@ definePageMeta({
 
 import { ref, onMounted, reactive } from 'vue'
 import ShippingServiceForm from './ShippingServiceForm.vue'
-import { getEnumLabel } from '../../../../constants/enums.js'
-import endpoints from '../../../../api/endpoints.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { getEnumLabel } from '@/constants/enums'
+import endpoints from '@/api/endpoints'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 
 const api = useApiClient()

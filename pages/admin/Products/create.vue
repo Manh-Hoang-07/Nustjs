@@ -12,10 +12,10 @@
 </template>
 <script setup>
 import ProductForm from './form.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 import { ref, reactive, watch, onMounted } from 'vue'
-import apiClient from '../../../api/apiClient.js'
-import { getEnumSync } from '../../../constants/enums.js'
+import apiClient from '@/api/apiClient'
+import { getEnumSync } from '@/constants/enums'
 
 const props = defineProps({
   show: Boolean,

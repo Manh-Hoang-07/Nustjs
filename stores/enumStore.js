@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { ENUMS as STATIC_ENUMS } from '../constants/enums.js'
+import { ENUMS as STATIC_ENUMS } from '@/constants/enums'
 
 export const useEnumStore = defineStore('enum', () => {
   // State

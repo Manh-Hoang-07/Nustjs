@@ -15,11 +15,11 @@
 </template>
 <script setup>
 import ProductForm from './form.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 import { ref, reactive, watch, onMounted } from 'vue'
 
-import { getEnumSync } from '../../../constants/enums.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { getEnumSync } from '@/constants/enums'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const api = useApiClient()
 

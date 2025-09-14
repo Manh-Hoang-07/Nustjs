@@ -131,11 +131,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getEnumSync, getEnumLabel } from '../../../constants/enums.js'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import api from '../../../api/apiClient.js'
-import endpoints from '../../../api/endpoints.js'
-import { useToast } from '../../../composables/ui/useToast.js'
+import { getEnumSync, getEnumLabel } from '@/constants/enums'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import api from '@/api/apiClient'
+import endpoints from '@/api/endpoints'
+import { useToast } from '@/composables/ui/useToast'
 
 // Props
 const props = defineProps({

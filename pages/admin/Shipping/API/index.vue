@@ -92,13 +92,13 @@ definePageMeta({
 })
 
 import { ref, onMounted, reactive } from 'vue'
-import api from '../../../../api/apiClient.js'
-import endpoints from '../../../../api/endpoints.js'
+import api from '@/api/apiClient'
+import endpoints from '@/api/endpoints'
 import CustomSection from '/components/Layout/Sections/CustomSection.vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import Modal from '@/components/Core/Modal/Modal.vue'
 import EditApiModal from './edit.vue'
 import ApiProviderForm from './ApiProviderForm.vue'
-import Pagination from '../../../components/Core/Navigation/Pagination.vue'
+import Pagination from '@/components/Core/Navigation/Pagination.vue'
 
 const showConfig = ref(false)
 const showAddProvider = ref(false)

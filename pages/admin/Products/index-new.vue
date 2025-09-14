@@ -129,9 +129,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AdminTable from '/components/Admin/Table/AdminTable.vue'
-import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
-import useCrudAdmin from '../../../composables/data/useCrudAdmin.js'
-import endpoints from '../../../api/endpoints.js'
+import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
+import useCrudAdmin from '@/composables/data/useCrudAdmin'
+import endpoints from '@/api/endpoints'
 
 
 const api = useApiClient()

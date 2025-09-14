@@ -50,7 +50,7 @@
 
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import Modal from '@/components/Core/Modal/Modal.vue'
 
 const props = defineProps({
   show: Boolean,

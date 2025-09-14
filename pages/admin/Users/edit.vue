@@ -16,10 +16,10 @@
 </template>
 <script setup>
 import UserForm from './form.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 import { ref, watch } from 'vue'
-import { useApiFormSubmit } from '../../../utils/form.js'
-import apiClient from '../../../api/apiClient.js'
+import { useApiFormSubmit } from '@/utils/form'
+import apiClient from '@/api/apiClient'
 
 const props = defineProps({
   show: Boolean,

@@ -179,7 +179,7 @@ definePageMeta({
 })
 
 import { ref, onMounted } from 'vue'
-import { useSystemConfig } from '../../composables/api'
+import { useSystemConfig } from '@/composables/api'
 
 const { clearCache: clearCacheApi, fetchConfigsByGroup } = useSystemConfig()
 

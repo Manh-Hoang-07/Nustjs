@@ -161,7 +161,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useUserNavigation } from '../../composables/navigation/useUserNavigation.js'
+import { useUserNavigation } from '@/composables/navigation/useUserNavigation'
 import NewsSection from './posts/components/NewsSection.vue'
 
 // Page meta

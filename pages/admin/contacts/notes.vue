@@ -107,13 +107,13 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
-import { getEnumLabel } from '../../../constants/enums.js'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
-import FormField from '../../../components/Core/Form/FormField.vue'
-import api from '../../../api/apiClient.js'
-import endpoints from '../../../api/endpoints.js'
-import { useToast } from '../../../composables/ui/useToast.js'
+import { getEnumLabel } from '@/constants/enums'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
+import FormField from '@/components/Core/Form/FormField.vue'
+import api from '@/api/apiClient'
+import endpoints from '@/api/endpoints'
+import { useToast } from '@/composables/ui/useToast'
 
 // Props
 const props = defineProps({

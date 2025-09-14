@@ -229,10 +229,10 @@
 
 <script setup>
 import { ref, computed, reactive, watch, nextTick, onMounted } from 'vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
-import MultipleSelect from '../../../components/Core/Select/MultipleSelect.vue'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
+import MultipleSelect from '@/components/Core/Select/MultipleSelect.vue'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const props = defineProps({
   show: Boolean,

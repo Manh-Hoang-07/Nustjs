@@ -208,10 +208,10 @@ definePageMeta({
 })
 
 import { ref, reactive, onMounted } from 'vue'
-import { useApiClient } from '../../../../composables/api/useApiClient.js'
-import { useToast } from '../../../../composables/ui/useToast.js'
-import SkeletonLoader from '../../../../components/Core/Loading/SkeletonLoader.vue'
-import ImageUploader from '../../../../components/Core/Image/ImageUploader.vue'
+import { useApiClient } from '@/composables/api/useApiClient'
+import { useToast } from '@/composables/ui/useToast'
+import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
+import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 
 // Use composables
 const { apiClient } = useApiClient()

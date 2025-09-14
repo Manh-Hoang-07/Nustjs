@@ -230,11 +230,11 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import { CONTACT_ENDPOINTS } from '../../api/endpoints.js'
-import api from '../../api/apiClient.js'
-import { useToast } from '../../composables/ui/useToast.js'
-import FormWrapper from '../../components/Core/Form/FormWrapper.vue'
-import FormField from '../../components/Core/Form/FormField.vue'
+import { CONTACT_ENDPOINTS } from '@/api/endpoints'
+import api from '@/api/apiClient'
+import { useToast } from '@/composables/ui/useToast'
+import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
+import FormField from '@/components/Core/Form/FormField.vue'
 
 // Page meta
 definePageMeta({

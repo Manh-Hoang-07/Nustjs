@@ -42,6 +42,6 @@
   </Modal>
 </template>
 <script setup>
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import Modal from '@/components/Core/Modal/Modal.vue'
 </script> 
 

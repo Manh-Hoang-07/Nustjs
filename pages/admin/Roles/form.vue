@@ -136,9 +136,9 @@
 
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import endpoints from '../../../api/endpoints.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import endpoints from '@/api/endpoints'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const { apiClient: api } = useApiClient()
 const { $loadMultiselect } = useNuxtApp()

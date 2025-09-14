@@ -15,9 +15,9 @@
 
 <script setup>
 import TagForm from './form.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 import { ref, watch } from 'vue'
-import { useApiFormSubmit } from '../../../utils/form.js'
+import { useApiFormSubmit } from '@/utils/form'
 
 const props = defineProps({
   show: Boolean,

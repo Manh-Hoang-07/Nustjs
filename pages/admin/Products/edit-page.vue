@@ -227,11 +227,11 @@ import { useRoute } from 'vue-router'
 import ProductForm from './form.vue'
 import VariantForm from './variant-form.vue'
 import ImageForm from './image-form.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 
-import { formatCurrency } from '../../../utils/formatters.js'
-import { getEnumSync } from '../../../constants/enums.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { formatCurrency } from '@/utils/formatters'
+import { getEnumSync } from '@/constants/enums'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const api = useApiClient()
 

@@ -12,11 +12,11 @@
 </template>
 <script setup>
 import AttributeForm from './form.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 import { ref, watch } from 'vue'
-import { getEnumSync } from '../../../constants/enums.js'
-import { useApiFormSubmit } from '../../../utils/form.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { getEnumSync } from '@/constants/enums'
+import { useApiFormSubmit } from '@/utils/form'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 
 const api = useApiClient()

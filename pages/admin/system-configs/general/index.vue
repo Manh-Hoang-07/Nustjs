@@ -116,11 +116,11 @@ definePageMeta({
 })
 
 import { ref, reactive, onMounted, computed } from 'vue'
-import { useDataTable } from '../../../../composables/data/useDataTable.js'
-import { useSystemConfig } from '../../../../composables/api'
-import { useToast } from '../../../../composables/ui/useToast.js'
-import SkeletonLoader from '../../../../components/Core/Loading/SkeletonLoader.vue'
-import ImageUploader from '../../../../components/Core/Image/ImageUploader.vue'
+import { useDataTable } from '@/composables/data/useDataTable'
+import { useSystemConfig } from '@/composables/api'
+import { useToast } from '@/composables/ui/useToast'
+import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
+import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 
 // Use composables
 const { 

@@ -174,14 +174,14 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { useDataTable } from '../../../composables/data/useDataTable.js'
-import { useToast } from '../../../composables/ui/useToast.js'
-import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
-import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
-import Actions from '../../../components/Core/Actions/Actions.vue'
-import Pagination from '../../../components/Core/Navigation/Pagination.vue'
-import endpoints from '../../../api/endpoints.js'
-import apiClient from '../../../api/apiClient.js'
+import { useDataTable } from '@/composables/data/useDataTable'
+import { useToast } from '@/composables/ui/useToast'
+import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
+import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
+import Actions from '@/components/Core/Actions/Actions.vue'
+import Pagination from '@/components/Core/Navigation/Pagination.vue'
+import endpoints from '@/api/endpoints'
+import apiClient from '@/api/apiClient'
 
 // Lazy load components
 const CreateInventory = defineAsyncComponent(() => import('./create.vue'))

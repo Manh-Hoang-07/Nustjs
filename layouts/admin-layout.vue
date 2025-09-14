@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { useAdminNavigation } from '../composables/navigation/useAdminNavigation.js'
+import { useAdminNavigation } from '@/composables/navigation/useAdminNavigation'
 import { ref, computed, onMounted } from 'vue';
 
 // Lazy load components để tăng performance

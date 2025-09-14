@@ -54,12 +54,12 @@
 </template>
 <script setup>
 import { ref, computed, watch } from 'vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
-import FormField from '../../../components/Core/Form/FormField.vue'
-import { useFormDefaults } from '../../../utils/form.js'
-import { formToFormData } from '../../../utils/form.js'
-import ImageUploader from '../../../components/Core/Image/ImageUploader.vue'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
+import FormField from '@/components/Core/Form/FormField.vue'
+import { useFormDefaults } from '@/utils/form'
+import { formToFormData } from '@/utils/form'
+import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 
 const props = defineProps({
   show: Boolean,

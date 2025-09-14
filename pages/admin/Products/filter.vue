@@ -64,10 +64,10 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue'
 import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 
-import { debounce } from '../../../utils/optimization.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { debounce } from '@/utils/optimization'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const api = useApiClient()
 

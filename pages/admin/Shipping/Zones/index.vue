@@ -109,9 +109,9 @@ definePageMeta({
 })
 
 import { ref, onMounted, computed, reactive } from 'vue'
-import api from '../../../../api/apiClient.js'
-import endpoints from '../../../../api/endpoints.js'
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import api from '@/api/apiClient'
+import endpoints from '@/api/endpoints'
+import Modal from '@/components/Core/Modal/Modal.vue'
 
 const showAddZone = ref(false)
 const editZoneName = ref('')

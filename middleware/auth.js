@@ -1,4 +1,4 @@
-import { useAuthStore } from '../stores/auth.js';
+import { useAuthStore } from '@/stores/auth';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   // Chỉ chạy trên client để tránh hydration mismatch

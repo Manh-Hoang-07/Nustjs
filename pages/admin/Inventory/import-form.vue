@@ -112,11 +112,11 @@
 </template>
 
 <script setup>
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import FormWrapper from '../../../components/Core/Form/FormWrapper.vue'
-import FormField from '../../../components/Core/Form/FormField.vue'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
+import FormField from '@/components/Core/Form/FormField.vue'
 import { ref, computed, watch } from 'vue'
-import { useFormDefaults } from '../../../utils/form.js'
+import { useFormDefaults } from '@/utils/form'
 
 const props = defineProps({
   show: Boolean,

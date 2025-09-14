@@ -200,9 +200,9 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { useSystemConfig } from '../../../composables/api'
-import { useToast } from '../../../composables/ui/useToast.js'
-import Modal from '../../../components/Core/Modal/Modal.vue'
+import { useSystemConfig } from '@/composables/api'
+import { useToast } from '@/composables/ui/useToast'
+import Modal from '@/components/Core/Modal/Modal.vue'
 
 const props = defineProps({
   show: {

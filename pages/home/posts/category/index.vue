@@ -222,8 +222,8 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { usePosts } from '../../../composables/usePosts.js'
-import Pagination from '../../../components/Core/Navigation/Pagination.vue'
+import { usePosts } from '@/composables/usePosts'
+import Pagination from '@/components/Core/Navigation/Pagination.vue'
 
 const route = useRoute()
 const { 

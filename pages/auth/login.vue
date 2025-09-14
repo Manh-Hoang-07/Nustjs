@@ -117,8 +117,8 @@
 </template>
 
 <script setup>
-import FormWrapper from '../components/Core/Form/FormWrapper.vue'
-import FormField from '../components/Core/Form/FormField.vue'
+import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
+import FormField from '@/components/Core/Form/FormField.vue'
 
 // Page meta
 definePageMeta({

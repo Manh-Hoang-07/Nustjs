@@ -224,10 +224,10 @@ definePageMeta({
 })
 
 import { ref, reactive, onMounted } from 'vue'
-import { useDataTable } from '../../../../composables/data/useDataTable.js'
-import { useSystemConfig } from '../../../../composables/api'
-import { useToast } from '../../../../composables/ui/useToast.js'
-import SkeletonLoader from '../../../../components/Core/Loading/SkeletonLoader.vue'
+import { useDataTable } from '@/composables/data/useDataTable'
+import { useSystemConfig } from '@/composables/api'
+import { useToast } from '@/composables/ui/useToast'
+import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 
 // Use composables
 const { 

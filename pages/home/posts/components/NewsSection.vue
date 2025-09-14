@@ -129,8 +129,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
-import { formatDate } from '../../../utils/formatters.js'
+import { useApiClient } from '@/composables/api/useApiClient'
+import { formatDate } from '@/utils/formatters'
 
 // Props
 const props = defineProps({

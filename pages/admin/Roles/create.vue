@@ -12,9 +12,9 @@
 </template>
 <script setup>
 import RoleForm from './form.vue'
-import endpoints from '../../../api/endpoints.js'
+import endpoints from '@/api/endpoints'
 import { ref, reactive, watch } from 'vue'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 
 const api = useApiClient()

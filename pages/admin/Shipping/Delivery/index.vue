@@ -11,7 +11,7 @@ definePageMeta({
 })
 
 // Nếu có form cấu hình delivery, import api và endpoints như sau:
-// import api from '../../../../api/apiClient.js'
-// import endpoints from '../../../../api/endpoints.js'
+// import api from '@/api/apiClient'
+// import endpoints from '@/api/endpoints'
 // Sau đó dùng api.get(endpoints.shippingDelivery.list) để lấy danh sách, api.post để thêm mới, v.v.
 </script> 

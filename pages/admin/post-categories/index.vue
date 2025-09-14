@@ -106,15 +106,15 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { getEnumSync, getEnumLabel } from '../../../constants/enums.js'
-import { useDataTable } from '../../../composables/data/useDataTable.js'
-import { useToast } from '../../../composables/ui/useToast.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
-import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
-import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
-import Actions from '../../../components/Core/Actions/Actions.vue'
-import Pagination from '../../../components/Core/Navigation/Pagination.vue'
-import endpoints from '../../../api/endpoints.js'
+import { getEnumSync, getEnumLabel } from '@/constants/enums'
+import { useDataTable } from '@/composables/data/useDataTable'
+import { useToast } from '@/composables/ui/useToast'
+import { useApiClient } from '@/composables/api/useApiClient'
+import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
+import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
+import Actions from '@/components/Core/Actions/Actions.vue'
+import Pagination from '@/components/Core/Navigation/Pagination.vue'
+import endpoints from '@/api/endpoints'
 
 // Lazy load components
 const CreateCategory = defineAsyncComponent(() => import('./create.vue'))

@@ -145,14 +145,14 @@ definePageMeta({
 })
 
 import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
-import ConfirmModal from '../../../components/Core/Modal/ConfirmModal.vue'
-import Actions from '../../../components/Core/Actions/Actions.vue'
-import SkeletonLoader from '../../../components/Core/Loading/SkeletonLoader.vue'
-import Pagination from '../../../components/Core/Navigation/Pagination.vue'
-import endpoints from '../../../api/endpoints.js'
-import { useDataTable } from '../../../composables/data/useDataTable'
-import { useToast } from '../../../composables/ui/useToast'
-import { formatDate, formatCurrency } from '../../../utils/formatters.js'
+import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
+import Actions from '@/components/Core/Actions/Actions.vue'
+import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
+import Pagination from '@/components/Core/Navigation/Pagination.vue'
+import endpoints from '@/api/endpoints'
+import { useDataTable } from '@/composables/data/useDataTable'
+import { useToast } from '@/composables/ui/useToast'
+import { formatDate, formatCurrency } from '@/utils/formatters'
 
 // Lazy load all components
 const ProductFilter = defineAsyncComponent(() => import('./filter.vue'))

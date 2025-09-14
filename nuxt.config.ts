@@ -41,8 +41,8 @@ export default defineNuxtConfig({
   vite: {
     resolve: {
       alias: {
-        '@': '.',
-        '~': '.'
+        '@': fileURLToPath(new URL('./', import.meta.url)),
+        '~': fileURLToPath(new URL('./', import.meta.url))
       }
     },
     build: {
@@ -89,12 +89,6 @@ export default defineNuxtConfig({
     }
   },
 
-  // Áp dụng middleware auth cho tất cả các route /admin/**
-  routeRules: {
-    '/admin/**': { 
-      middleware: ['auth']
-    }
-  },
 
   vue: {
     compilerOptions: {
@@ -102,8 +96,4 @@ export default defineNuxtConfig({
     }
   },
 
-  alias: {
-    '@': fileURLToPath(new URL('./', import.meta.url)),
-    '~': fileURLToPath(new URL('./', import.meta.url))
-  }
 })

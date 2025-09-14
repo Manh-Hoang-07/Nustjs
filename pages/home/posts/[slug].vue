@@ -237,9 +237,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useApiClient } from '../../composables/api/useApiClient.js'
-import HtmlContent from '../../components/Core/Content/HtmlContent.vue'
-import { formatDate } from '../../utils/formatters.js'
+import { useApiClient } from '@/composables/api/useApiClient'
+import HtmlContent from '@/components/Core/Content/HtmlContent.vue'
+import { formatDate } from '@/utils/formatters'
 
 const route = useRoute()
 const apiClient = useApiClient()

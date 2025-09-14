@@ -62,8 +62,8 @@
 </template>
 <script setup>
 import { ref, computed, reactive, watch } from 'vue'
-import Modal from '../../../components/Core/Modal/Modal.vue'
-import { getEnumSync } from '../../../constants/enums.js'
+import Modal from '@/components/Core/Modal/Modal.vue'
+import { getEnumSync } from '@/constants/enums'
 
 const props = defineProps({
   show: Boolean,
