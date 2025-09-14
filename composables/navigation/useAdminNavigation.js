@@ -8,198 +8,259 @@ export function useAdminNavigation() {
     {
       name: 'Dashboard',
       path: '/admin',
-      icon: '📊'
+      icon: '📊',
+      status: 'active'
     },
     {
       name: 'Quản lý chung',
       icon: '⚙️',
+      status: 'active',
       children: [
         {
           name: 'Tài khoản',
           path: '/admin/users',
-          icon: '👤'
+          icon: '👤',
+          status: 'active'
         },
         {
           name: 'Quyền',
           path: '/admin/permissions',
-          icon: '🔑'
+          icon: '🔑',
+          status: 'active'
         },
         {
           name: 'Vai trò',
           path: '/admin/roles',
-          icon: '👑'
+          icon: '👑',
+          status: 'active'
         }
       ]
     },
     {
       name: 'Khai báo chung',
       icon: '📋',
+      status: 'active',
       children: [
         {
           name: 'Danh mục',
           path: '/admin/categories',
-          icon: '📁'
+          icon: '📁',
+          status: 'active'
         },
         {
           name: 'Thương hiệu',
           path: '/admin/brands',
-          icon: '🏷️'
+          icon: '🏷️',
+          status: 'active'
         },
         {
           name: 'Thuộc tính',
           path: '/admin/attributes',
-          icon: '⚙️'
+          icon: '⚙️',
+          status: 'active'
         },
         {
           name: 'Giá trị thuộc tính',
           path: '/admin/attribute-values',
-          icon: '🔧'
+          icon: '🔧',
+          status: 'active'
         }
       ]
     },
     {
       name: 'Sản phẩm',
       path: '/admin/products',
-      icon: '📦'
+      icon: '📦',
+      status: 'active'
     },
     {
       name: 'Đơn hàng',
       path: '/admin/orders',
-      icon: '📋'
+      icon: '📋',
+      status: 'active'
     },
     {
-      name: 'Kho hàng',
-      path: '/admin/warehouses',
-      icon: '🏪'
-    },
-    {
-      name: 'Quản lý Tồn kho',
-      path: '/admin/inventory',
-      icon: '📦'
+      name: 'Quản lý Kho',
+      icon: '🏪',
+      status: 'active',
+      children: [
+        {
+          name: 'Kho hàng',
+          path: '/admin/warehouses',
+          icon: '🏪',
+          status: 'active'
+        },
+        {
+          name: 'Quản lý Tồn kho',
+          path: '/admin/inventory',
+          icon: '📦',
+          status: 'active'
+        }
+      ]
     },
     {
       name: 'Tin tức',
       icon: '📰',
+      status: 'active',
       children: [
         {
           name: 'Danh sách bài viết',
           path: '/admin/posts',
-          icon: '📄'
+          icon: '📄',
+          status: 'active'
         },
         {
           name: 'Danh mục bài viết',
           path: '/admin/post-categories',
-          icon: '📁'
+          icon: '📁',
+          status: 'active'
         },
         {
           name: 'Thẻ bài viết',
           path: '/admin/post-tags',
-          icon: '🏷️'
+          icon: '🏷️',
+          status: 'active'
         }
       ]
     },
     {
       name: 'Vận chuyển',
       icon: '🚚',
+      status: 'active',
       children: [
         {
           name: 'Tích hợp api',
           path: '/admin/shipping/api',
-          icon: '🔌'
+          icon: '🔌',
+          status: 'active'
         },
         {
           name: 'Dịch vụ vận chuyển',
           path: '/admin/shipping/services',
-          icon: '🚛'
+          icon: '🚛',
+          status: 'active'
         },
         {
           name: 'Zone Mapping',
           path: '/admin/shipping/zones',
-          icon: '🗺️'
+          icon: '🗺️',
+          status: 'active'
         },
         {
           name: 'Quy tắc giá',
           path: '/admin/shipping/pricing',
-          icon: '💰'
+          icon: '💰',
+          status: 'active'
         },
         {
           name: 'Khuyến mãi',
           path: '/admin/shipping/promotions',
-          icon: '🎉'
+          icon: '🎉',
+          status: 'active'
         },
         {
           name: 'Giao hàng',
           path: '/admin/shipping/delivery',
-          icon: '📮'
+          icon: '📮',
+          status: 'active'
         },
         {
           name: 'Nâng cao',
           path: '/admin/shipping/advanced',
-          icon: '⚡'
+          icon: '⚡',
+          status: 'active'
         }
       ]
     },
     {
       name: 'Liên hệ',
       path: '/admin/contacts',
-      icon: '📞'
+      icon: '📞',
+      status: 'active'
     },
     {
       name: 'Báo cáo',
       path: '/admin/reports',
-      icon: '📈'
+      icon: '📈',
+      status: 'active'
     },
     {
       name: 'Cấu hình hệ thống',
       icon: '⚙️',
+      status: 'inactive',
       children: [
         {
           name: 'Cài đặt chung',
           path: '/admin/system-configs/general',
-          icon: '🌐'
+          icon: '🌐',
+          status: 'active'
         },
         {
           name: 'Cài đặt email',
           path: '/admin/system-configs/email',
-          icon: '📧'
+          icon: '📧',
+          status: 'active'
         },
         {
           name: 'Cài đặt bảo mật',
           path: '/admin/system-configs/security',
-          icon: '🔒'
+          icon: '🔒',
+          status: 'active'
         },
         {
           name: 'Tất cả cấu hình',
           path: '/admin/system-configs',
-          icon: '📋'
+          icon: '📋',
+          status: 'active'
         }
       ]
     },
     {
-      name: 'Cấu hình hệ thống V2',
+      name: 'Cấu hình hệ thống',
       icon: '🔧',
+      status: 'active',
       children: [
         {
-          name: 'Cài đặt chung V2',
+          name: 'Cài đặt chung',
           path: '/admin/system-configs-v2/general',
-          icon: '🌐'
+          icon: '🌐',
+          status: 'active'
         },
         {
-          name: 'Cài đặt email V2',
+          name: 'Cài đặt email',
           path: '/admin/system-configs-v2/email',
-          icon: '📧'
+          icon: '📧',
+          status: 'active'
         },
         {
-          name: 'Cấu hình theo Key V2',
+          name: 'Cấu hình theo Key',
           path: '/admin/system-configs-v2/key',
-          icon: '🔑'
+          icon: '🔑',
+          status: 'active'
         }
       ]
     }
   ])
 
-  // Menu items đã được filter (luôn bao gồm tất cả)
-  const filteredMenuItems = computed(() => menuItems.value)
+  // Hàm filter menu items theo status
+  const filterMenuItemsByStatus = (items) => {
+    return items.filter(item => {
+      if (item.status !== 'active') return false
+      
+      if (item.children) {
+        const filteredChildren = filterMenuItemsByStatus(item.children)
+        if (filteredChildren.length === 0) return false
+        return {
+          ...item,
+          children: filteredChildren
+        }
+      }
+      return true
+    })
+  }
+
+  // Menu items đã được filter theo status
+  const filteredMenuItems = computed(() => filterMenuItemsByStatus(menuItems.value))
 
   return {
     menuItems: filteredMenuItems,
