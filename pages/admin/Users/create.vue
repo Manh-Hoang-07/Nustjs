@@ -41,21 +41,17 @@ watch(() => props.show, (newValue) => {
 }, { immediate: true })
 
 async function handleSubmit(formData) {
-  const {
-    name,
-    address,
-    gender,
-    birthday,
-    image,
-    about,
-    password_confirmation, // not needed by backend
-    ...rest
-  } = formData || {}
+  const data = formData || {}
+  const profileKeys = new Set(['name', 'address', 'gender', 'birthday', 'image', 'about', 'remove_image'])
+  const payload = { profile: {} }
 
-  const payload = {
-    ...rest,
-    profile: { name, address, gender, birthday, image, about }
-  }
+  Object.keys(data).forEach((key) => {
+    if (profileKeys.has(key)) {
+      payload.profile[key] = data[key]
+    } else {
+      payload[key] = data[key]
+    }
+  })
 
   await submit(payload)
 }

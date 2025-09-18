@@ -64,9 +64,9 @@ async function onFileChange(e) {
     error.value = ''
     try {
       const formData = new FormData()
-      formData.append('image', file)
+      formData.append('file', file)
       
-      const res = await api.post('/api/upload-image', formData, {
+      const res = await api.post('/api/files/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       
