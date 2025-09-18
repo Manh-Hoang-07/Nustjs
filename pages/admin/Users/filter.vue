@@ -51,13 +51,17 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
 
 const props = defineProps({
   initialFilters: {
     type: Object,
     default: () => ({})
+  },
+  statusEnums: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -66,23 +70,22 @@ const emit = defineEmits(['update:filters'])
 const filters = reactive({
   search: props.initialFilters.search || '',
   status: props.initialFilters.status || '',
-  sort_by: props.initialFilters.sort_by || 'created_at_desc',
+  sort_by: props.initialFilters.sort_by || 'created_at:desc',
 })
 
-// Các tùy chọn cho select
-const statusOptions = [
-  { value: 'active', label: 'Hoạt động' },
-  { value: 'inactive', label: 'Không hoạt động' },
-  { value: 'banned', label: 'Đã khóa' }
-]
+// Các tùy chọn cho select (lấy từ props.statusEnums) và phản ứng khi props thay đổi
+const statusOptions = computed(() => (props.statusEnums || []).map(it => ({
+  value: it.value ?? it.id,
+  label: it.label ?? it.name
+})))
 
 const sortOptions = [
-  { value: 'created_at_desc', label: 'Mới nhất' },
-  { value: 'created_at_asc', label: 'Cũ nhất' },
-  { value: 'username_asc', label: 'Tên đăng nhập (A-Z)' },
-  { value: 'username_desc', label: 'Tên đăng nhập (Z-A)' },
-  { value: 'email_asc', label: 'Email (A-Z)' },
-  { value: 'email_desc', label: 'Email (Z-A)' }
+  { value: 'created_at:desc', label: 'Mới nhất' },
+  { value: 'created_at:asc', label: 'Cũ nhất' },
+  { value: 'username:asc', label: 'Tên đăng nhập (A-Z)' },
+  { value: 'username:desc', label: 'Tên đăng nhập (Z-A)' },
+  { value: 'email:asc', label: 'Email (A-Z)' },
+  { value: 'email:desc', label: 'Email (Z-A)' }
 ]
 
 // Áp dụng bộ lọc
@@ -95,7 +98,7 @@ function resetFilters() {
   Object.keys(filters).forEach(key => {
     filters[key] = ''
   })
-  filters.sort_by = 'created_at_desc'
+  filters.sort_by = 'created_at:desc'
   emit('update:filters', { ...filters })
 }
 </script> 

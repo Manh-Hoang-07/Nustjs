@@ -13,6 +13,7 @@
     <!-- Bộ lọc -->
     <UserFilter 
       :initial-filters="filters"
+      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
@@ -152,6 +153,7 @@ definePageMeta({
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { getEnumSync, getEnumLabel } from '@/constants/enums'
+import apiClient from '@/api/apiClient'
 import { useDataTable } from '@/composables/data/useDataTable'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
@@ -180,7 +182,7 @@ const {
   defaultFilters: {
     search: '',
     status: '',
-    sort_by: 'created_at_desc'
+    sort_by: 'created_at:desc'
   }
 })
 
@@ -216,17 +218,29 @@ function handleFilterUpdate(newFilters) {
 }
 
 function fetchEnums() {
-  // Sử dụng static enum thay vì gọi API
-  statusEnums.value = getEnumSync('user_status')
+  // Trạng thái: lấy từ API basic_status
+  ;(async () => {
+    try {
+      const response = await apiClient.get(endpoints.enums('basic_status'))
+      if (response.data?.success) {
+        statusEnums.value = response.data.data || []
+      } else {
+        statusEnums.value = []
+      }
+    } catch (e) {
+      statusEnums.value = []
+    }
+  })()
+
+  // Giới tính: dùng enum tĩnh hiện có
   genderEnums.value = getEnumSync('gender')
 }
 
 async function loadRoles() {
   try {
     const response = await apiClient.get(endpoints.roles.list)
-    const data = await responseon()
-    if (data.success) {
-      roleEnums.value = data.data
+    if (response.data?.success) {
+      roleEnums.value = response.data.data || []
     }
   } catch (error) {
     console.error('Error loading roles:', error)
@@ -329,7 +343,9 @@ function handlePageChange(page) {
 
 // Helper functions
 function getStatusLabel(status) {
-  return getEnumLabel('user_status', status) || status || 'Không xác định'
+  const list = statusEnums.value || []
+  const found = list.find(it => it.value === status || it.id === status)
+  return found?.label || found?.name || status || 'Không xác định'
 }
 
 function getStatusName(status) {
