@@ -51,12 +51,15 @@
 <script setup>
 import { reactive, computed } from 'vue'
 import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
-import { getEnumSync } from '@/constants/enums'
 
 const props = defineProps({
   initialFilters: {
     type: Object,
     default: () => ({})
+  },
+  statusEnums: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -70,13 +73,12 @@ const filters = reactive({
 
 // Các tùy chọn cho select
 const statusOptions = computed(() => {
-  const enumData = getEnumSync('basic_status')
-  const options = [{ value: '', label: 'Tất cả trạng thái' }]
+  const options = []
   
-  if (Array.isArray(enumData)) {
-    options.push(...enumData.map(item => ({
-      value: item.value,
-      label: item.label
+  if (Array.isArray(props.statusEnums)) {
+    options.push(...props.statusEnums.map(item => ({
+      value: item.value || item.id,
+      label: item.label || item.name
     })))
   }
   
@@ -84,10 +86,10 @@ const statusOptions = computed(() => {
 })
 
 const sortOptions = [
-  { value: 'created_at_desc', label: 'Mới nhất' },
-  { value: 'created_at_asc', label: 'Cũ nhất' },
-  { value: 'name_asc', label: 'Tên (A-Z)' },
-  { value: 'name_desc', label: 'Tên (Z-A)' }
+  { value: 'created_at:desc', label: 'Mới nhất' },
+  { value: 'created_at:asc', label: 'Cũ nhất' },
+  { value: 'name:asc', label: 'Tên (A-Z)' },
+  { value: 'name:desc', label: 'Tên (Z-A)' }
 ]
 
 // Áp dụng bộ lọc

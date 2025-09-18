@@ -221,7 +221,7 @@ function fetchEnums() {
   // Trạng thái: lấy từ API basic_status
   ;(async () => {
     try {
-      const response = await apiClient.get(endpoints.enums('basic_status'))
+      const response = await apiClient.get(endpoints.enums('user_status'))
       if (response.data?.success) {
         statusEnums.value = response.data.data || []
       } else {

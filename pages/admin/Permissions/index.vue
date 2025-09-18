@@ -13,20 +13,19 @@
     <!-- Bộ lọc -->
     <PermissionFilter 
       :initial-filters="filters"
+      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
     <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="7" />
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên quyền</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên hiển thị</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guard</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quyền cha</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
@@ -36,10 +35,6 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ permission.id }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ permission.name }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ permission.display_name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ permission.guard_name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ permission.parent_name || '-- Không có --' }}
-            </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
@@ -61,7 +56,7 @@
             </td>
           </tr>
           <tr v-if="items.length === 0">
-            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>
@@ -83,6 +78,7 @@
     <CreatePermission
       v-if="showCreateModal"
       :show="showCreateModal"
+      :status-enums="statusEnums"
       :on-close="closeCreateModal"
       @created="handlePermissionCreated"
     />
@@ -92,6 +88,7 @@
       v-if="showEditModal"
       :show="showEditModal"
       :permission="selectedPermission"
+      :status-enums="statusEnums"
       :on-close="closeEditModal"
       @updated="handlePermissionUpdated"
     />
@@ -121,7 +118,7 @@ import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
-import { getEnumLabel } from '@/constants/enums'
+import apiClient from '@/api/apiClient'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 import endpoints from '@/api/endpoints'
 
@@ -151,6 +148,7 @@ const { showSuccess, showError } = useToast()
 
 // State
 const selectedPermission = ref(null)
+const statusEnums = ref([])
 
 // Modal state
 const showCreateModal = ref(false)
@@ -159,7 +157,10 @@ const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  await fetchData()
+  await Promise.all([
+    fetchData(),
+    fetchStatusEnums()
+  ])
 })
 
 // Filter handlers
@@ -223,9 +224,25 @@ function handlePageChange(page) {
   fetchData({ page })
 }
 
+// Fetch status enums
+async function fetchStatusEnums() {
+  try {
+    const response = await apiClient.get(endpoints.enums('basic_status'))
+    if (response.data?.success) {
+      statusEnums.value = response.data.data || []
+    } else {
+      statusEnums.value = []
+    }
+  } catch (error) {
+    statusEnums.value = []
+  }
+}
+
 // Status helper functions
 function getStatusLabel(status) {
-  return getEnumLabel('basic_status', status) || status || 'Không xác định'
+  const list = statusEnums.value || []
+  const found = list.find(it => it.value === status || it.id === status)
+  return found?.label || found?.name || status || 'Không xác định'
 }
 
 function getStatusClass(status) {

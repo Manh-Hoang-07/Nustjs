@@ -4,7 +4,7 @@
       v-if="showModal"
       :show="showModal"
       :parent-options="parentOptions"
-      :status-enums="statusEnums"
+      :status-enums="props.statusEnums"
       :api-errors="apiErrors"
       @submit="handleSubmit" 
       @cancel="onClose" 
@@ -15,21 +15,24 @@
 import PermissionForm from './form.vue'
 import endpoints from '@/api/endpoints'
 import { ref, watch } from 'vue'
-import { getEnumSync } from '@/constants/enums'
 import { useApiFormSubmit } from '@/utils/form'
 import { useApiClient } from '@/composables/api/useApiClient'
+import apiClient from '@/api/apiClient'
 
 
-const api = useApiClient()
+const { apiClient: api } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
+  statusEnums: {
+    type: Array,
+    default: () => []
+  },
   onClose: Function
 })
 const emit = defineEmits(['created'])
 
 const showModal = ref(false)
-const statusEnums = ref([])
 const parentOptions = ref([])
 
 const { apiErrors, submit } = useApiFormSubmit({
@@ -44,19 +47,10 @@ const { apiErrors, submit } = useApiFormSubmit({
 watch(() => props.show, (newValue) => {
   showModal.value = newValue
   if (newValue) {
-    fetchStatusEnums()
     fetchParentOptions()
   }
 }, { immediate: true })
 
-async function fetchStatusEnums() {
-  try {
-    const enumData = getEnumSync('basic_status')
-    statusEnums.value = Array.isArray(enumData) ? enumData : []
-  } catch (error) {
-    statusEnums.value = []
-  }
-}
 
 async function fetchParentOptions() {
   try {
@@ -68,6 +62,7 @@ async function fetchParentOptions() {
     })
     parentOptions.value = response.data.data || []
   } catch (error) {
+    console.error('Error fetching parent options:', error)
     parentOptions.value = []
   }
 }

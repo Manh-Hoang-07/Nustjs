@@ -9,7 +9,7 @@
       :show="showModal"
       :permission="permissionData"
       :parent-options="parentOptions"
-      :status-enums="statusEnums"
+      :status-enums="props.statusEnums"
       :api-errors="apiErrors"
       @submit="handleSubmit" 
       @cancel="onClose" 
@@ -20,21 +20,24 @@
 import PermissionForm from './form.vue'
 import endpoints from '@/api/endpoints'
 import { ref, watch, reactive } from 'vue'
-import { getEnumSync } from '@/constants/enums'
 import { useApiClient } from '@/composables/api/useApiClient'
+import apiClient from '@/api/apiClient'
 
 
-const api = useApiClient()
+const { apiClient: api } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
   permission: Object,
+  statusEnums: {
+    type: Array,
+    default: () => []
+  },
   onClose: Function
 })
 const emit = defineEmits(['updated'])
 
 const showModal = ref(false)
-const statusEnums = ref([])
 const parentOptions = ref([])
 const permissionData = ref(null)
 const loading = ref(false)
@@ -44,7 +47,6 @@ watch(() => props.show, (newValue) => {
   showModal.value = newValue
   if (newValue) {
     Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-    fetchStatusEnums()
     fetchParentOptions()
     
     // Luôn fetch dữ liệu chi tiết từ API khi mở modal
@@ -74,14 +76,6 @@ async function fetchPermissionDetails() {
   }
 }
 
-async function fetchStatusEnums() {
-  try {
-    const enumData = getEnumSync('basic_status')
-    statusEnums.value = Array.isArray(enumData) ? enumData : []
-  } catch (error) {
-    statusEnums.value = []
-  }
-}
 
 async function fetchParentOptions() {
   try {
@@ -95,6 +89,7 @@ async function fetchParentOptions() {
     const allPermissions = response.data.data || []
     parentOptions.value = allPermissions.filter(permission => permission.id !== props.permission?.id)
   } catch (error) {
+    console.error('Error fetching parent options:', error)
     parentOptions.value = []
   }
 }
