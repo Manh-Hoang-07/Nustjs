@@ -29,7 +29,6 @@ export { withCtx, withDirectives, withKeys, withMemo, withModifiers, withScopeId
 export { requestIdleCallback, cancelIdleCallback } from '#app/compat/idle-callback';
 export { setInterval } from '#app/compat/interval';
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
-export { Auth, authState } from '../utils/auth';
 export { default as form, formToFormData, validateForm, useFormDefaults, useApiFormSubmit } from '../utils/form';
 export { default as formatters, formatCurrency, formatNumber, formatDate } from '../utils/formatters';
 export { default as optimization, debounce, throttle, lazyLoadImage, generateSrcSet, generateSizes, optimizeImageUrl, preloadImage, preloadImages, getImageDimensions, compressImage, generatePlaceholder, isImageLoaded, getDominantColor, PerformancePlugin, measureTime, measureApiCall, measureComponentRender, getPerformanceMetrics, getPerformanceReport } from '../utils/optimization';

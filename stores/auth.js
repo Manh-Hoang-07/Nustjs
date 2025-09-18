@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = ref(false)
   const user = ref(null)
   const userRole = ref('')
+  const userPermissions = ref([])
   const isFetchingUser = ref(false)
   const lastFetchTime = ref(0)
   const fetchCacheDuration = 30000 // Cache trong 30 giây
@@ -17,6 +18,22 @@ export const useAuthStore = defineStore('auth', () => {
   // Getters
   const isAdmin = computed(() => userRole.value === 'admin')
   const isUser = computed(() => userRole.value === 'user')
+  
+  // Permission getters
+  const can = (permission) => {
+    if (!userPermissions.value || !Array.isArray(userPermissions.value)) return false
+    return userPermissions.value.includes(permission)
+  }
+  
+  const canAny = (permissions) => {
+    if (!Array.isArray(permissions)) return false
+    return permissions.some(permission => can(permission))
+  }
+  
+  const canAll = (permissions) => {
+    if (!Array.isArray(permissions)) return false
+    return permissions.every(permission => can(permission))
+  }
 
   // Helper function để lấy token từ cookie
   const getTokenFromCookie = () => {
@@ -118,10 +135,15 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated.value = false
     user.value = null
     userRole.value = ''
+    userPermissions.value = []
     lastFetchTime.value = 0
     
-    // Xóa token khỏi cookie
+    // Xóa token khỏi cookie và localStorage
     removeTokenFromCookie()
+    if (process.client) {
+      localStorage.removeItem('user')
+      localStorage.removeItem('userPermissions')
+    }
   }
 
   const fetchUserInfo = async (force = false) => {
@@ -143,13 +165,21 @@ export const useAuthStore = defineStore('auth', () => {
       if (response.data.success) {
         user.value = response.data.data
         userRole.value = response.data.data.role || 'user'
+        userPermissions.value = response.data.data.permissions || []
         isAuthenticated.value = true
         lastFetchTime.value = Date.now()
+        
+        // Lưu vào localStorage cho offline access
+        if (process.client) {
+          localStorage.setItem('user', JSON.stringify(response.data.data))
+          localStorage.setItem('userPermissions', JSON.stringify(response.data.data.permissions || []))
+        }
       } else {
         // Token không hợp lệ
         isAuthenticated.value = false
         user.value = null
         userRole.value = ''
+        userPermissions.value = []
         removeTokenFromCookie()
       }
     } catch (error) {
@@ -159,12 +189,22 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthenticated.value = false
         user.value = null
         userRole.value = ''
+        userPermissions.value = []
         removeTokenFromCookie()
+        if (process.client) {
+          localStorage.removeItem('user')
+          localStorage.removeItem('userPermissions')
+        }
       } else if (error.response?.status === 403) {
         // User not authorized
         isAuthenticated.value = false
         user.value = null
         userRole.value = ''
+        userPermissions.value = []
+        if (process.client) {
+          localStorage.removeItem('user')
+          localStorage.removeItem('userPermissions')
+        }
       }
     } finally {
       isFetchingUser.value = false
@@ -181,6 +221,7 @@ export const useAuthStore = defineStore('auth', () => {
       isAuthenticated.value = false
       user.value = null
       userRole.value = ''
+      userPermissions.value = []
       return false
     }
 
@@ -232,11 +273,110 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // Initialize auth from localStorage
+  const initFromStorage = async () => {
+    if (process.client) {
+      const token = getTokenFromCookie()
+      const storedUser = localStorage.getItem('user')
+      const storedPermissions = localStorage.getItem('userPermissions')
+
+      if (token && storedUser) {
+        try {
+          // Thử lấy thông tin user từ API để verify token
+          const response = await apiClient.get('/api/me')
+
+          if (response.data.success) {
+            // Cập nhật state
+            isAuthenticated.value = true
+            user.value = response.data.data
+            userRole.value = response.data.data.role || 'user'
+            userPermissions.value = response.data.data.permissions || []
+            
+            // Cập nhật localStorage
+            localStorage.setItem('user', JSON.stringify(response.data.data))
+            localStorage.setItem('userPermissions', JSON.stringify(response.data.data.permissions || []))
+            
+            return true
+          } else {
+            // Token không hợp lệ, xóa state
+            clearAuthState()
+            return false
+          }
+        } catch (error) {
+          console.error('Auth init error:', error)
+          // Fallback: sử dụng data từ localStorage nếu API fail
+          if (storedUser) {
+            const userData = JSON.parse(storedUser)
+            isAuthenticated.value = true
+            user.value = userData
+            userRole.value = userData.role || 'user'
+            userPermissions.value = JSON.parse(storedPermissions || '[]')
+            return true
+          } else {
+            clearAuthState()
+            return false
+          }
+        }
+      } else if (storedUser) {
+        // Có user data nhưng không có token, xóa state
+        clearAuthState()
+        return false
+      }
+    }
+    return false
+  }
+
+  // Clear auth state
+  const clearAuthState = () => {
+    isAuthenticated.value = false
+    user.value = null
+    userRole.value = ''
+    userPermissions.value = []
+    removeTokenFromCookie()
+    if (process.client) {
+      localStorage.removeItem('user')
+      localStorage.removeItem('userPermissions')
+    }
+  }
+
+  // Static methods for easy access
+  const Auth = {
+    // State getters
+    get isAuthenticated() { return isAuthenticated.value },
+    get user() { return user.value },
+    get userRole() { return userRole.value },
+    get userPermissions() { return userPermissions.value },
+    get isAdmin() { return isAdmin.value },
+    get isUser() { return isUser.value },
+    
+    // Permission methods
+    can,
+    canAny,
+    canAll,
+    
+    // Auth methods
+    login,
+    register,
+    logout,
+    checkAuth,
+    refreshUserInfo,
+    updateProfile,
+    changePassword,
+    initFromStorage,
+    clearAuthState,
+    
+    // Utility methods
+    getTokenFromCookie,
+    setTokenToCookie,
+    removeTokenFromCookie
+  }
+
   return {
     // State
     isAuthenticated,
     user,
     userRole,
+    userPermissions,
     isFetchingUser,
     lastFetchTime,
     isInitialized,
@@ -244,6 +384,11 @@ export const useAuthStore = defineStore('auth', () => {
     // Getters
     isAdmin,
     isUser,
+    
+    // Permission methods
+    can,
+    canAny,
+    canAll,
     
     // Actions
     login,
@@ -253,6 +398,11 @@ export const useAuthStore = defineStore('auth', () => {
     checkAuth,
     refreshUserInfo,
     updateProfile,
-    changePassword
+    changePassword,
+    initFromStorage,
+    clearAuthState,
+    
+    // Static methods
+    Auth
   }
 }) 

@@ -8,79 +8,94 @@ export function useUserNavigation() {
     {
       name: 'Trang chủ',
       path: '/home',
-      icon: '🏠'
+      icon: '🏠',
+      status: 'active'
     },
     {
       name: 'Sản phẩm',
       icon: '🛍️',
+      status: 'active',
       children: [
         {
           name: 'Tất cả sản phẩm',
           path: '/home/products',
-          icon: '📦'
+          icon: '📦',
+          status: 'active'
         },
         {
           name: 'Sản phẩm mới',
           path: '/home/products?filter=new',
-          icon: '✨'
+          icon: '✨',
+          status: 'active'
         },
         {
           name: 'Sản phẩm bán chạy',
           path: '/home/products?filter=popular',
-          icon: '🔥'
+          icon: '🔥',
+          status: 'active'
         },
         {
           name: 'Sản phẩm giảm giá',
           path: '/home/products?filter=sale',
-          icon: '💰'
+          icon: '💰',
+          status: 'active'
         }
       ]
     },
     {
       name: 'Danh mục',
       icon: '📂',
+      status: 'active',
       children: [
         {
           name: 'Điện tử',
           path: '/home/categories/electronics',
-          icon: '📱'
+          icon: '📱',
+          status: 'active'
         },
         {
           name: 'Thời trang',
           path: '/home/categories/fashion',
-          icon: '👗'
+          icon: '👗',
+          status: 'active'
         },
         {
           name: 'Nhà cửa',
           path: '/home/categories/home',
-          icon: '🏠'
+          icon: '🏠',
+          status: 'active'
         },
         {
           name: 'Sức khỏe',
           path: '/home/categories/health',
-          icon: '💊'
+          icon: '💊',
+          status: 'active'
         },
         {
           name: 'Thể thao',
           path: '/home/categories/sports',
-          icon: '⚽'
+          icon: '⚽',
+          status: 'active'
         }
       ]
     },
     {
       name: 'Tin tức',
       path: '/home/posts',
-      icon: '📰'
+      icon: '📰',
+      status: 'active'
     },
     {
       name: 'Giới thiệu',
       path: '/home/about',
-      icon: 'ℹ️'
+      icon: 'ℹ️',
+      status: 'active'
     },
     {
       name: 'Liên hệ',
       path: '/home/contact',
-      icon: '📞'
+      icon: '📞',
+      status: 'active'
     }
   ])
 
@@ -89,32 +104,38 @@ export function useUserNavigation() {
     {
       name: 'Tài khoản của tôi',
       path: '/user/profile',
-      icon: '👤'
+      icon: '👤',
+      status: 'active'
     },
     {
       name: 'Đơn hàng',
       path: '/user/orders',
-      icon: '📋'
+      icon: '📋',
+      status: 'active'
     },
     {
       name: 'Yêu thích',
       path: '/user/wishlist',
-      icon: '❤️'
+      icon: '❤️',
+      status: 'active'
     },
     {
       name: 'Đánh giá',
       path: '/user/reviews',
-      icon: '⭐'
+      icon: '⭐',
+      status: 'active'
     },
     {
       name: 'Địa chỉ',
       path: '/user/addresses',
-      icon: '📍'
+      icon: '📍',
+      status: 'active'
     },
     {
       name: 'Cài đặt',
       path: '/user/settings',
-      icon: '⚙️'
+      icon: '⚙️',
+      status: 'active'
     }
   ])
 
@@ -123,12 +144,14 @@ export function useUserNavigation() {
     {
       name: 'Xem giỏ hàng',
       path: '/cart',
-      icon: '🛒'
+      icon: '🛒',
+      status: 'active'
     },
     {
       name: 'Thanh toán',
       path: '/checkout',
-      icon: '💳'
+      icon: '💳',
+      status: 'active'
     }
   ])
 
@@ -137,17 +160,20 @@ export function useUserNavigation() {
     {
       name: 'Tìm kiếm nâng cao',
       path: '/search/advanced',
-      icon: '🔍'
+      icon: '🔍',
+      status: 'active'
     },
     {
       name: 'Lịch sử tìm kiếm',
       path: '/search/history',
-      icon: '📜'
+      icon: '📜',
+      status: 'active'
     },
     {
       name: 'Sản phẩm đã xem',
       path: '/user/recently-viewed',
-      icon: '👁️'
+      icon: '👁️',
+      status: 'active'
     }
   ])
 
@@ -156,49 +182,72 @@ export function useUserNavigation() {
     {
       name: 'Hướng dẫn mua hàng',
       path: '/help/shopping-guide',
-      icon: '🛒'
+      icon: '🛒',
+      status: 'active'
     },
     {
       name: 'Chính sách đổi trả',
       path: '/help/return-policy',
-      icon: '🔄'
+      icon: '🔄',
+      status: 'active'
     },
     {
       name: 'Vận chuyển',
       path: '/help/shipping',
-      icon: '🚚'
+      icon: '🚚',
+      status: 'active'
     },
     {
       name: 'Thanh toán',
       path: '/help/payment',
-      icon: '💳'
+      icon: '💳',
+      status: 'active'
     },
     {
       name: 'Bảo hành',
       path: '/help/warranty',
-      icon: '🛡️'
+      icon: '🛡️',
+      status: 'active'
     },
     {
       name: 'FAQ',
       path: '/help/faq',
-      icon: '❓'
+      icon: '❓',
+      status: 'active'
     }
   ])
 
-  // Menu items đã được filter
-  const filteredMenuItems = computed(() => menuItems.value)
+  // Hàm filter menu items theo status
+  const filterMenuItemsByStatus = (items) => {
+    return items.filter(item => {
+      if (item.status !== 'active') return false
+      
+      if (item.children) {
+        const filteredChildren = filterMenuItemsByStatus(item.children)
+        if (filteredChildren.length === 0) return false
+        return {
+          ...item,
+          children: filteredChildren
+        }
+      }
+      return true
+    })
+  }
+
+  // Menu items đã được filter theo status
+  const filteredMenuItems = computed(() => filterMenuItemsByStatus(menuItems.value))
 
   // Hàm để lấy menu items theo loại
   const getMenuItemsByType = (type) => {
     switch (type) {
       case 'user':
-        return userMenuItems.value
+        return filterMenuItemsByStatus(userMenuItems.value)
       case 'cart':
-        return cartMenuItems.value
+        return filterMenuItemsByStatus(cartMenuItems.value)
       case 'search':
-        return searchMenuItems.value
+        return filterMenuItemsByStatus(searchMenuItems.value)
       case 'support':
-        return supportMenuItems.value
+        return filterMenuItemsByStatus(supportMenuItems.value)
       default:
         return filteredMenuItems.value
     }
