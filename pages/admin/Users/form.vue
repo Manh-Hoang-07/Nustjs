@@ -130,17 +130,7 @@
           @update:model-value="clearError('about')"
         />
         
-        <!-- Vai trò -->
-        <FormField
-          v-model="form.role_ids"
-          label="Vai trò"
-          name="role_ids"
-          type="select"
-          :options="roleOptions"
-          :error="errors.role_ids"
-          multiple
-          @update:model-value="clearError('role_ids')"
-        />
+        
         
         <!-- Trạng thái -->
         <FormField
@@ -176,10 +166,7 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
-  roleEnums: {
-    type: Array,
-    default: () => []
-  },
+  
   apiErrors: {
     type: Object,
     default: () => ({})
@@ -201,12 +188,6 @@ const modalVisible = computed({
 const defaultValues = computed(() => {
   const obj = props.user || {}
   
-  // Extract role_ids from roles array if exists
-  let roleIds = []
-  if (obj.roles && Array.isArray(obj.roles)) {
-    roleIds = obj.roles.map(role => role.id)
-  }
-  
   return {
     username: '',
     email: '',
@@ -220,7 +201,6 @@ const defaultValues = computed(() => {
     image: null,
     about: '',
     status: '',
-    role_ids: roleIds,
     remove_image: false,
     ...obj
   }
@@ -272,12 +252,7 @@ const genderOptions = computed(() =>
   }))
 )
 
-const roleOptions = computed(() =>
-  (props.roleEnums || []).map(opt => ({
-    value: opt.id,
-    label: opt.name
-  }))
-)
+ 
 
 function handleSubmit(form) {
   emit('submit', form)

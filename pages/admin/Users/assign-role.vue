@@ -71,7 +71,7 @@ watch(() => props.show, async (newValue) => {
 
 async function fetchUserDetail() {
   try {
-    const response = await apiClient.get(endpoints.users.showWithRoles(props.user.id))
+    const response = await apiClient.get(endpoints.users.show(props.user.id))
     if (response.data.success) {
       userDetail.value = response.data.data
     }

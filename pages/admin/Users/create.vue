@@ -5,7 +5,6 @@
       :show="showModal"
       :status-enums="statusEnums"
       :gender-enums="genderEnums"
-      :role-enums="roleEnums"
       :api-errors="apiErrors"
       @submit="handleSubmit" 
       @cancel="onClose" 
@@ -22,7 +21,6 @@ const props = defineProps({
   show: Boolean,
   statusEnums: Array,
   genderEnums: Array,
-  roleEnums: Array,
   onClose: Function
 })
 const emit = defineEmits(['created'])
@@ -43,7 +41,23 @@ watch(() => props.show, (newValue) => {
 }, { immediate: true })
 
 async function handleSubmit(formData) {
-  await submit(formData)
+  const {
+    name,
+    address,
+    gender,
+    birthday,
+    image,
+    about,
+    password_confirmation, // not needed by backend
+    ...rest
+  } = formData || {}
+
+  const payload = {
+    ...rest,
+    profile: { name, address, gender, birthday, image, about }
+  }
+
+  await submit(payload)
 }
 
 function onClose() {

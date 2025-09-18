@@ -4,29 +4,59 @@ import apiClient from '@/api/apiClient'
 // ===== FORM TO FORMDATA =====
 export function formToFormData(form, options = {}) {
   const submitData = new FormData()
+
   // Nếu là update (PUT/PATCH), thêm _method vào FormData
   if (options.method && (options.method.toLowerCase() === 'put' || options.method.toLowerCase() === 'patch')) {
     submitData.append('_method', options.method.toUpperCase())
   }
-  for (const key in form) {
-    if (options.exclude && options.exclude.includes(key)) continue
 
+  const appendValue = (fd, key, value) => {
     // Nếu là boolean true cho remove_xxx, append 1
-    if (key.startsWith('remove_') && form[key]) {
-      submitData.append(key, 1)
-      continue
+    if (typeof key === 'string' && key.startsWith('remove_') && value) {
+      fd.append(key, 1)
+      return
     }
-    // Nếu giá trị null/undefined, append chuỗi rỗng
-    if (form[key] === null || form[key] === undefined) {
-      submitData.append(key, '')
-      continue
+    if (value === null || value === undefined) {
+      fd.append(key, '')
+      return
     }
-    // Nếu là chuỗi rỗng, có thể bỏ qua (tùy chọn)
-    if (form[key] === '' && options.skipEmpty) continue
+    if (value === '' && options.skipEmpty) return
 
-    // Mặc định: append cả string (đường dẫn) hoặc file object
-    submitData.append(key, form[key])
+    // File/Blob giữ nguyên
+    if (typeof File !== 'undefined' && value instanceof File) {
+      fd.append(key, value)
+      return
+    }
+    if (typeof Blob !== 'undefined' && value instanceof Blob) {
+      fd.append(key, value)
+      return
+    }
+
+    // Array -> key[]
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        fd.append(`${key}[]`, item)
+      })
+      return
+    }
+
+    // Object -> key[sub]
+    if (typeof value === 'object') {
+      Object.keys(value).forEach((subKey) => {
+        appendValue(fd, `${key}[${subKey}]`, value[subKey])
+      })
+      return
+    }
+
+    // Primitive
+    fd.append(key, value)
   }
+
+  Object.keys(form).forEach((key) => {
+    if (options.exclude && options.exclude.includes(key)) return
+    appendValue(submitData, key, form[key])
+  })
+
   return submitData
 }
 
