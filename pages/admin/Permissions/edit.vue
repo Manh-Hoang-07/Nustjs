@@ -8,7 +8,6 @@
       v-else-if="showModal"
       :show="showModal"
       :permission="permissionData"
-      :parent-options="parentOptions"
       :status-enums="props.statusEnums"
       :api-errors="apiErrors"
       @submit="handleSubmit" 
@@ -38,7 +37,6 @@ const props = defineProps({
 const emit = defineEmits(['updated'])
 
 const showModal = ref(false)
-const parentOptions = ref([])
 const permissionData = ref(null)
 const loading = ref(false)
 const apiErrors = reactive({})
@@ -47,7 +45,6 @@ watch(() => props.show, (newValue) => {
   showModal.value = newValue
   if (newValue) {
     Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-    fetchParentOptions()
     
     // Luôn fetch dữ liệu chi tiết từ API khi mở modal
     if (props.permission?.id) {
@@ -77,22 +74,6 @@ async function fetchPermissionDetails() {
 }
 
 
-async function fetchParentOptions() {
-  try {
-    const response = await api.get(endpoints.permissions.list, { 
-      params: { 
-        per_page: 100,
-        relations: 'parent'
-      } 
-    })
-    // Loại bỏ permission hiện tại khỏi danh sách parent options
-    const allPermissions = response.data.data || []
-    parentOptions.value = allPermissions.filter(permission => permission.id !== props.permission?.id)
-  } catch (error) {
-    console.error('Error fetching parent options:', error)
-    parentOptions.value = []
-  }
-}
 
 async function handleSubmit(formData) {
   try {

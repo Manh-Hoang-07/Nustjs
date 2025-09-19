@@ -41,16 +41,22 @@
         />
         
         <!-- Quyền cha -->
-        <FormField
-          v-model="form.parent_id"
-          label="Quyền cha"
-          name="parent_id"
-          type="select"
-          :options="parentOptionsFormatted"
-          :error="errors.parent_id"
-          placeholder="Chọn quyền cha"
-          @update:model-value="clearError('parent_id')"
-        />
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Quyền cha
+          </label>
+          <SearchableSelect
+            v-model="form.parent_id"
+            :search-api="permissionsListApi"
+            :exclude-id="permission?.id"
+            :error="errors.parent_id"
+            placeholder="Tìm kiếm quyền cha..."
+            @update:model-value="clearError('parent_id')"
+          />
+          <div v-if="errors.parent_id" class="mt-1 text-sm text-red-600">
+            {{ errors.parent_id }}
+          </div>
+        </div>
         
         <!-- Trạng thái -->
         <FormField
@@ -72,15 +78,12 @@ import { computed } from 'vue'
 import Modal from '@/components/Core/Modal/Modal.vue'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
+import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import { useFormDefaults } from '@/utils/form'
 
 const props = defineProps({
   show: Boolean,
   permission: Object,
-  parentOptions: {
-    type: Array,
-    default: () => []
-  },
   statusEnums: {
     type: Array,
     default: () => []
@@ -120,15 +123,9 @@ const validationRules = computed(() => ({
   ]
 }))
 
-const parentOptionsFormatted = computed(() => [
-  { value: '', label: '-- Không có --' },
-  ...(props.parentOptions || [])
-    .filter(opt => !props.permission || opt.id !== props.permission.id) // Loại bỏ permission hiện tại
-    .map(opt => ({
-      value: opt.id,
-      label: opt.display_name || opt.name
-    }))
-])
+// API endpoint cho list permissions
+const permissionsListApi = '/api/admin/permissions'
+
 
 const statusOptions = computed(() =>
   (props.statusEnums || []).map(opt => ({

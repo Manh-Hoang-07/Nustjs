@@ -84,12 +84,16 @@ const props = defineProps({
   minSearchLength: {
     type: Number,
     default: 2
+  },
+  excludeId: {
+    type: [String, Number],
+    default: null
   }
 })
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
-const api = useApiClient()
+const { apiClient: api } = useApiClient()
 
 const searchQuery = ref('')
 const showDropdown = ref(false)
@@ -126,14 +130,23 @@ const loadDefaultOptions = async () => {
     loading.value = true
     try {
       // Load tất cả nếu ít hơn 50 items, nếu không thì load 50 items đầu
-      const response = await api.get(`${props.searchApi}?limit=50`)
+      const response = await api.get(props.searchApi, { 
+        params: { 
+          per_page: 50
+        } 
+      })
       const allOptions = response.data.data || response.data || []
       
       // Transform options to have consistent label field
-      const transformedOptions = allOptions.map(option => ({
+      let transformedOptions = allOptions.map(option => ({
         value: option.id,
         label: option.title || option.name || option.label || 'Không có tên'
       }))
+      
+      // Loại bỏ item có excludeId nếu có
+      if (props.excludeId) {
+        transformedOptions = transformedOptions.filter(option => option.value != props.excludeId)
+      }
       
       if (transformedOptions.length <= 50) {
         // Nếu ít hơn 50 items, load tất cả
@@ -160,14 +173,26 @@ const debouncedSearch = debounce(async () => {
   
   loading.value = true
   try {
-    const response = await api.get(`${props.searchApi}?search=${encodeURIComponent(searchQuery.value)}`)
+    const response = await api.get(props.searchApi, { 
+      params: { 
+        search: searchQuery.value,
+        per_page: 50
+      } 
+    })
     const searchResults = response.data.data || response.data || []
     
     // Transform search results to have consistent label field
-    options.value = searchResults.map(option => ({
+    let transformedResults = searchResults.map(option => ({
       value: option.id,
       label: option.title || option.name || option.label || 'Không có tên'
     }))
+    
+    // Loại bỏ item có excludeId nếu có
+    if (props.excludeId) {
+      transformedResults = transformedResults.filter(option => option.value != props.excludeId)
+    }
+    
+    options.value = transformedResults
   } catch (error) {
     console.error('Error searching options:', error)
     options.value = []
@@ -226,7 +251,12 @@ watch(() => props.modelValue, async (newValue) => {
     } else {
       // If not found, fetch it from API
       try {
-        const response = await api.get(`${props.searchApi}?id=${newValue}`)
+        const response = await api.get(props.searchApi, { 
+          params: { 
+            id: newValue,
+            per_page: 1
+          } 
+        })
         const data = response.data.data || response.data || []
         if (data && data.length > 0) {
           const option = data[0]
@@ -248,7 +278,12 @@ watch(() => props.modelValue, async (newValue) => {
 onMounted(async () => {
   if (props.modelValue) {
     try {
-      const response = await api.get(`${props.searchApi}?id=${props.modelValue}`)
+      const response = await api.get(props.searchApi, { 
+        params: { 
+          id: props.modelValue,
+          per_page: 1
+        } 
+      })
       const data = response.data.data || response.data || []
       if (data && data.length > 0) {
         const option = data[0]
