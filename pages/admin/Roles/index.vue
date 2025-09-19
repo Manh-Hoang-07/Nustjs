@@ -13,20 +13,19 @@
     <!-- Bộ lọc -->
     <RoleFilter 
       :initial-filters="filters"
+      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
     <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
-      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="7" />
+      <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên vai trò</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên hiển thị</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guard</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vai trò cha</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
@@ -36,8 +35,6 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ role.id }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ role.name }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ role.display_name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ role.guard_name }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ getParentName(role.parent_id) }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
@@ -55,7 +52,7 @@
             </td>
           </tr>
           <tr v-if="items.length === 0">
-            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
               Không có dữ liệu
             </td>
           </tr>
@@ -112,13 +109,13 @@ definePageMeta({
 })
 
 import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
-import { getEnumSync, getEnumLabel } from '@/constants/enums'
 import { useDataTable } from '@/composables/data/useDataTable'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
+import apiClient from '@/api/apiClient'
 import endpoints from '@/api/endpoints'
 
 // Lazy load components
@@ -156,20 +153,28 @@ const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  // Load enums immediately (static)
-  fetchEnums()
-  
-  // Fetch roles
-  await fetchData()
+  await Promise.all([
+    fetchData(),
+    fetchStatusEnums()
+  ])
 })
 
 function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
 
-function fetchEnums() {
-  // Sử dụng static enum thay vì gọi API
-  statusEnums.value = getEnumSync('basic_status')
+// Fetch status enums
+async function fetchStatusEnums() {
+  try {
+    const response = await apiClient.get(endpoints.enums('basic_status'))
+    if (response.data?.success) {
+      statusEnums.value = response.data.data || []
+    } else {
+      statusEnums.value = []
+    }
+  } catch (error) {
+    statusEnums.value = []
+  }
 }
 
 // Modal handlers
@@ -230,7 +235,9 @@ function handlePageChange(page) {
 
 // Status helper functions
 function getStatusLabel(status) {
-  return getEnumLabel('basic_status', status) || status || 'Không xác định'
+  const list = statusEnums.value || []
+  const found = list.find(it => it.value === status || it.id === status)
+  return found?.label || found?.name || status || 'Không xác định'
 }
 
 function getStatusClass(status) {
@@ -239,18 +246,6 @@ function getStatusClass(status) {
   return 'bg-gray-100 text-gray-800'
 }
 
-// Map id -> vai trò để tra nhanh tên vai trò cha
-const roleMap = computed(() => {
-  const map = {}
-  items.value.forEach(r => { map[r.id] = r })
-  return map
-})
-
-function getParentName(parent_id) {
-  if (!parent_id) return '—'
-  const r = roleMap.value[parent_id]
-  return r ? (r.display_name || r.name) : parent_id
-}
 </script>
 
 <style>

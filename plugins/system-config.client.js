@@ -8,10 +8,7 @@ export default defineNuxtPlugin(async (nuxtApp) => {
         
         // Chỉ gọi API nếu chưa có cache hoặc cache đã hết hạn
         if (!systemConfigStore.isLoaded || (Date.now() - systemConfigStore.lastFetchTime) >= systemConfigStore.cacheDuration) {
-          console.log('Cache expired or not loaded, fetching system config...')
           await systemConfigStore.loadSystemConfig()
-        } else {
-          console.log('Using existing system config cache')
         }
       } catch (error) {
         console.error('System config init failed:', error)

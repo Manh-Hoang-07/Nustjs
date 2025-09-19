@@ -1,6 +1,10 @@
 <template>
   <Modal v-model="modalVisible" :title="formTitle">
-    <form @submit.prevent="validateAndSubmit" class="space-y-4">
+    <div v-if="props.loading" class="flex justify-center items-center p-8">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <span class="ml-2 text-gray-600">Đang tải dữ liệu...</span>
+    </div>
+    <form v-else @submit.prevent="validateAndSubmit" class="space-y-4">
       <!-- Tên vai trò -->
       <div>
         <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Tên vai trò <span class="text-red-500">*</span></label>
@@ -46,17 +50,14 @@
       <!-- Vai trò cha -->
       <div>
         <label for="parent_id" class="block text-sm font-medium text-gray-700 mb-1">Vai trò cha</label>
-        <select
-          id="parent_id"
+        <SearchableSelect
           v-model="formData.parent_id"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          :class="{ 'border-red-500': validationErrors.parent_id || apiErrors.parent_id }"
-        >
-          <option value="">-- Không có --</option>
-          <option v-for="r in parentOptions" :key="r.id" :value="r.id">
-            {{ r.display_name || r.name }}
-          </option>
-        </select>
+          :search-api="endpoints.roles.list"
+          placeholder="Tìm kiếm vai trò cha..."
+          :error="validationErrors.parent_id || apiErrors.parent_id"
+          :exclude-id="props.role?.id"
+          label-field="display_name"
+        />
         <p v-if="validationErrors.parent_id" class="mt-1 text-sm text-red-600">{{ validationErrors.parent_id }}</p>
         <p v-else-if="apiErrors.parent_id" class="mt-1 text-sm text-red-600">{{ apiErrors.parent_id }}</p>
       </div>
@@ -81,34 +82,13 @@
       <!-- Quyền -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Quyền</label>
-        <div v-if="loadingPermissions" class="text-center py-4 text-gray-500">
-          Đang tải danh sách quyền...
-        </div>
-        <div v-else>
-          <div v-if="!multiselectLoaded" class="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg">
-            <div class="text-center">
-              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-2"></div>
-              <p class="text-gray-600 text-sm">Đang tải component...</p>
-            </div>
-          </div>
-          <component
-            v-else
-            :is="Multiselect"
-            v-model="formData.permissions"
-            :options="permissionOptions"
-            :multiple="true"
-            :searchable="true"
-            :close-on-select="false"
-            :clear-on-select="false"
-            :preserve-search="true"
-            placeholder="Chọn quyền..."
-            label="label"
-            track-by="value"
-            :preselect-first="false"
-            :class="{ 'border-red-500': validationErrors.permissions || apiErrors.permissions }"
-            @input="handlePermissionsChange"
-          />
-        </div>
+        <SearchableMultiSelect
+          v-model="formData.permissions"
+          :search-api="endpoints.permissions.list"
+          placeholder="Tìm kiếm quyền..."
+          :error="validationErrors.permissions || apiErrors.permissions"
+          label-field="display_name"
+        />
         <p v-if="validationErrors.permissions" class="mt-1 text-sm text-red-600">{{ validationErrors.permissions }}</p>
         <p v-else-if="apiErrors.permissions" class="mt-1 text-sm text-red-600">{{ apiErrors.permissions }}</p>
       </div>
@@ -137,26 +117,12 @@
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue'
 import Modal from '@/components/Core/Modal/Modal.vue'
+import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
+import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
 import endpoints from '@/api/endpoints'
 import { useApiClient } from '@/composables/api/useApiClient'
 
 const { apiClient: api } = useApiClient()
-const { $loadMultiselect } = useNuxtApp()
-
-// Lazy load Multiselect component
-const Multiselect = ref(null)
-const multiselectLoaded = ref(false)
-
-const loadMultiselectComponent = async () => {
-  if (!multiselectLoaded.value) {
-    try {
-      Multiselect.value = await $loadMultiselect()
-      multiselectLoaded.value = true
-    } catch (error) {
-      console.error('Failed to load Multiselect:', error)
-    }
-  }
-}
 
 const props = defineProps({
   show: Boolean,
@@ -168,6 +134,10 @@ const props = defineProps({
   apiErrors: {
     type: Object,
     default: () => ({})
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -186,48 +156,8 @@ const statusOptions = computed(() => {
   return options
 })
 
-// Permission options cho multiselect
-const permissionOptions = computed(() => {
-  if (!permissions.value || !Array.isArray(permissions.value)) {
-    return []
-  }
-  return permissions.value.map(permission => ({
-    value: permission.id,
-    label: permission.display_name || permission.name
-  }))
-})
-
-// Lấy danh sách vai trò cha
-const parentOptions = ref([])
-const fetchParentOptions = async () => {
-  try {
-    const response = await api.get(endpoints.roles.list, { params: { per_page: 1000 } })
-    parentOptions.value = response.data.data || []
-  } catch (error) {
-    parentOptions.value = []
-  }
-}
-
-// Lấy danh sách quyền
-const permissions = ref([])
-const loadingPermissions = ref(false)
-const fetchPermissions = async () => {
-  loadingPermissions.value = true
-  try {
-    const response = await api.get(endpoints.permissions.list, { params: { per_page: 1000 } })
-    permissions.value = response.data.data || []
-  } catch (error) {
-    
-    permissions.value = []
-  } finally {
-    loadingPermissions.value = false
-  }
-}
-
 onMounted(async () => {
-  await loadMultiselectComponent()
-  fetchParentOptions()
-  fetchPermissions()
+  // No additional setup needed for SearchableMultiSelect
 })
 
 // Form title
@@ -263,7 +193,7 @@ watch(() => props.role, (newVal) => {
     formData.status = newVal.status || 'active'
     // Xử lý permissions
     if (newVal.permissions && Array.isArray(newVal.permissions)) {
-      // Chuyển đổi permissions thành array of objects cho multiselect
+      // Chuyển đổi permissions thành array of objects cho SearchableMultiSelect
       formData.permissions = newVal.permissions.map(p => {
         if (typeof p === 'object' && p !== null) {
           return {
@@ -356,11 +286,6 @@ function validateAndSubmit() {
   }
 }
 
-// Handle permissions change
-function handlePermissionsChange(selectedPermissions) {
-  // Giữ nguyên format objects cho multiselect
-  formData.permissions = selectedPermissions || []
-}
 
 // Close modal
 function onClose() {

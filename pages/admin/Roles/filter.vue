@@ -16,7 +16,6 @@
           label="Trạng thái"
           type="select"
           v-model="filters.status"
-          placeholder="Tất cả trạng thái"
           :options="statusOptions"
         />
         <!-- Sắp xếp theo -->
@@ -51,12 +50,15 @@
 <script setup>
 import { reactive, computed } from 'vue'
 import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
-import { getEnumSync } from '@/constants/enums'
 
 const props = defineProps({
   initialFilters: {
     type: Object,
     default: () => ({})
+  },
+  statusEnums: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -70,13 +72,12 @@ const filters = reactive({
 
 // Các tùy chọn cho select
 const statusOptions = computed(() => {
-  const enumData = getEnumSync('basic_status')
   const options = [{ value: '', label: 'Tất cả trạng thái' }]
   
-  if (Array.isArray(enumData)) {
-    options.push(...enumData.map(item => ({
-      value: item.value,
-      label: item.label
+  if (Array.isArray(props.statusEnums)) {
+    options.push(...props.statusEnums.map(item => ({
+      value: item.value || item.id,
+      label: item.label || item.name
     })))
   }
   

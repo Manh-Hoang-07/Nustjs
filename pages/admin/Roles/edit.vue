@@ -10,6 +10,7 @@
       :role="roleData"
       :status-enums="statusEnums"
       :api-errors="apiErrors"
+      :loading="loading"
       @submit="handleSubmit" 
       @cancel="onClose" 
     />
@@ -20,9 +21,10 @@ import RoleForm from './form.vue'
 import endpoints from '@/api/endpoints'
 import { ref, reactive, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
+import apiClient from '@/api/apiClient'
 
 
-const api = useApiClient()
+const { apiClient: api } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
@@ -33,6 +35,7 @@ const props = defineProps({
   },
   onClose: Function
 })
+
 const emit = defineEmits(['updated'])
 
 const showModal = ref(false)
@@ -60,11 +63,11 @@ async function fetchRoleDetails() {
   
   loading.value = true
   try {
-    const response = await api.get(`/api/admin/roles/${props.role.id}`)
+    const response = await api.get(endpoints.roles.show(props.role.id))
     
     roleData.value = response.data.data || response.data
   } catch (error) {
-    
+    console.error('Error fetching role details:', error)
     // Fallback về dữ liệu từ list view nếu API lỗi
     roleData.value = props.role
   } finally {

@@ -27,7 +27,6 @@ export const useSystemConfigStore = defineStore('systemConfig', () => {
             config.value = storedConfig
             isLoaded.value = true
             lastFetchTime.value = storedTime
-            console.log('Loaded system config from localStorage cache')
             return true
           } else {
             // Cache hết hạn, xóa khỏi localStorage
@@ -76,20 +75,17 @@ export const useSystemConfigStore = defineStore('systemConfig', () => {
   const loadSystemConfig = async (force = false) => {
     // Kiểm tra cache
     if (!force && isLoaded.value && (Date.now() - lastFetchTime.value) < cacheDuration) {
-      console.log('Using cached system config')
       return config.value
     }
 
     // Nếu đang có request đang chạy, chờ nó hoàn thành
     if (loadingPromise.value) {
-      console.log('System config is already loading, waiting for existing request...')
       return await loadingPromise.value
     }
 
     // Tạo promise mới
     loadingPromise.value = (async () => {
       try {
-        console.log('Loading system config from API...')
         isLoading.value = true
         
         const response = await apiClient.get('/api/config-v2/general')

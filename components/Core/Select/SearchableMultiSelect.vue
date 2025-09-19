@@ -164,6 +164,10 @@ const props = defineProps({
   minSearchLength: {
     type: Number,
     default: 2
+  },
+  labelField: {
+    type: String,
+    default: 'title'
   }
 })
 
@@ -177,6 +181,14 @@ const options = ref([])
 const loading = ref(false)
 const selectedItems = ref([])
 const showAllSelected = ref(false)
+
+// Function to get label based on labelField prop
+const getLabel = (option) => {
+  if (props.labelField === 'display_name') {
+    return option.display_name || option.name || option.title || option.label || 'Không có tên'
+  }
+  return option.title || option.name || option.label || 'Không có tên'
+}
 
 // Filter options to exclude already selected items
 const filteredOptions = computed(() => {
@@ -196,9 +208,15 @@ const loadDefaultOptions = async () => {
     try {
       const response = await api.get(`${props.searchApi}?limit=50`)
       const allOptions = response.data.data || []
-      options.value = allOptions
-    } catch (error) {
       
+      // Transform options to have consistent label field
+      options.value = allOptions.map(option => ({
+        value: option.id,
+        label: getLabel(option)
+      }))
+    } catch (error) {
+      console.error('Error loading default options:', error)
+      options.value = []
     } finally {
       loading.value = false
     }
@@ -215,9 +233,15 @@ const debouncedSearch = debounce(async () => {
   loading.value = true
   try {
     const response = await api.get(`${props.searchApi}?search=${encodeURIComponent(searchQuery.value)}`)
-    options.value = response.data.data || []
-  } catch (error) {
+    const searchResults = response.data.data || []
     
+    // Transform search results to have consistent label field
+    options.value = searchResults.map(option => ({
+      value: option.id,
+      label: getLabel(option)
+    }))
+  } catch (error) {
+    console.error('Error searching options:', error)
     options.value = []
   } finally {
     loading.value = false

@@ -88,6 +88,10 @@ const props = defineProps({
   excludeId: {
     type: [String, Number],
     default: null
+  },
+  labelField: {
+    type: String,
+    default: 'title'
   }
 })
 
@@ -100,6 +104,14 @@ const showDropdown = ref(false)
 const options = ref([])
 const loading = ref(false)
 const selectedOption = ref(null)
+
+// Function to get label based on labelField prop
+const getLabel = (option) => {
+  if (props.labelField === 'display_name') {
+    return option.display_name || option.name || option.title || option.label || 'Không có tên'
+  }
+  return option.title || option.name || option.label || 'Không có tên'
+}
 
 // Display value for input
 const displayValue = computed({
@@ -140,7 +152,7 @@ const loadDefaultOptions = async () => {
       // Transform options to have consistent label field
       let transformedOptions = allOptions.map(option => ({
         value: option.id,
-        label: option.title || option.name || option.label || 'Không có tên'
+        label: getLabel(option)
       }))
       
       // Loại bỏ item có excludeId nếu có
@@ -184,7 +196,7 @@ const debouncedSearch = debounce(async () => {
     // Transform search results to have consistent label field
     let transformedResults = searchResults.map(option => ({
       value: option.id,
-      label: option.title || option.name || option.label || 'Không có tên'
+      label: getLabel(option)
     }))
     
     // Loại bỏ item có excludeId nếu có
@@ -262,7 +274,7 @@ watch(() => props.modelValue, async (newValue) => {
           const option = data[0]
           selectedOption.value = {
             value: option.id,
-            label: option.title || option.name || option.label || 'Không có tên'
+            label: getLabel(option)
           }
         }
       } catch (error) {
