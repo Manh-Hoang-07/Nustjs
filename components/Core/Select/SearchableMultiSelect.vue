@@ -1,135 +1,72 @@
 <template>
   <div class="searchable-multi-select relative">
-    <!-- Selected items display -->
-    <div class="selected-items mb-3">
-      <div v-if="selectedItems.length > 0">
-        <!-- Compact view when too many items -->
-        <div v-if="selectedItems.length > 3 && !showAllSelected" class="flex items-center gap-2">
-          <div class="flex items-center gap-1">
-            <span 
-              v-for="(item, index) in selectedItems.slice(0, 2)" 
-              :key="item.value"
-              class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm bg-blue-50 border border-blue-200 text-blue-700"
-            >
-              <span class="mr-2">{{ item.label }}</span>
-              <button 
-                @click="removeItem(item)" 
-                class="text-blue-500 hover:text-blue-700 focus:outline-none transition-colors"
-                type="button"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </span>
-          </div>
-          <button 
-            @click="showAllSelected = true"
-            class="text-blue-600 hover:text-blue-800 text-sm font-medium focus:outline-none transition-colors"
-            type="button"
-          >
-            +{{ selectedItems.length - 2 }} more
-          </button>
-        </div>
-        
-        <!-- Full view when expanded or few items -->
-        <div v-else class="flex flex-wrap gap-2">
-          <span 
-            v-for="item in selectedItems" 
-            :key="item.value"
-            class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition-colors"
-          >
-            <span class="mr-2">{{ item.label }}</span>
-            <button 
-              @click="removeItem(item)" 
-              class="text-blue-500 hover:text-blue-700 focus:outline-none transition-colors"
-              type="button"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </span>
-          
-          <!-- Collapse button when expanded -->
-          <button 
-            v-if="selectedItems.length > 3 && showAllSelected"
-            @click="showAllSelected = false"
-            class="text-blue-600 hover:text-blue-800 text-sm font-medium focus:outline-none transition-colors"
-            type="button"
-          >
-            Show less
-          </button>
-        </div>
-      </div>
-      <div v-else class="text-sm text-gray-500 italic">
-        Chưa có danh mục nào được chọn
-      </div>
-    </div>
-    
-    <!-- Search input -->
+    <!-- Search input with single-line summary (ellipsis if overflow) -->
     <div class="relative">
-      <input
-        v-model="searchQuery"
-        @input="handleInput"
-        @focus="handleFocus"
-        @blur="handleBlur"
-        :placeholder="placeholder"
-        :disabled="disabled"
+      <div
+        class="w-full pl-10 pr-3 py-2.5 border rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 flex items-center"
         :class="[
-          'w-full pl-10 pr-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
           error ? 'border-red-500' : 'border-gray-300',
           disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'
         ]"
-      />
+        @click="focusInput"
+      >
+        <span v-if="!showDropdown && selectedItems.length > 0" class="text-sm text-gray-700 truncate">
+          {{ selectedItems.length }} đã chọn
+        </span>
+        <input
+          ref="searchInputRef"
+          v-model="searchQuery"
+          @input="handleInput"
+          @focus="handleFocus"
+          @blur="handleBlur"
+          @keydown.backspace="handleBackspace"
+          :placeholder="placeholder"
+          :disabled="disabled"
+          class="flex-1 min-w-0 outline-none border-0 p-0 bg-transparent text-sm placeholder-gray-400"
+        />
+      </div>
+
       <!-- Search icon -->
       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
         <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
       </div>
-    </div>
-    
-    <!-- Loading indicator -->
-    <div v-if="loading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-      <div class="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+
+      <!-- Loading indicator -->
+      <div v-if="loading" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+        <div class="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
     </div>
     
     <!-- Dropdown -->
     <div 
-      v-if="showDropdown && (filteredOptions.length > 0 || searchQuery.length > 0)" 
-      class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-60 overflow-y-auto"
+      v-if="showDropdown" 
+      class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-64 overflow-y-auto"
+      @mousedown.prevent="onDropdownMouseDown"
+      @mouseup="onDropdownMouseUp"
     >
+
       <div 
-        v-for="option in filteredOptions" 
+        v-for="option in combinedOptions" 
         :key="option.value"
-        @click="selectOption(option)"
+        @click="onOptionRowClick(option)"
         class="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0 flex items-center justify-between transition-colors"
       >
         <span class="text-gray-700">{{ option.label }}</span>
-        <span v-if="isSelected(option)" class="text-blue-600">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-          </svg>
-        </span>
+        <button
+          type="button"
+          class="text-sm px-2 py-1 rounded-md border transition-colors"
+          :class="isSelected(option) ? 'text-red-600 border-red-200 hover:bg-red-50' : 'text-blue-600 border-blue-200 hover:bg-blue-50'"
+          @click.stop="handleOptionAction(option)"
+        >
+          {{ isSelected(option) ? 'Xóa' : 'Chọn' }}
+        </button>
       </div>
       
       <!-- No results -->
       <div v-if="searchQuery.length > 0 && filteredOptions.length === 0 && !loading" class="px-4 py-3 text-gray-500 text-center">
-        <svg class="w-6 h-6 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.47-.881-6.08-2.33"></path>
-        </svg>
         Không tìm thấy kết quả
-      </div>
-      
-      <!-- Too many items notice -->
-      <div v-if="!searchQuery && options.length > 50" class="px-4 py-3 text-sm text-gray-500 bg-gray-50 border-t border-gray-100">
-        <div class="flex items-center">
-          <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          Hiển thị 50 items đầu tiên. Vui lòng tìm kiếm để xem thêm.
-        </div>
       </div>
     </div>
   </div>
@@ -139,6 +76,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { debounce } from '../../utils/optimization.js'
 import { useApiClient } from '../../../composables/api/useApiClient.js'
+import apiClient from '@/api/apiClient'
 
 const props = defineProps({
   modelValue: {
@@ -173,14 +111,30 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
-const api = useApiClient()
+const { apiClient: api } = useApiClient()
 
 const searchQuery = ref('')
 const showDropdown = ref(false)
 const options = ref([])
 const loading = ref(false)
 const selectedItems = ref([])
-const showAllSelected = ref(false)
+const searchInputRef = ref(null)
+const selectedSummary = computed(() => selectedItems.value.map(i => i.label).join(', '))
+
+// Combine selected and filtered options into a single list
+const combinedOptions = computed(() => {
+  const selectedMap = new Map(selectedItems.value.map(i => [i.value, i]))
+  const filtered = filteredOptions.value
+  const combined = []
+  // Ensure selected appear first (and unique)
+  selectedItems.value.forEach(item => {
+    combined.push(item)
+  })
+  filtered.forEach(opt => {
+    if (!selectedMap.has(opt.value)) combined.push(opt)
+  })
+  return combined
+})
 
 // Function to get label based on labelField prop
 const getLabel = (option) => {
@@ -206,7 +160,7 @@ const loadDefaultOptions = async () => {
   if (options.value.length === 0) {
     loading.value = true
     try {
-      const response = await api.get(`${props.searchApi}?limit=50`)
+      const response = await apiClient.get(`${props.searchApi}?per_page=50`)
       const allOptions = response.data.data || []
       
       // Transform options to have consistent label field
@@ -232,7 +186,7 @@ const debouncedSearch = debounce(async () => {
   
   loading.value = true
   try {
-    const response = await api.get(`${props.searchApi}?search=${encodeURIComponent(searchQuery.value)}`)
+    const response = await apiClient.get(`${props.searchApi}?search=${encodeURIComponent(searchQuery.value)}&per_page=50`)
     const searchResults = response.data.data || []
     
     // Transform search results to have consistent label field
@@ -246,7 +200,7 @@ const debouncedSearch = debounce(async () => {
   } finally {
     loading.value = false
   }
-}, 300)
+}, 100)
 
 // Handle input changes
 const handleInput = () => {
@@ -257,6 +211,12 @@ const handleInput = () => {
   }
 }
 
+// Focus input when clicking on the wrapper
+const focusInput = () => {
+  if (props.disabled) return
+  searchInputRef.value && searchInputRef.value.focus()
+}
+
 // Handle focus
 const handleFocus = async () => {
   showDropdown.value = true
@@ -265,9 +225,51 @@ const handleFocus = async () => {
 
 // Handle blur with delay to allow click events
 const handleBlur = () => {
+  // Delay closing to allow clicks inside dropdown; only close if not interacting
   setTimeout(() => {
-    showDropdown.value = false
-  }, 200)
+    if (!isInteractingWithDropdown.value) {
+      showDropdown.value = false
+    }
+  }, 150)
+}
+
+// Handle backspace to remove last selected when query is empty
+const handleBackspace = () => {
+  if (searchQuery.value.length === 0 && selectedItems.value.length > 0) {
+    const last = selectedItems.value[selectedItems.value.length - 1]
+    removeItem(last)
+  }
+}
+
+// Row click: only select when not already selected
+const onOptionRowClick = (option) => {
+  if (!isSelected(option)) {
+    selectOption(option)
+  }
+}
+
+// Action button click inside option row
+const handleOptionAction = (option) => {
+  if (isSelected(option)) {
+    removeItem(option)
+  } else {
+    selectOption(option)
+  }
+  // Keep dropdown open and refocus input
+  nextTick(() => {
+    showDropdown.value = true
+    searchInputRef.value && searchInputRef.value.focus()
+  })
+}
+
+// Manage dropdown interaction state to prevent blur-closing
+const isInteractingWithDropdown = ref(false)
+const onDropdownMouseDown = () => {
+  isInteractingWithDropdown.value = true
+}
+const onDropdownMouseUp = () => {
+  isInteractingWithDropdown.value = false
+  searchInputRef.value && searchInputRef.value.focus()
 }
 
 // Select an option
@@ -292,6 +294,7 @@ const isSelected = (option) => {
   return selectedItems.value.some(item => item.value === option.value)
 }
 
+
 // Watch for modelValue changes to update selected items
 watch(() => props.modelValue, async (newValue) => {
   if (newValue && newValue.length > 0) {
@@ -311,21 +314,22 @@ watch(() => props.modelValue, async (newValue) => {
     // Fetch missing items from API
     if (missingIds.length > 0) {
       try {
-        const response = await api.get(`${props.searchApi}?ids=${missingIds.join(',')}`)
+        const response = await apiClient.get(`${props.searchApi}?ids=${missingIds.join(',')}`)
         if (response.data.data) {
-          foundItems.push(...response.data.data)
+          const missingItems = response.data.data.map(option => ({
+            value: option.id,
+            label: getLabel(option)
+          }))
+          foundItems.push(...missingItems)
         }
       } catch (error) {
-        
+        console.error('Error fetching missing items:', error)
       }
     }
     
     selectedItems.value = foundItems
-    // Reset showAllSelected when items change
-    showAllSelected.value = false
   } else {
     selectedItems.value = []
-    showAllSelected.value = false
   }
 }, { immediate: true })
 
@@ -333,14 +337,18 @@ watch(() => props.modelValue, async (newValue) => {
 onMounted(async () => {
   if (props.modelValue && props.modelValue.length > 0) {
     try {
-      const response = await api.get(`${props.searchApi}?ids=${props.modelValue.join(',')}`)
+      const response = await apiClient.get(`${props.searchApi}?ids=${props.modelValue.join(',')}`)
       if (response.data.data) {
-        selectedItems.value = response.data.data
+        const initialItems = response.data.data.map(option => ({
+          value: option.id,
+          label: getLabel(option)
+        }))
+        selectedItems.value = initialItems
         // Add to options so they show in dropdown
-        options.value = response.data.data
+        options.value = initialItems
       }
     } catch (error) {
-      
+      console.error('Error loading initial options:', error)
     }
   }
 })
@@ -351,11 +359,7 @@ onMounted(async () => {
   position: relative;
 }
 
-.dropdown {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
 .selected-items {
   min-height: 2rem;
 }
-</style> 
+</style>
