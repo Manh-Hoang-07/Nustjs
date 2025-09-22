@@ -344,35 +344,7 @@ watch(() => props.modelValue, async (newValue) => {
 }, { immediate: true })
 
 // Load initial options if modelValue exists
-onMounted(async () => {
-  if (props.modelValue && props.modelValue.length > 0) {
-    try {
-      const normalizedIds = normalizeToIds(props.modelValue)
-      const uniqueIds = Array.from(new Set(normalizedIds))
-      const response = await apiClient.get(`${props.searchApi}?ids=${uniqueIds.join(',')}`)
-      if (response.data.data) {
-        const requestedIdSet = new Set(uniqueIds)
-        const initialItems = response.data.data
-          .filter(option => requestedIdSet.has(option.id))
-          .map(option => ({
-            value: option.id,
-            label: getLabel(option)
-          }))
-        // Deduplicate by value
-        const seen = new Set()
-        selectedItems.value = initialItems.filter(item => {
-          if (seen.has(item.value)) return false
-          seen.add(item.value)
-          return true
-        })
-        // Add to options so they show in dropdown
-        options.value = selectedItems.value
-      }
-    } catch (error) {
-      console.error('Error loading initial options:', error)
-    }
-  }
-})
+// Removed onMounted ids-fetch to avoid duplicate calls; watcher with immediate handles initialization
 
 // Normalize incoming modelValue to an array of ids
 function normalizeToIds(values) {
