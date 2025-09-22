@@ -73,9 +73,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { debounce } from '../../utils/optimization.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { debounce } from '../../../utils/optimization.js'
 import apiClient from '@/api/apiClient'
 
 const props = defineProps({
@@ -111,7 +110,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
-const { apiClient: api } = useApiClient()
+
 
 const searchQuery = ref('')
 const showDropdown = ref(false)
@@ -298,11 +297,13 @@ const isSelected = (option) => {
 // Watch for modelValue changes to update selected items
 watch(() => props.modelValue, async (newValue) => {
   if (newValue && newValue.length > 0) {
+    const normalizedIds = normalizeToIds(newValue)
+    const uniqueIds = Array.from(new Set(normalizedIds))
     // Try to find items in current options
     const foundItems = []
     const missingIds = []
     
-    for (const id of newValue) {
+    for (const id of uniqueIds) {
       const found = options.value.find(opt => opt.value === id)
       if (found) {
         foundItems.push(found)
@@ -316,10 +317,13 @@ watch(() => props.modelValue, async (newValue) => {
       try {
         const response = await apiClient.get(`${props.searchApi}?ids=${missingIds.join(',')}`)
         if (response.data.data) {
-          const missingItems = response.data.data.map(option => ({
-            value: option.id,
-            label: getLabel(option)
-          }))
+          const requestedIdSet = new Set(missingIds)
+          const missingItems = response.data.data
+            .filter(option => requestedIdSet.has(option.id))
+            .map(option => ({
+              value: option.id,
+              label: getLabel(option)
+            }))
           foundItems.push(...missingItems)
         }
       } catch (error) {
@@ -327,7 +331,13 @@ watch(() => props.modelValue, async (newValue) => {
       }
     }
     
-    selectedItems.value = foundItems
+    // Deduplicate by value to avoid inflated counts
+    const seen = new Set()
+    selectedItems.value = foundItems.filter(item => {
+      if (seen.has(item.value)) return false
+      seen.add(item.value)
+      return true
+    })
   } else {
     selectedItems.value = []
   }
@@ -337,21 +347,43 @@ watch(() => props.modelValue, async (newValue) => {
 onMounted(async () => {
   if (props.modelValue && props.modelValue.length > 0) {
     try {
-      const response = await apiClient.get(`${props.searchApi}?ids=${props.modelValue.join(',')}`)
+      const normalizedIds = normalizeToIds(props.modelValue)
+      const uniqueIds = Array.from(new Set(normalizedIds))
+      const response = await apiClient.get(`${props.searchApi}?ids=${uniqueIds.join(',')}`)
       if (response.data.data) {
-        const initialItems = response.data.data.map(option => ({
-          value: option.id,
-          label: getLabel(option)
-        }))
-        selectedItems.value = initialItems
+        const requestedIdSet = new Set(uniqueIds)
+        const initialItems = response.data.data
+          .filter(option => requestedIdSet.has(option.id))
+          .map(option => ({
+            value: option.id,
+            label: getLabel(option)
+          }))
+        // Deduplicate by value
+        const seen = new Set()
+        selectedItems.value = initialItems.filter(item => {
+          if (seen.has(item.value)) return false
+          seen.add(item.value)
+          return true
+        })
         // Add to options so they show in dropdown
-        options.value = initialItems
+        options.value = selectedItems.value
       }
     } catch (error) {
       console.error('Error loading initial options:', error)
     }
   }
 })
+
+// Normalize incoming modelValue to an array of ids
+function normalizeToIds(values) {
+  return values.map(v => {
+    if (v && typeof v === 'object') {
+      if ('id' in v && v.id != null) return v.id
+      if ('value' in v && v.value != null) return v.value
+    }
+    return v
+  })
+}
 </script>
 
 <style scoped>
