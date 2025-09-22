@@ -32,13 +32,15 @@
       <main class="flex-1 pt-16">
         <slot />
       </main>
+      <ToastContainer />
     </div>
   </div>
 </template>
 
 <script setup>
 import { useAdminNavigation } from '@/composables/navigation/useAdminNavigation'
-import { ref, computed, onMounted } from 'vue';
+import { defineAsyncComponent, ref, computed, onMounted } from 'vue';
+import ToastContainer from '@/components/Core/Feedback/ToastContainer.vue'
 
 // Lazy load components để tăng performance
 const HeaderBar = defineAsyncComponent(() => import('../components/Layout/Header/HeaderBar.vue'))

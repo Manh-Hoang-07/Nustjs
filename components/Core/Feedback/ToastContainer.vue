@@ -9,7 +9,7 @@
         v-for="toast in toasts"
         :key="toast.id"
         :class="[
-          'max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden',
+          'max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden',
           'transform transition-all duration-300 ease-in-out',
           toast.visible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
         ]"
@@ -82,8 +82,8 @@
               </svg>
             </div>
             
-            <div class="ml-3 w-0 flex-1 pt-0.5">
-              <p class="text-sm font-medium text-gray-900">
+            <div class="ml-3 flex-1 min-w-0 pt-0.5">
+              <p class="text-sm font-medium text-gray-900 break-words whitespace-normal leading-5">
                 {{ toast.message }}
               </p>
             </div>
