@@ -206,7 +206,6 @@ const toggleMaintenanceMode = async () => {
   try {
     // This would call the API to update maintenance mode
     // await updateConfigsByGroup('general', [{ config_key: 'maintenance_mode', config_value: maintenanceMode.value.toString() }])
-    console.log('Maintenance mode toggled:', maintenanceMode.value)
     alert(`Chế độ bảo trì đã được ${maintenanceMode.value ? 'bật' : 'tắt'}`)
   } catch (err) {
     console.error('Error toggling maintenance mode:', err)

@@ -57,8 +57,8 @@
 
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
-import { debounce } from '../../utils/optimization.js'
-import { useApiClient } from '../../../composables/api/useApiClient.js'
+import { debounce } from '../../../utils/optimization.js'
+import apiClient from '@/api/apiClient'
 
 const props = defineProps({
   modelValue: {
@@ -97,7 +97,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
-const { apiClient: api } = useApiClient()
+ 
 
 const searchQuery = ref('')
 const showDropdown = ref(false)
@@ -142,12 +142,8 @@ const loadDefaultOptions = async () => {
     loading.value = true
     try {
       // Load tất cả nếu ít hơn 50 items, nếu không thì load 50 items đầu
-      const response = await api.get(props.searchApi, { 
-        params: { 
-          per_page: 50
-        } 
-      })
-      const allOptions = response.data.data || response.data || []
+      const response = await apiClient.get(`${props.searchApi}?per_page=50`)
+      const allOptions = response.data.data || []
       
       // Transform options to have consistent label field
       let transformedOptions = allOptions.map(option => ({
@@ -185,13 +181,8 @@ const debouncedSearch = debounce(async () => {
   
   loading.value = true
   try {
-    const response = await api.get(props.searchApi, { 
-      params: { 
-        search: searchQuery.value,
-        per_page: 50
-      } 
-    })
-    const searchResults = response.data.data || response.data || []
+    const response = await apiClient.get(`${props.searchApi}?search=${encodeURIComponent(searchQuery.value)}&per_page=50`)
+    const searchResults = response.data.data || []
     
     // Transform search results to have consistent label field
     let transformedResults = searchResults.map(option => ({
@@ -263,15 +254,11 @@ watch(() => props.modelValue, async (newValue) => {
     } else {
       // If not found, fetch it from API
       try {
-        const response = await api.get(props.searchApi, { 
-          params: { 
-            id: newValue,
-            per_page: 1
-          } 
-        })
-        const data = response.data.data || response.data || []
-        if (data && data.length > 0) {
-          const option = data[0]
+        const response = await apiClient.get(`${props.searchApi}?ids=${newValue}`)
+        const data = response.data.data || []
+        const filtered = data.filter(option => option.id == newValue)
+        if (filtered.length > 0) {
+          const option = filtered[0]
           selectedOption.value = {
             value: option.id,
             label: getLabel(option)
@@ -290,18 +277,14 @@ watch(() => props.modelValue, async (newValue) => {
 onMounted(async () => {
   if (props.modelValue) {
     try {
-      const response = await api.get(props.searchApi, { 
-        params: { 
-          id: props.modelValue,
-          per_page: 1
-        } 
-      })
-      const data = response.data.data || response.data || []
-      if (data && data.length > 0) {
-        const option = data[0]
+      const response = await apiClient.get(`${props.searchApi}?ids=${props.modelValue}`)
+      const data = response.data.data || []
+      const filtered = data.filter(option => option.id == props.modelValue)
+      if (filtered.length > 0) {
+        const option = filtered[0]
         const transformedOption = {
           value: option.id,
-          label: option.title || option.name || option.label || 'Không có tên'
+          label: getLabel(option)
         }
         selectedOption.value = transformedOption
         // Add to options so it shows in dropdown

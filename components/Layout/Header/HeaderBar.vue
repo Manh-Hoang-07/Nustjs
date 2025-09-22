@@ -132,13 +132,11 @@ const handleClickOutside = (event) => {
 const handleProfile = () => {
   isDropdownOpen.value = false
   // TODO: Navigate to profile page
-  console.log('Navigate to profile')
 }
 
 const handleSettings = () => {
   isDropdownOpen.value = false
   // TODO: Navigate to settings page
-  console.log('Navigate to settings')
 }
 
 const handleLogout = () => {
