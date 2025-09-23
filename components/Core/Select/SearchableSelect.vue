@@ -5,6 +5,7 @@
       @input="handleInput"
       @focus="handleFocus"
       @blur="handleBlur"
+      @keydown.backspace="handleBackspace"
       :placeholder="placeholder"
       :disabled="disabled"
       :class="[
@@ -104,6 +105,7 @@ const showDropdown = ref(false)
 const options = ref([])
 const loading = ref(false)
 const selectedOption = ref(null)
+const isInteracting = ref(false)
 
 // Function to get label based on labelField prop
 const getLabel = (option) => {
@@ -116,10 +118,14 @@ const getLabel = (option) => {
 // Display value for input
 const displayValue = computed({
   get: () => {
+    // While typing/searching, show the query; otherwise show selected label
+    if (isInteracting.value || searchQuery.value.length > 0) {
+      return searchQuery.value
+    }
     if (selectedOption.value) {
       return selectedOption.value.label
     }
-    return searchQuery.value
+    return ''
   },
   set: (value) => {
     searchQuery.value = value
@@ -206,6 +212,12 @@ const debouncedSearch = debounce(async () => {
 
 // Handle input changes
 const handleInput = () => {
+  // If a selection exists and user starts typing, clear the selection to enable searching
+  if (selectedOption.value) {
+    selectedOption.value = null
+    emit('update:modelValue', null)
+    emit('change', null)
+  }
   if (searchQuery.value.length >= props.minSearchLength) {
     debouncedSearch()
   } else {
@@ -215,6 +227,7 @@ const handleInput = () => {
 
 // Handle focus
 const handleFocus = async () => {
+  isInteracting.value = true
   showDropdown.value = true
   await loadDefaultOptions()
 }
@@ -223,7 +236,21 @@ const handleFocus = async () => {
 const handleBlur = () => {
   setTimeout(() => {
     showDropdown.value = false
+    isInteracting.value = false
+    // If input was cleared during interaction and no selection, ensure value is null
+    if (!selectedOption.value && searchQuery.value === '') {
+      emit('update:modelValue', null)
+      emit('change', null)
+    }
   }, 200)
+}
+
+// Handle backspace to clear current selection when input is empty
+const handleBackspace = () => {
+  if (searchQuery.value.length === 0 && selectedOption.value) {
+    clearSelection()
+    showDropdown.value = true
+  }
 }
 
 // Select an option

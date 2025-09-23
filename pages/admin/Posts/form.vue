@@ -105,28 +105,23 @@
       <!-- Danh mục chính -->
       <div>
         <label for="primary_postcategory_id" class="block text-sm font-medium text-gray-700 mb-1">Danh mục chính</label>
-        <select
-          id="primary_postcategory_id"
-          :value="formData.primary_postcategory_id"
-          @change="formData.primary_postcategory_id = $event.target.value"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          :class="{ 'border-red-500': validationErrors.primary_postcategory_id || apiErrors.primary_postcategory_id }"
-        >
-          <option value="">-- Chọn danh mục chính --</option>
-          <option v-for="category in categoryOptions" :key="category.value" :value="category.value">
-            {{ category.label }}
-          </option>
-        </select>
+        <SearchableSelect
+          v-model="formData.primary_postcategory_id"
+          :search-api="POSTS_ENDPOINTS.ADMIN_POST_CATEGORIES"
+          :label-field="'name'"
+          placeholder="Chọn danh mục chính"
+          :error="validationErrors.primary_postcategory_id || apiErrors.primary_postcategory_id"
+        />
         <p v-if="validationErrors.primary_postcategory_id" class="mt-1 text-sm text-red-600">{{ validationErrors.primary_postcategory_id }}</p>
         <p v-else-if="apiErrors.primary_postcategory_id" class="mt-1 text-sm text-red-600">{{ apiErrors.primary_postcategory_id }}</p>
       </div>
         
         <!-- Danh mục -->
       <div>
-        <MultipleSelect
+        <SearchableMultiSelect
           v-model="formData.category_ids"
-          :options="categoryOptions"
-          label="Danh mục"
+          :search-api="POSTS_ENDPOINTS.ADMIN_POST_CATEGORIES"
+          :label-field="'name'"
           placeholder="Chọn danh mục"
           :error="validationErrors.category_ids || apiErrors.category_ids"
         />
@@ -134,10 +129,10 @@
         
         <!-- Thẻ -->
       <div>
-        <MultipleSelect
+        <SearchableMultiSelect
           v-model="formData.tag_ids"
-          :options="tagOptions"
-          label="Thẻ"
+          :search-api="POSTS_ENDPOINTS.ADMIN_POST_TAGS"
+          :label-field="'name'"
           placeholder="Chọn thẻ"
           :error="validationErrors.tag_ids || apiErrors.tag_ids"
         />
@@ -228,11 +223,12 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, reactive, watch, nextTick } from 'vue'
 import Modal from '@/components/Core/Modal/Modal.vue'
 import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
-import MultipleSelect from '@/components/Core/Select/MultipleSelect.vue'
-import { useApiClient } from '@/composables/api/useApiClient'
+import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
+import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
+import { POSTS_ENDPOINTS } from '@/api/endpoints'
 
 const props = defineProps({
   show: Boolean,
@@ -257,9 +253,6 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
-// API client
-const api = useApiClient()
-
 // Status options từ props
 const statusOptions = computed(() => {
   if (Array.isArray(props.statusEnums)) {
@@ -271,117 +264,7 @@ const statusOptions = computed(() => {
   return []
 })
 
-// Category và tag options từ API
-const categoryOptions = ref([])
-const tagOptions = ref([])
-const loadingCategories = ref(false)
-const loadingTags = ref(false)
-
-// Cache để tránh gọi API nhiều lần
-const categoriesCache = ref(null)
-const tagsCache = ref(null)
-
-// Fetch categories từ API
-async function fetchCategories() {
-  // Nếu đã có cache, không gọi API nữa
-  if (categoriesCache.value) {
-    categoryOptions.value = categoriesCache.value
-    return
-  }
-  
-  if (loadingCategories.value) return
-  
-  loadingCategories.value = true
-  try {
-    // Thử các endpoint khác nhau, bỏ qua endpoint lỗi
-    let response
-    const endpoints = [
-      '/api/post-categories',
-      '/api/post-categories/list',
-      '/api/admin/post-categories/list'
-    ]
-    
-    for (const endpoint of endpoints) {
-      try {
-        response = await api.get(endpoint)
-        break
-      } catch (error) {
-        // Bỏ qua endpoint lỗi, thử endpoint tiếp theo
-        continue
-      }
-    }
-    
-    if (!response) {
-      throw new Error('All endpoints failed')
-    }
-    
-    const categories = response.data.data || response.data
-    const options = categories.map(category => ({
-      value: category.id,
-      label: category.name
-    }))
-    
-    // Cache kết quả
-    categoriesCache.value = options
-    categoryOptions.value = options
-  } catch (error) {
-    console.error('Error fetching categories:', error)
-    categoryOptions.value = []
-  } finally {
-    loadingCategories.value = false
-  }
-}
-
-// Fetch tags từ API
-async function fetchTags() {
-  // Nếu đã có cache, không gọi API nữa
-  if (tagsCache.value) {
-    tagOptions.value = tagsCache.value
-    return
-  }
-  
-  if (loadingTags.value) return
-  
-  loadingTags.value = true
-  try {
-    // Thử các endpoint khác nhau, bỏ qua endpoint lỗi
-    let response
-    const endpoints = [
-      '/api/post-tags',
-      '/api/post-tags/list',
-      '/api/admin/post-tags/list'
-    ]
-    
-    for (const endpoint of endpoints) {
-      try {
-        response = await api.get(endpoint)
-        break
-      } catch (error) {
-        // Bỏ qua endpoint lỗi, thử endpoint tiếp theo
-        continue
-      }
-    }
-    
-    if (!response) {
-      throw new Error('All endpoints failed')
-    }
-    
-    const tags = response.data.data || response.data
-    const options = tags.map(tag => ({
-      value: tag.id,
-      label: tag.name
-    }))
-    
-    // Cache kết quả
-    tagsCache.value = options
-    tagOptions.value = options
-  } catch (error) {
-    console.error('Error fetching tags:', error)
-    tagOptions.value = []
-  } finally {
-    loadingTags.value = false
-  }
-}
+//
 
 
 
@@ -595,11 +478,7 @@ function onClose() {
   emit('cancel')
 }
 
-// Load data khi component mount
-onMounted(() => {
-  fetchCategories()
-  fetchTags()
-})
+//
 
 
 </script>

@@ -24,7 +24,7 @@ import { ref, reactive, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 
 
-const api = useApiClient()
+const { apiClient: api } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
@@ -72,7 +72,7 @@ async function fetchPostDetails() {
   
   loading.value = true
   try {
-    const response = await api.get(`/api/admin/posts/${props.post.id}`)
+    const response = await api.get(endpoints.posts.show(props.post.id))
     
     postData.value = response.data.data || response.data
   } catch (error) {

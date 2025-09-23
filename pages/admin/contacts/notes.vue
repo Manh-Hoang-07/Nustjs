@@ -58,47 +58,7 @@
             @update:model-value="clearError('admin_notes')"
           />
 
-          <!-- Quick Actions -->
-          <div class="bg-blue-50 rounded-lg p-4">
-            <h4 class="text-sm font-medium text-blue-900 mb-2">Thao tác nhanh:</h4>
-            <div class="flex flex-wrap gap-2">
-              <button
-                type="button"
-                @click="addQuickNote('Đã gọi điện thoại cho khách hàng')"
-                class="px-3 py-1 text-xs bg-blue-100 text-blue-800 rounded-full hover:bg-blue-200 transition-colors"
-              >
-                📞 Đã gọi điện
-              </button>
-              <button
-                type="button"
-                @click="addQuickNote('Đã gửi email phản hồi')"
-                class="px-3 py-1 text-xs bg-green-100 text-green-800 rounded-full hover:bg-green-200 transition-colors"
-              >
-                📧 Đã gửi email
-              </button>
-              <button
-                type="button"
-                @click="addQuickNote('Đã xử lý xong yêu cầu')"
-                class="px-3 py-1 text-xs bg-purple-100 text-purple-800 rounded-full hover:bg-purple-200 transition-colors"
-              >
-                ✅ Đã xử lý xong
-              </button>
-              <button
-                type="button"
-                @click="addQuickNote('Cần liên hệ lại sau')"
-                class="px-3 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full hover:bg-yellow-200 transition-colors"
-              >
-                ⏰ Liên hệ lại sau
-              </button>
-              <button
-                type="button"
-                @click="addQuickNote('Khách hàng không phản hồi')"
-                class="px-3 py-1 text-xs bg-red-100 text-red-800 rounded-full hover:bg-red-200 transition-colors"
-              >
-                ❌ Không phản hồi
-              </button>
-            </div>
-          </div>
+          
         </template>
       </FormWrapper>
     </div>
@@ -165,27 +125,16 @@ function getStatusClass(status) {
   }
 }
 
-// We need to access the form data from FormWrapper
-// This is a workaround to add quick notes
+// Removed quick action helpers; keep minimal state only
 let currentFormData = ref({ admin_notes: '' })
-
-function addQuickNote(note) {
-  const currentNotes = currentFormData.value.admin_notes?.trim() || ''
-  const timestamp = new Date().toLocaleString('vi-VN')
-  const newNote = `[${timestamp}] ${note}`
-  
-  if (currentNotes) {
-    currentFormData.value.admin_notes = currentNotes + '\n\n' + newNote
-  } else {
-    currentFormData.value.admin_notes = newNote
-  }
-}
 
 // Submit handler
 const handleSubmit = async (formData) => {
   try {
-    await api.put(endpoints.contacts.update(props.contact.id), {
-      admin_notes: formData.admin_notes?.trim() || null
+    // Send email along with admin_notes to satisfy backend validation
+    await api.patch(endpoints.contacts.update(props.contact.id), {
+      admin_notes: formData.admin_notes?.trim() || null,
+      email: props.contact?.email || undefined
     })
     
     // Update local contact

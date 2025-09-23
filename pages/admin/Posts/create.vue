@@ -19,7 +19,7 @@ import { ref, reactive, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 
 
-const api = useApiClient()
+const { apiClient: api } = useApiClient()
 
 const props = defineProps({
   show: Boolean,

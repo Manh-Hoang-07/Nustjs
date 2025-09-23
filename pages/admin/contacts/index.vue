@@ -88,9 +88,10 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <Actions 
                 :item="contact"
+                :show-edit="false"
+                :show-delete="false"
+                :show-view="true"
                 @view="openViewModal"
-                @edit="openEditModal"
-                @delete="confirmDelete"
               >
                 <template #custom="{ item }">
                   <button 
@@ -141,7 +142,7 @@
       :show="showViewModal"
       :contact="selectedContact"
       :on-close="closeViewModal"
-      @status-updated="handleStatusUpdated"
+      
     />
 
     <!-- Modal chỉnh sửa -->
