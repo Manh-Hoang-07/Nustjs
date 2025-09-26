@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import { useToast } from '../../../composables/ui/useToast.js'
+import { useToast } from '@/composables/ui/useToast'
 
 const { toasts, removeToast } = useToast()
 </script>

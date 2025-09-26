@@ -1,33 +1,32 @@
-﻿<template>
+<template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Quản lý người dùng</h1>
+      <h1 class="text-2xl font-bold">Qu?n l� ngu?i d�ng</h1>
       <button 
         @click="openCreateModal" 
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-        Thêm người dùng mới
+        Th�m ngu?i d�ng m?i
       </button>
     </div>
 
-    <!-- Bộ lọc -->
+    <!-- B? l?c -->
     <UserFilter 
       :initial-filters="filters"
-      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
-    <!-- Bảng dữ liệu -->
+    <!-- B?ng d? li?u -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
       <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên đăng nhập</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">T�n dang nh?p</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số điện thoại</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S? di?n tho?i</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng th�i</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao t�c</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -37,15 +36,9 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.phone || 'N/A' }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
-                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                :class="(
-                  statusEnums.find(s => s.value === user.status)?.class ||
-                  statusEnums.find(s => s.value === user.status)?.badge_class ||
-                  statusEnums.find(s => s.value === user.status)?.color_class ||
-                  'bg-gray-100 text-gray-800'
-                )"
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800"
               >
-                {{ getStatusLabel(user.status) }}
+                {{ user.status || 'N/A' }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -58,7 +51,7 @@
                   <button 
                     @click="openChangePasswordModal(item)" 
                     class="p-2 rounded-full hover:bg-blue-100 transition-colors duration-200"
-                    title="Đổi mật khẩu"
+                    title="�?i m?t kh?u"
                   >
                     <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
@@ -67,7 +60,7 @@
                   <button 
                     @click="openAssignRoleModal(item)" 
                     class="p-2 rounded-full hover:bg-green-100 transition-colors duration-200"
-                    title="Phân quyền"
+                    title="Ph�n quy?n"
                   >
                     <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -79,14 +72,14 @@
           </tr>
           <tr v-if="items.length === 0">
             <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-              Không có dữ liệu
+              Kh�ng c� d? li?u
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Phân trang -->
+    <!-- Ph�n trang -->
     <Pagination 
       v-if="items.length > 0"
       :current-page="pagination.current_page"
@@ -96,7 +89,7 @@
       @page-change="handlePageChange"
     />
 
-    <!-- Modal thêm mới -->
+    <!-- Modal th�m m?i -->
     <CreateUser
       v-if="showCreateModal"
       :show="showCreateModal"
@@ -107,7 +100,7 @@
       @created="handleUserCreated"
     />
 
-    <!-- Modal chỉnh sửa -->
+    <!-- Modal ch?nh s?a -->
     <EditUser
       v-if="showEditModal"
       :show="showEditModal"
@@ -119,7 +112,7 @@
       @updated="handleUserUpdated"
     />
 
-    <!-- Modal đổi mật khẩu -->
+    <!-- Modal d?i m?t kh?u -->
     <ChangePassword
       v-if="showChangePasswordModal"
       :show="showChangePasswordModal"
@@ -128,7 +121,7 @@
       @password-changed="handlePasswordChanged"
     />
 
-    <!-- Modal phân quyền -->
+    <!-- Modal ph�n quy?n -->
     <AssignRole
       v-if="showAssignRoleModal"
       :show="showAssignRoleModal"
@@ -137,12 +130,12 @@
       @role-assigned="handleRoleAssigned"
     />
 
-    <!-- Modal xác nhận xóa -->
+    <!-- Modal x�c nh?n x�a -->
     <ConfirmModal
       v-if="showDeleteModal"
       :show="showDeleteModal"
-      title="Xác nhận xóa"
-      :message="`Bạn có chắc chắn muốn xóa người dùng ${selectedUser?.username || ''}?`"
+      title="X�c nh?n x�a"
+      :message="`B?n c� ch?c ch?n mu?n x�a ngu?i d�ng ${selectedUser?.username || ''}?`"
       :on-close="closeDeleteModal"
       @confirm="deleteUser"
     />
@@ -158,7 +151,7 @@ definePageMeta({
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
 // Removed static enum helpers; enums are loaded via API
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 import { useDataTable } from '@/composables/data/useDataTable'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
@@ -196,8 +189,6 @@ const { apiClient } = useApiClient()
 
 // State
 const selectedUser = ref(null)
-const statusEnums = ref([])
-const genderEnums = ref([])
 const roleEnums = ref([])
 
 // Modal state
@@ -209,9 +200,6 @@ const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  // Load enums immediately (static)
-  fetchEnums()
-  
   // Load roles from API
   await loadRoles()
   
@@ -224,7 +212,7 @@ function handleFilterUpdate(newFilters) {
 }
 
 function fetchEnums() {
-  // Trạng thái: lấy từ API basic_status
+  // Tr?ng th�i: l?y t? API basic_status
   ;(async () => {
     try {
       const response = await apiClient.get(adminEndpoints.enums('user_status'))
@@ -238,7 +226,7 @@ function fetchEnums() {
     }
   })()
 
-  // Giới tính: lấy từ API
+  // Gi?i t�nh: l?y t? API
   ;(async () => {
     try {
       const response = await apiClient.get(adminEndpoints.enums('gender'))
@@ -261,7 +249,7 @@ async function loadRoles() {
     }
   } catch (error) {
     console.error('Error loading roles:', error)
-    showError('Không thể tải danh sách vai trò')
+    showError('Kh�ng th? t?i danh s�ch vai tr�')
   }
 }
 
@@ -297,7 +285,7 @@ function closeChangePasswordModal() {
 async function openAssignRoleModal(user) {
   selectedUser.value = user
   
-  // Đảm bảo roles đã được load
+  // �?m b?o roles d� du?c load
   if (roleEnums.value.length === 0) {
     await loadRoles()
   }
@@ -324,33 +312,33 @@ function closeDeleteModal() {
 async function handleUserCreated() {
   await fetchData()
   closeCreateModal()
-  showSuccess('Người dùng đã được tạo thành công')
+  showSuccess('Ngu?i d�ng d� du?c t?o th�nh c�ng')
 }
 
 async function handleUserUpdated() {
   await fetchData()
   closeEditModal()
-  showSuccess('Người dùng đã được cập nhật thành công')
+  showSuccess('Ngu?i d�ng d� du?c c?p nh?t th�nh c�ng')
 }
 
 async function handlePasswordChanged() {
   closeChangePasswordModal()
-  showSuccess('Mật khẩu đã được thay đổi thành công')
+  showSuccess('M?t kh?u d� du?c thay d?i th�nh c�ng')
 }
 
 async function handleRoleAssigned() {
   await fetchData()
   closeAssignRoleModal()
-  showSuccess('Vai trò đã được phân công thành công')
+  showSuccess('Vai tr� d� du?c ph�n c�ng th�nh c�ng')
 }
 
 async function deleteUser() {
   try {
     await deleteItem(selectedUser.value.id)
     closeDeleteModal()
-    showSuccess('Người dùng đã được xóa thành công')
+    showSuccess('Ngu?i d�ng d� du?c x�a th�nh c�ng')
   } catch (error) {
-    showError('Không thể xóa người dùng')
+    showError('Kh�ng th? x�a ngu?i d�ng')
   }
 }
 
@@ -362,7 +350,7 @@ function handlePageChange(page) {
 function getStatusLabel(status) {
   const list = statusEnums.value || []
   const found = list.find(it => it.value === status || it.id === status)
-  return found?.label || found?.name || status || 'Không xác định'
+  return found?.label || found?.name || status || 'Kh�ng x�c d?nh'
 }
 
 // Removed getStatusClass; class is derived from API enums directly in template

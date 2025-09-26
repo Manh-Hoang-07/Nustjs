@@ -1,18 +1,18 @@
-﻿<template>
+<template>
   <Modal v-model="modalVisible" :title="formTitle">
     <FormWrapper
       :default-values="defaultValues"
       :rules="validationRules"
       :api-errors="apiErrors"
-      submit-text="Đổi mật khẩu"
+      submit-text="�?i m?t kh?u"
       @submit="handleSubmit"
       @cancel="onClose"
     >
       <template #default="{ form, errors, clearError, isSubmitting }">
-        <!-- Mật khẩu mới -->
+        <!-- M?t kh?u m?i -->
         <FormField
           v-model="form.password"
-          label="Mật khẩu mới"
+          label="M?t kh?u m?i"
           name="password"
           type="password"
           :error="errors.password"
@@ -21,10 +21,10 @@
           @update:model-value="clearError('password')"
         />
         
-        <!-- Xác nhận mật khẩu mới -->
+        <!-- X�c nh?n m?t kh?u m?i -->
         <FormField
           v-model="form.password_confirmation"
-          label="Xác nhận mật khẩu mới"
+          label="X�c nh?n m?t kh?u m?i"
           name="password_confirmation"
           type="password"
           :error="errors.password_confirmation"
@@ -54,7 +54,7 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
-const formTitle = computed(() => `Đổi mật khẩu cho ${props.user?.username || 'người dùng'}`)
+const formTitle = computed(() => `�?i m?t kh?u cho ${props.user?.username || 'ngu?i d�ng'}`)
 const modalVisible = computed({
   get: () => props.show,
   set: () => onClose()
@@ -67,12 +67,12 @@ const defaultValues = {
 
 const validationRules = {
   password: [
-    { required: 'Mật khẩu mới là bắt buộc.' },
-    { min: [8, 'Mật khẩu phải có ít nhất 8 ký tự.'] }
+    { required: 'M?t kh?u m?i l� b?t bu?c.' },
+    { min: [8, 'M?t kh?u ph?i c� �t nh?t 8 k� t?.'] }
   ],
   password_confirmation: [
-    { required: 'Vui lòng xác nhận mật khẩu mới.' },
-    { match: ['password', 'Mật khẩu xác nhận không khớp.'] }
+    { required: 'Vui l�ng x�c nh?n m?t kh?u m?i.' },
+    { match: ['password', 'M?t kh?u x�c nh?n kh�ng kh?p.'] }
   ]
 }
 

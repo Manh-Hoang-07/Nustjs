@@ -231,7 +231,7 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { CONTACT_ENDPOINTS } from '@/api/endpoints'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 import { useToast } from '@/composables/ui/useToast'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'

@@ -201,7 +201,7 @@ import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 import ToastContainer from '@/components/Core/Feedback/ToastContainer.vue'
 import { adminEndpoints } from '@/api/endpoints'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 // Lazy load components
 const ContactView = defineAsyncComponent(() => import('./view.vue'))

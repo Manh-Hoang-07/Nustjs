@@ -77,7 +77,7 @@ import { adminEndpoints } from '@/api/endpoints'
 import Modal from '@/components/Core/Modal/Modal.vue'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 import { useToast } from '@/composables/ui/useToast'
 
 const { apiClient } = useApiClient()

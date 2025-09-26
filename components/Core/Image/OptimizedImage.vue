@@ -62,7 +62,7 @@ import {
   generateSizes, 
   optimizeImageUrl,
   generatePlaceholder 
-} from '../../utils/optimization.js'
+} from '@/utils/optimization'
 
 const props = defineProps({
   src: {

@@ -16,7 +16,7 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const props = defineProps({
   modelValue: {

@@ -74,8 +74,8 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
-import { debounce } from '../../../utils/optimization.js'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { debounce } from '@/utils/optimization'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const props = defineProps({
   modelValue: {

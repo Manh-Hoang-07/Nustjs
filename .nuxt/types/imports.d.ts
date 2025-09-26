@@ -32,7 +32,9 @@ declare global {
   const formToFormData: typeof import('../../utils/form')['formToFormData']
   const formatCurrency: typeof import('../../utils/formatters')['formatCurrency']
   const formatDate: typeof import('../../utils/formatters')['formatDate']
+  const formatDateTime: typeof import('../../utils/formatters')['formatDateTime']
   const formatNumber: typeof import('../../utils/formatters')['formatNumber']
+  const formatRelativeTime: typeof import('../../utils/formatters')['formatRelativeTime']
   const formatters: typeof import('../../utils/formatters')['default']
   const generatePlaceholder: typeof import('../../utils/optimization')['generatePlaceholder']
   const generateSizes: typeof import('../../utils/optimization')['generateSizes']
@@ -236,7 +238,9 @@ declare module 'vue' {
     readonly formToFormData: UnwrapRef<typeof import('../../utils/form')['formToFormData']>
     readonly formatCurrency: UnwrapRef<typeof import('../../utils/formatters')['formatCurrency']>
     readonly formatDate: UnwrapRef<typeof import('../../utils/formatters')['formatDate']>
+    readonly formatDateTime: UnwrapRef<typeof import('../../utils/formatters')['formatDateTime']>
     readonly formatNumber: UnwrapRef<typeof import('../../utils/formatters')['formatNumber']>
+    readonly formatRelativeTime: UnwrapRef<typeof import('../../utils/formatters')['formatRelativeTime']>
     readonly formatters: UnwrapRef<typeof import('../../utils/formatters')['default']>
     readonly generatePlaceholder: UnwrapRef<typeof import('../../utils/optimization')['generatePlaceholder']>
     readonly generateSizes: UnwrapRef<typeof import('../../utils/optimization')['generateSizes']>

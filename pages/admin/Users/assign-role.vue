@@ -1,31 +1,31 @@
-﻿<template>
-  <Modal v-model="modalVisible" title="Phân quyền người dùng">
+<template>
+  <Modal v-model="modalVisible" title="Ph�n quy?n ngu?i d�ng">
     <FormWrapper
       :default-values="defaultValues"
       :rules="validationRules"
       :api-errors="apiErrors"
-      submit-text="Cập nhật quyền"
+      submit-text="C?p nh?t quy?n"
       @submit="handleSubmit"
       @cancel="onClose"
     >
       <template #default="{ form, errors, clearError, isSubmitting }">
-                 <!-- Thông tin user -->
+                 <!-- Th�ng tin user -->
          <div class="mb-4 p-3 bg-gray-50 rounded-lg">
            <div class="text-sm text-gray-600">
-             <div><strong>Tên:</strong> {{ userDetail?.name || userDetail?.username || 'N/A' }}</div>
+             <div><strong>T�n:</strong> {{ userDetail?.name || userDetail?.username || 'N/A' }}</div>
              <div><strong>Email:</strong> {{ userDetail?.email || 'N/A' }}</div>
            </div>
          </div>
         
                  
          
-                   <!-- Vai trò -->
+                   <!-- Vai tr� -->
           <MultipleSelect
             v-model="form.role_ids"
-            label="Vai trò"
+            label="Vai tr�"
             :options="roleOptions"
             :error="errors.role_ids"
-            placeholder="Chọn vai trò..."
+            placeholder="Ch?n vai tr�..."
             @update:model-value="clearError('role_ids')"
           />
       </template>
@@ -40,7 +40,7 @@ import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import MultipleSelect from '@/components/Core/Select/MultipleSelect.vue'
 import { adminEndpoints } from '@/api/endpoints'
 import { useApiFormSubmit } from '@/utils/form'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const props = defineProps({
   show: Boolean,
@@ -54,13 +54,13 @@ const { apiClient } = useApiClient()
 const userDetail = ref(null)
 const roles = ref([])
 
-const formTitle = computed(() => `Phân quyền cho ${userDetail.value?.name || userDetail.value?.username || 'người dùng'}`)
+const formTitle = computed(() => `Ph�n quy?n cho ${userDetail.value?.name || userDetail.value?.username || 'ngu?i d�ng'}`)
 const modalVisible = computed({
   get: () => props.show,
   set: () => onClose()
 })
 
-// Watch show prop để fetch user detail và roles
+// Watch show prop d? fetch user detail v� roles
 watch(() => props.show, async (newValue) => {
   if (newValue && props.user?.id) {
     await Promise.all([
@@ -119,7 +119,7 @@ const { apiErrors, submit } = useApiFormSubmit({
 
 const validationRules = computed(() => ({
   role_ids: [
-    { required: 'Vui lòng chọn ít nhất một vai trò.' }
+    { required: 'Vui l�ng ch?n �t nh?t m?t vai tr�.' }
   ]
 }))
 
@@ -131,7 +131,7 @@ const roleOptions = computed(() => {
 })
 
 async function handleSubmit(formData) {
-  // Chỉ gửi role_ids để cập nhật
+  // Ch? g?i role_ids d? c?p nh?t
   const dataToSubmit = {
     role_ids: Array.isArray(formData.role_ids) ? formData.role_ids : [formData.role_ids].filter(Boolean)
   }

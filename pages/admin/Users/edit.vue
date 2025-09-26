@@ -19,7 +19,7 @@ import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch } from 'vue'
 import { formatDate } from '@/utils/formatters'
 import { useApiFormSubmit } from '@/utils/form'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 const props = defineProps({
   show: Boolean,

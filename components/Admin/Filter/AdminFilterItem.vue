@@ -90,7 +90,7 @@
 
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { debounce } from '../../utils/optimization.js'
+import { debounce } from '@/utils/optimization'
 
 const props = defineProps({
   modelValue: {

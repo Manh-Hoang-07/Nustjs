@@ -28,6 +28,8 @@
   "devDependencies": {
     "@babel/parser": "^7.28.0",
     "@nuxt/devtools": "latest",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vue-eslint-parser": "^10.2.0"
   }

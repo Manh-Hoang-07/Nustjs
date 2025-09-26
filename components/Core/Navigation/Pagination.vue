@@ -82,7 +82,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import usePagination from '../../../composables/ui/usePagination.js'
+import usePagination from '@/composables/ui/usePagination'
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/vue/24/solid'
 
 // Props

@@ -110,7 +110,7 @@ import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
 import { adminEndpoints } from '@/api/endpoints'
 import { useToast } from '@/composables/ui/useToast'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 // Props
 const props = defineProps({

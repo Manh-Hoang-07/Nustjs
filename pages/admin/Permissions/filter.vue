@@ -1,28 +1,28 @@
-﻿<template>
+<template>
   <div class="bg-white p-4 rounded-lg shadow mb-6">
     <form @submit.prevent="applyFilters">
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <!-- Tìm kiếm theo tên -->
+        <!-- T�m ki?m theo t�n -->
         <AdminFilterItem
           id="search"
-          label="Tìm kiếm"
+          label="T�m ki?m"
           type="text"
           v-model="filters.search"
-          placeholder="Tìm theo tên quyền"
+          placeholder="T�m theo t�n quy?n"
         />
-        <!-- Lọc theo trạng thái -->
+        <!-- L?c theo tr?ng th�i -->
         <AdminFilterItem
           id="status"
-          label="Trạng thái"
+          label="Tr?ng th�i"
           type="select"
           v-model="filters.status"
-          placeholder="Tất cả trạng thái"
+          placeholder="T?t c? tr?ng th�i"
           :options="statusOptions"
         />
-        <!-- Sắp xếp theo -->
+        <!-- S?p x?p theo -->
         <AdminFilterItem
           id="sort_by"
-          label="Sắp xếp theo"
+          label="S?p x?p theo"
           type="select"
           v-model="filters.sort_by"
           :options="sortOptions"
@@ -33,14 +33,14 @@
             type="submit"
             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
           >
-            Lọc
+            L?c
           </button>
           <button
             type="button"
             @click="resetFilters"
             class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none"
           >
-            Đặt lại
+            �?t l?i
           </button>
         </div>
       </div>
@@ -71,7 +71,7 @@ const filters = reactive({
   sort_by: props.initialFilters.sort_by || 'created_at_desc',
 })
 
-// Các tùy chọn cho select
+// C�c t�y ch?n cho select
 const statusOptions = computed(() => {
   const options = []
   
@@ -86,18 +86,18 @@ const statusOptions = computed(() => {
 })
 
 const sortOptions = [
-  { value: 'created_at:desc', label: 'Mới nhất' },
-  { value: 'created_at:asc', label: 'Cũ nhất' },
-  { value: 'name:asc', label: 'Tên (A-Z)' },
-  { value: 'name:desc', label: 'Tên (Z-A)' }
+  { value: 'created_at:desc', label: 'M?i nh?t' },
+  { value: 'created_at:asc', label: 'Cu nh?t' },
+  { value: 'name:asc', label: 'T�n (A-Z)' },
+  { value: 'name:desc', label: 'T�n (Z-A)' }
 ]
 
-// Áp dụng bộ lọc
+// �p d?ng b? l?c
 function applyFilters() {
   emit('update:filters', { ...filters })
 }
 
-// Đặt lại bộ lọc
+// �?t l?i b? l?c
 function resetFilters() {
   Object.keys(filters).forEach(key => {
     filters[key] = ''

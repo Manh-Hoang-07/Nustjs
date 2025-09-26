@@ -118,7 +118,7 @@
 import { ref, onMounted, watch } from 'vue'
 // Removed static enum imports; enums are loaded via API
 import Modal from '@/components/Core/Modal/Modal.vue'
-import { useApiClient } from '@/composables/api/useApiClient.js'
+import { useApiClient } from '@/composables/api/useApiClient'
 import { adminEndpoints as endpoints } from '@/api/endpoints'
 import { useToast } from '@/composables/ui/useToast'
 
