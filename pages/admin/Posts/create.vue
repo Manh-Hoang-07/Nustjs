@@ -14,12 +14,12 @@
 </template>
 <script setup>
 import PostForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, reactive, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 
 
-const { apiClient: api } = useApiClient()
+const { apiClient } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
@@ -49,7 +49,7 @@ watch(() => props.show, (newValue) => {
 async function handleSubmit(formData) {
   try {
     Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-    const response = await api.post(endpoints.posts.create, formData)
+    const response = await apiClient.post(adminEndpoints.posts.create, formData)
     emit('created')
     props.onClose()
   } catch (error) {

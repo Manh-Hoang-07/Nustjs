@@ -70,7 +70,7 @@
             :key="child.path"
             :to="child.path" 
             :prefetch="false"
-            @click="$emit('select', child)"
+            @click="() => { $emit('select', child); router.push(child.path) }"
             :class="[
               'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
               'hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 hover:text-white',
@@ -90,7 +90,7 @@
           v-else
           :to="item.path" 
           :prefetch="false"
-          @click="$emit('select', item)"
+          @click="() => { $emit('select', item); router.push(item.path) }"
           :class="[
             'group flex items-center w-full px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 min-h-[48px]',
             'hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 hover:text-white',
@@ -119,6 +119,7 @@ const props = defineProps({
 })
 
 const route = useRoute()
+const router = useRouter()
 
 const expandedMenus = ref([])
 

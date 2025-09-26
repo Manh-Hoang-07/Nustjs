@@ -13,7 +13,12 @@
             <span class="text-sm text-gray-500">ID: #{{ contactData?.id }}</span>
             <span 
               class="px-2 py-1 text-xs font-semibold rounded-full"
-              :class="getStatusClass(contactData?.status)"
+              :class="(
+                statusEnums.find(s => s.value === contactData?.status)?.class ||
+                statusEnums.find(s => s.value === contactData?.status)?.badge_class ||
+                statusEnums.find(s => s.value === contactData?.status)?.color_class ||
+                'bg-gray-100 text-gray-800'
+              )"
             >
               {{ getStatusLabel(contactData?.status) }}
             </span>
@@ -111,10 +116,10 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { getEnumSync, getEnumLabel } from '@/constants/enums'
+// Removed static enum imports; enums are loaded via API
 import Modal from '@/components/Core/Modal/Modal.vue'
-import api from '@/api/apiClient'
-import endpoints from '@/api/endpoints'
+import { useApiClient } from '@/composables/api/useApiClient.js'
+import { adminEndpoints as endpoints } from '@/api/endpoints'
 import { useToast } from '@/composables/ui/useToast'
 
 // Props
@@ -161,18 +166,11 @@ const formattedContent = computed(() => {
 
 // Methods
 function getStatusLabel(status) {
-  return getEnumLabel('contact_status', status) || status || 'Không xác định'
+  const found = (statusEnums.value || []).find(s => s.value === status)
+  return found?.label || status || 'Không xác định'
 }
 
-function getStatusClass(status) {
-  switch (status) {
-    case 'pending': return 'bg-yellow-100 text-yellow-800'
-    case 'in_progress': return 'bg-blue-100 text-blue-800'
-    case 'completed': return 'bg-green-100 text-green-800'
-    case 'cancelled': return 'bg-red-100 text-red-800'
-    default: return 'bg-gray-100 text-gray-800'
-  }
-}
+// Removed getStatusClass; class is derived from API enums directly in template
 
 function formatDate(date) {
   if (!date) return 'N/A'
@@ -185,43 +183,20 @@ function formatDate(date) {
   })
 }
 
-async function updateStatus(event) {
-  const newStatus = event.target.value
-  try {
-    await api.patch(endpoints.contacts.updateStatus(props.contact.id), {
-      status: newStatus
-    })
-    
-    // Update local contact
-    props.contact.status = newStatus
-    
-    showSuccess('Trạng thái đã được cập nhật thành công')
-    emit('status-updated')
-  } catch (error) {
-    console.error('Error updating contact status:', error)
-    showError('Không thể cập nhật trạng thái')
-  }
-}
-
-async function markAsResponded() {
-  try {
-    await api.patch(endpoints.contacts.markResponded(props.contact.id))
-    
-    // Update local contact
-    props.contact.status = 'completed'
-    props.contact.responded_at = new Date().toISOString()
-    
-    showSuccess('Đã đánh dấu phản hồi thành công')
-    emit('status-updated')
-  } catch (error) {
-    console.error('Error marking contact as responded:', error)
-    showError('Không thể đánh dấu phản hồi')
-  }
-}
+// Removed unused updateStatus and markAsResponded functions
 
 // Load enums and fetch details when modal opens
-onMounted(() => {
-  statusEnums.value = getEnumSync('contact_status')
+onMounted(async () => {
+  try {
+    const response = await api.get(endpoints.enums('contact_status'))
+    if (response.data?.success) {
+      statusEnums.value = response.data.data || []
+    } else {
+      statusEnums.value = []
+    }
+  } catch (e) {
+    statusEnums.value = []
+  }
 })
 
 watch(() => props.show, async (val) => {

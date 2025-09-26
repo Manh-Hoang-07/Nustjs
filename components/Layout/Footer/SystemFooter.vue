@@ -80,7 +80,8 @@
 </template>
 
 <script setup>
-import { useSystemConfigInfo } from '@/composables/system/useSystemConfig'
-
-const { siteInfo, socialLinks, isConfigLoading } = useSystemConfigInfo()
+import { reactive } from 'vue'
+const siteInfo = reactive({ name: '', email: '', phone: '', address: '', description: '' })
+const socialLinks = reactive({})
+const isConfigLoading = false
 </script>

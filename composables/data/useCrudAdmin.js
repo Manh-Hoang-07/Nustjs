@@ -14,7 +14,7 @@ import { useApiClient } from '../api/useApiClient.js'
  * @returns {Object} - Các state và methods cho CRUD
  */
 export default function useCrudAdmin(options) {
-  const { apiClient: api } = useApiClient()
+  const { apiClient } = useApiClient()
   
   // Destructure options với defaults
   const { 
@@ -79,7 +79,7 @@ export default function useCrudAdmin(options) {
       state.loading = true
       try {
         const params = { ...state.filters, page }
-        const response = await api.get(endpoints.list, { params })
+        const response = await apiClient.get(endpoints.list, { params })
         
         // Transform items
         if (response.data.data) {
@@ -109,7 +109,7 @@ export default function useCrudAdmin(options) {
       
       try {
         const transformedData = beforeSubmit(data)
-        const response = await api.post(endpoints.create, transformedData)
+        const response = await apiClient.post(endpoints.create, transformedData)
         
         await this.fetchItems(state.pagination.current_page)
         this.closeCreateModal()
@@ -132,7 +132,7 @@ export default function useCrudAdmin(options) {
       
       try {
         const transformedData = beforeSubmit(data)
-        const response = await api.post(
+        const response = await apiClient.post(
           endpoints.update(state.selectedItem.id), 
           transformedData
         )
@@ -156,7 +156,7 @@ export default function useCrudAdmin(options) {
       state.loading = true
       
       try {
-        await api.delete(endpoints.delete(state.selectedItem.id))
+        await apiClient.delete(endpoints.delete(state.selectedItem.id))
         await this.fetchItems(state.pagination.current_page)
         this.closeDeleteModal()
         return true
@@ -176,7 +176,7 @@ export default function useCrudAdmin(options) {
       try {
         await Promise.all(
           state.selectedItems.map(item => 
-            api.delete(endpoints.delete(item.id))
+            apiClient.delete(endpoints.delete(item.id))
           )
         )
         

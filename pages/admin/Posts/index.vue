@@ -38,7 +38,12 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                :class="getStatusClass(post.status)"
+                :class="(
+                  statusEnums.find(s => s.value === post.status)?.class ||
+                  statusEnums.find(s => s.value === post.status)?.badge_class ||
+                  statusEnums.find(s => s.value === post.status)?.color_class ||
+                  'bg-gray-100 text-gray-800'
+                )"
               >
                 {{ getStatusLabel(post.status) }}
               </span>
@@ -113,15 +118,15 @@ definePageMeta({
   requiresAdmin: true
 })
 
-import { ref, onMounted, computed, defineAsyncComponent } from 'vue'
-import { getEnumSync, getEnumLabel } from '@/constants/enums'
+import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { useDataTable } from '@/composables/data/useDataTable'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
+import { useApiClient } from '@/composables/api/useApiClient'
 
 // Lazy load components
 const CreatePost = defineAsyncComponent(() => import('./create.vue'))
@@ -137,7 +142,7 @@ const {
   fetchData, 
   updateFilters, 
   deleteItem 
-} = useDataTable(endpoints.posts.list, {
+} = useDataTable(adminEndpoints.posts.list, {
   defaultFilters: {
     search: '',
     status: '',
@@ -147,6 +152,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
+const { apiClient } = useApiClient()
 
 // State
 const selectedPost = ref(null)
@@ -161,8 +167,8 @@ const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  // Load enums immediately (static)
-  fetchEnums()
+  // Load enums via API
+  await fetchEnums()
   
   // Fetch posts
   await fetchData()
@@ -172,14 +178,17 @@ function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
 
-function fetchEnums() {
-  // Sử dụng static enum thay vì gọi API
-  statusEnums.value = [
-    { value: 'draft', label: 'Bản nháp' },
-    { value: 'published', label: 'Xuất bản' },
-    { value: 'scheduled', label: 'Lên lịch' },
-    { value: 'archived', label: 'Lưu trữ' }
-  ]
+async function fetchEnums() {
+  try {
+    const response = await apiClient.get(adminEndpoints.enums('post_status'))
+    if (response.data?.success) {
+      statusEnums.value = response.data.data || []
+    } else {
+      statusEnums.value = []
+    }
+  } catch (e) {
+    statusEnums.value = []
+  }
   
   // TODO: Load categories and tags from API if needed
   categoryEnums.value = []
@@ -244,22 +253,11 @@ function handlePageChange(page) {
 
 // Status helper functions
 function getStatusLabel(status) {
-  const statusMap = {
-    'published': 'Xuất bản',
-    'draft': 'Bản nháp',
-    'scheduled': 'Lên lịch',
-    'archived': 'Lưu trữ'
-  }
-  return statusMap[status] || status || 'Không xác định'
+  const found = (statusEnums.value || []).find(s => s.value === status)
+  return found?.label || status || 'Không xác định'
 }
 
-function getStatusClass(status) {
-  if (status === 'published') return 'bg-green-100 text-green-800'
-  if (status === 'draft') return 'bg-yellow-100 text-yellow-800'
-  if (status === 'scheduled') return 'bg-blue-100 text-blue-800'
-  if (status === 'archived') return 'bg-red-100 text-red-800'
-  return 'bg-gray-100 text-gray-800'
-}
+// Removed getStatusClass; class is derived from API enums directly in template
 
 function getCategoryNames(categories) {
   if (!categories || !Array.isArray(categories) || categories.length === 0) {

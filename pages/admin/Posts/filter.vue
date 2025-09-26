@@ -11,13 +11,13 @@
           placeholder="Tìm theo tên bài viết"
         />
         <!-- Lọc theo trạng thái -->
-        <AdminFilterItem
-          id="status"
-          label="Trạng thái"
-          type="select"
+        <SelectFilter
           v-model="filters.status"
+          label="Trạng thái"
           placeholder="Tất cả trạng thái"
-          :options="statusOptions"
+          :api-endpoint="statusApi"
+          label-field="label"
+          value-field="value"
         />
         <!-- Sắp xếp theo -->
         <AdminFilterItem
@@ -50,8 +50,9 @@
 
 <script setup>
 import { reactive, computed } from 'vue'
-import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
-import { getEnumSync } from '@/constants/enums'
+import AdminFilterItem from '@/components/Admin/Filter/AdminFilterItem.vue'
+import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
+import { adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   initialFilters: {
@@ -68,22 +69,8 @@ const filters = reactive({
   sort_by: props.initialFilters.sort_by || 'created_at_desc',
 })
 
-// Các tùy chọn cho select
-const statusOptions = computed(() => {
-  const options = [{ value: '', label: 'Tất cả trạng thái' }]
-  
-  // Sử dụng static enum cho posts
-  const postStatuses = [
-    { value: 'draft', label: 'Bản nháp' },
-    { value: 'published', label: 'Xuất bản' },
-    { value: 'scheduled', label: 'Lên lịch' },
-    { value: 'archived', label: 'Lưu trữ' }
-  ]
-  
-  options.push(...postStatuses)
-  
-  return options
-})
+// API cho enum trạng thái
+const statusApi = adminEndpoints.enums('post_status')
 
 const sortOptions = [
   { value: 'created_at_desc', label: 'Mới nhất' },

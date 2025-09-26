@@ -12,7 +12,7 @@
 </template>
 <script setup>
 import ChangePasswordForm from './change-password-form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch } from 'vue'
 import { useApiFormSubmit } from '@/utils/form'
 
@@ -26,7 +26,7 @@ const emit = defineEmits(['password-changed'])
 const showModal = ref(false)
 
 const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: endpoints.users.changePassword(props.user?.id),
+  endpoint: adminEndpoints.users.changePassword(props.user?.id),
   emit,
   onClose: props.onClose,
   eventName: 'password-changed',

@@ -38,7 +38,12 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                :class="getStatusClass(permission.status)"
+                :class="(
+                  statusEnums.find(s => s.value === permission.status)?.class ||
+                  statusEnums.find(s => s.value === permission.status)?.badge_class ||
+                  statusEnums.find(s => s.value === permission.status)?.color_class ||
+                  'bg-gray-100 text-gray-800'
+                )"
               >
                 {{ getStatusLabel(permission.status) }}
               </span>
@@ -118,9 +123,9 @@ import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
-import apiClient from '@/api/apiClient'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 
 // Lazy load components
 const CreatePermission = defineAsyncComponent(() => import('./create.vue'))
@@ -136,7 +141,7 @@ const {
   fetchData, 
   updateFilters, 
   deleteItem 
-} = useDataTable(endpoints.permissions.list, {
+} = useDataTable(adminEndpoints.permissions.list, {
   defaultFilters: {
     search: '',
     status: '',
@@ -145,6 +150,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
+const { apiClient } = useApiClient()
 
 // State
 const selectedPermission = ref(null)
@@ -227,7 +233,7 @@ function handlePageChange(page) {
 // Fetch status enums
 async function fetchStatusEnums() {
   try {
-    const response = await apiClient.get(endpoints.enums('basic_status'))
+    const response = await apiClient.get(adminEndpoints.enums('basic_status'))
     if (response.data?.success) {
       statusEnums.value = response.data.data || []
     } else {
@@ -245,11 +251,7 @@ function getStatusLabel(status) {
   return found?.label || found?.name || status || 'Không xác định'
 }
 
-function getStatusClass(status) {
-  if (status === 'active') return 'bg-green-100 text-green-800'
-  if (status === 'inactive') return 'bg-red-100 text-red-800'
-  return 'bg-gray-100 text-gray-800'
-}
+// Removed getStatusClass; class is derived from API enums directly in template
 </script>
 
 <style>

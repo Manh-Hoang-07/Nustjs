@@ -14,11 +14,11 @@
 
 <script setup>
 import CategoryForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, reactive, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 
-const api = useApiClient()
+const { apiClient } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
@@ -45,7 +45,7 @@ async function handleSubmit(formData) {
   try {
     Object.keys(apiErrors).forEach(key => delete apiErrors[key])
     
-    const response = await api.post(endpoints.postCategories.create, formData)
+    const response = await apiClient.post(adminEndpoints.postCategories.create, formData)
     emit('created')
     props.onClose()
   } catch (error) {

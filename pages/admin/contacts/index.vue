@@ -71,7 +71,12 @@
                 :value="contact.status"
                 @change="updateContactStatus(contact, $event.target.value)"
                 class="px-2 py-1 text-xs font-semibold rounded-full border-0 focus:ring-2 focus:ring-blue-500"
-                :class="getStatusClass(contact.status)"
+                :class="(
+                  statusEnums.find(s => s.value === contact.status)?.class ||
+                  statusEnums.find(s => s.value === contact.status)?.badge_class ||
+                  statusEnums.find(s => s.value === contact.status)?.color_class ||
+                  'bg-gray-100 text-gray-800'
+                )"
               >
                 <option 
                   v-for="status in statusEnums" 
@@ -187,7 +192,7 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { getEnumSync, getEnumLabel } from '@/constants/enums'
+// Removed static enum helpers; enums are loaded via API
 import { useDataTable } from '@/composables/data/useDataTable'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
@@ -195,8 +200,8 @@ import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 import ToastContainer from '@/components/Core/Feedback/ToastContainer.vue'
-import endpoints from '@/api/endpoints'
-import api from '@/api/apiClient'
+import { adminEndpoints } from '@/api/endpoints'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 
 // Lazy load components
 const ContactView = defineAsyncComponent(() => import('./view.vue'))
@@ -213,7 +218,7 @@ const {
   fetchData, 
   updateFilters, 
   deleteItem 
-} = useDataTable(endpoints.contacts.list, {
+} = useDataTable(adminEndpoints.contacts.list, {
   defaultFilters: {
     search: '',
     status: '',
@@ -224,6 +229,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
+const { apiClient } = useApiClient()
 
 // State
 const selectedContact = ref(null)
@@ -237,9 +243,8 @@ const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  // Load enums immediately (static)
-  fetchEnums()
-  
+  // Load status enums via API (fallback to static on error)
+  await fetchEnums()
   // Fetch contacts
   await fetchData()
 })
@@ -248,9 +253,17 @@ function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
 
-function fetchEnums() {
-  // Sử dụng static enum thay vì gọi API
-  statusEnums.value = getEnumSync('contact_status')
+async function fetchEnums() {
+  try {
+    const response = await apiClient.get(adminEndpoints.enums('basic_status'))
+    if (response.data?.success) {
+      statusEnums.value = response.data.data || []
+    } else {
+      statusEnums.value = []
+    }
+  } catch (e) {
+    statusEnums.value = []
+  }
 }
 
 // Modal handlers
@@ -301,11 +314,7 @@ async function handleContactUpdated() {
   showSuccess('Liên hệ đã được cập nhật thành công')
 }
 
-async function handleStatusUpdated() {
-  await fetchData()
-  closeViewModal()
-  showSuccess('Trạng thái đã được cập nhật thành công')
-}
+// Removed unused handleStatusUpdated
 
 async function handleNotesUpdated() {
   await fetchData()
@@ -325,7 +334,7 @@ async function deleteContact() {
 
 async function updateContactStatus(contact, newStatus) {
   try {
-    await api.patch(endpoints.contacts.updateStatus(contact.id), {
+    await apiClient.patch(adminEndpoints.contacts.updateStatus(contact.id), {
       status: newStatus
     })
     
@@ -341,7 +350,7 @@ async function updateContactStatus(contact, newStatus) {
 
 async function markAsResponded(contact) {
   try {
-    await api.patch(endpoints.contacts.markResponded(contact.id))
+    await apiClient.patch(adminEndpoints.contacts.markResponded(contact.id))
     
     // Update local data
     contact.status = 'completed'
@@ -365,7 +374,7 @@ async function refreshData() {
 
 async function exportContacts() {
   try {
-    const response = await api.get(endpoints.contacts.list, {
+    const response = await apiClient.get(adminEndpoints.contacts.list, {
       params: {
         ...filters.value,
         export: 'excel'
@@ -392,17 +401,8 @@ async function exportContacts() {
 
 // Helper functions
 function getStatusLabel(status) {
-  return getEnumLabel('contact_status', status) || status || 'Không xác định'
-}
-
-function getStatusClass(status) {
-  switch (status) {
-    case 'pending': return 'bg-yellow-100 text-yellow-800'
-    case 'in_progress': return 'bg-blue-100 text-blue-800'
-    case 'completed': return 'bg-green-100 text-green-800'
-    case 'cancelled': return 'bg-red-100 text-red-800'
-    default: return 'bg-gray-100 text-gray-800'
-  }
+  const found = (statusEnums.value || []).find(s => s.value === status)
+  return found?.label || status || 'Không xác định'
 }
 
 function formatDate(date) {

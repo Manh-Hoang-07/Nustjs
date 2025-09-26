@@ -13,7 +13,7 @@
 </template>
 <script setup>
 import UserForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch } from 'vue'
 import { useApiFormSubmit } from '@/utils/form'
 
@@ -28,7 +28,7 @@ const emit = defineEmits(['created'])
 const showModal = ref(false)
 
 const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: endpoints.users.create,
+  endpoint: adminEndpoints.users.create,
   emit,
   onClose: props.onClose,
   eventName: 'created',

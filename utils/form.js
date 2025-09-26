@@ -1,5 +1,5 @@
 import { reactive, computed } from 'vue'
-import apiClient from '@/api/apiClient'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 
 // ===== FORM TO FORMDATA =====
 export function formToFormData(form, options = {}) {
@@ -155,6 +155,7 @@ export function useApiFormSubmit({ endpoint, emit, onClose, eventName = 'created
         ? formToFormData(form, { method })
         : formToFormData(form)
 
+      const { apiClient } = useApiClient()
       const response = await apiClient.post(endpoint, dataToSend)
       emit(eventName)
       if (onClose) onClose()

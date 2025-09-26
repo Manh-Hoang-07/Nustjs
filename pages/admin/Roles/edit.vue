@@ -18,13 +18,12 @@
 </template>
 <script setup>
 import RoleForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, reactive, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
-import apiClient from '@/api/apiClient'
 
 
-const { apiClient: api } = useApiClient()
+const { apiClient } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
@@ -63,7 +62,7 @@ async function fetchRoleDetails() {
   
   loading.value = true
   try {
-    const response = await api.get(endpoints.roles.show(props.role.id))
+    const response = await apiClient.get(adminEndpoints.roles.show(props.role.id))
     
     roleData.value = response.data.data || response.data
   } catch (error) {
@@ -86,7 +85,7 @@ async function handleSubmit(formData) {
       _method: 'PUT'
     }
     
-    const response = await api.post(endpoints.roles.update(props.role.id), dataWithMethod)
+    const response = await apiClient.post(adminEndpoints.roles.update(props.role.id), dataWithMethod)
     emit('updated')
     props.onClose()
   } catch (error) {

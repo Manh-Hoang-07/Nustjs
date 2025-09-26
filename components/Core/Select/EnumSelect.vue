@@ -28,7 +28,8 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { getEnumSync } from '../../constants/enums.js'
+import { useApiClient } from '@/composables/api/useApiClient.js'
+import { adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   modelValue: {
@@ -68,6 +69,7 @@ const error = ref(null)
 
 const selectedValue = ref(props.modelValue)
 const enumData = ref([])
+const { apiClient } = useApiClient()
 
 // Watch for modelValue changes
 watch(() => props.modelValue, (newValue) => {
@@ -84,9 +86,22 @@ const handleChange = () => {
   emit('change', selectedValue.value)
 }
 
-const loadEnumData = () => {
-  // Chỉ sử dụng static enum để tránh API calls
-  enumData.value = getEnumSync(props.type)
+const loadEnumData = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await apiClient.get(adminEndpoints.enums(props.type))
+    if (response.data?.success) {
+      enumData.value = response.data.data || []
+    } else {
+      enumData.value = []
+    }
+  } catch (e) {
+    error.value = 'Không thể tải dữ liệu'
+    enumData.value = []
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(() => {

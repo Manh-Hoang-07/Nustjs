@@ -122,7 +122,7 @@ import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
 import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 // 
 const props = defineProps({
   show: Boolean,
@@ -214,7 +214,7 @@ const statusOptions = computed(() =>
 
 const searchApi = computed(() => {
   // API endpoint để tìm kiếm danh mục cha
-  return endpoints.postCategories.list
+  return adminEndpoints.postCategories.list
 })
 
 function handleSubmit(form) {

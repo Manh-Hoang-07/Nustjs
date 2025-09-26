@@ -59,7 +59,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { debounce } from '../../../utils/optimization.js'
-import apiClient from '@/api/apiClient'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 
 const props = defineProps({
   modelValue: {
@@ -148,6 +148,7 @@ const loadDefaultOptions = async () => {
     loading.value = true
     try {
       // Load tất cả nếu ít hơn 50 items, nếu không thì load 50 items đầu
+      const { apiClient } = useApiClient()
       const response = await apiClient.get(`${props.searchApi}?per_page=50`)
       const allOptions = response.data.data || []
       
@@ -187,6 +188,7 @@ const debouncedSearch = debounce(async () => {
   
   loading.value = true
   try {
+    const { apiClient } = useApiClient()
     const response = await apiClient.get(`${props.searchApi}?search=${encodeURIComponent(searchQuery.value)}&per_page=50`)
     const searchResults = response.data.data || []
     
@@ -281,6 +283,7 @@ watch(() => props.modelValue, async (newValue) => {
     } else {
       // If not found, fetch it from API
       try {
+        const { apiClient } = useApiClient()
         const response = await apiClient.get(`${props.searchApi}?ids=${newValue}`)
         const data = response.data.data || []
         const filtered = data.filter(option => option.id == newValue)
@@ -304,6 +307,7 @@ watch(() => props.modelValue, async (newValue) => {
 onMounted(async () => {
   if (props.modelValue) {
     try {
+      const { apiClient } = useApiClient()
       const response = await apiClient.get(`${props.searchApi}?ids=${props.modelValue}`)
       const data = response.data.data || []
       const filtered = data.filter(option => option.id == props.modelValue)

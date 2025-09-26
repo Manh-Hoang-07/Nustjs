@@ -12,14 +12,10 @@
 </template>
 <script setup>
 import PermissionForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch } from 'vue'
 import { useApiFormSubmit } from '@/utils/form'
-import { useApiClient } from '@/composables/api/useApiClient'
-import apiClient from '@/api/apiClient'
-
-
-const { apiClient: api } = useApiClient()
+ 
 
 const props = defineProps({
   show: Boolean,
@@ -34,7 +30,7 @@ const emit = defineEmits(['created'])
 const showModal = ref(false)
 
 const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: endpoints.permissions.create,
+  endpoint: adminEndpoints.permissions.create,
   emit,
   onClose: props.onClose,
   eventName: 'created',

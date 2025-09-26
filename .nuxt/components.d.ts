@@ -18,6 +18,10 @@ interface _GlobalComponents {
     'CoreContentCKEditorUltimate': typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']
     'CoreContentHtmlContent': typeof import("../components/Core/Content/HtmlContent.vue")['default']
     'CoreFeedbackToastContainer': typeof import("../components/Core/Feedback/ToastContainer.vue")['default']
+    'CoreFilterDateRangeFilter': typeof import("../components/Core/Filter/DateRangeFilter.vue")['default']
+    'CoreFilterMultiSelectFilter': typeof import("../components/Core/Filter/MultiSelectFilter.vue")['default']
+    'CoreFilterSelectFilter': typeof import("../components/Core/Filter/SelectFilter.vue")['default']
+    'CoreFilterTextFilter': typeof import("../components/Core/Filter/TextFilter.vue")['default']
     'CoreFormField': typeof import("../components/Core/Form/FormField.vue")['default']
     'CoreFormWrapper': typeof import("../components/Core/Form/FormWrapper.vue")['default']
     'CoreImageUploader': typeof import("../components/Core/Image/ImageUploader.vue")['default']
@@ -31,6 +35,7 @@ interface _GlobalComponents {
     'CoreSelectMultipleSelect': typeof import("../components/Core/Select/MultipleSelect.vue")['default']
     'CoreSelectSearchableMultiSelect': typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']
     'CoreSelectSearchableSelect': typeof import("../components/Core/Select/SearchableSelect.vue")['default']
+    'CoreSelectSingleSelect': typeof import("../components/Core/Select/SingleSelect.vue")['default']
     'CoreTableDataTable': typeof import("../components/Core/Table/DataTable.vue")['default']
     'LayoutFooterSystemFooter': typeof import("../components/Layout/Footer/SystemFooter.vue")['default']
     'LayoutHeaderBar': typeof import("../components/Layout/Header/HeaderBar.vue")['default']
@@ -68,6 +73,10 @@ interface _GlobalComponents {
     'LazyCoreContentCKEditorUltimate': LazyComponent<typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']>
     'LazyCoreContentHtmlContent': LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
     'LazyCoreFeedbackToastContainer': LazyComponent<typeof import("../components/Core/Feedback/ToastContainer.vue")['default']>
+    'LazyCoreFilterDateRangeFilter': LazyComponent<typeof import("../components/Core/Filter/DateRangeFilter.vue")['default']>
+    'LazyCoreFilterMultiSelectFilter': LazyComponent<typeof import("../components/Core/Filter/MultiSelectFilter.vue")['default']>
+    'LazyCoreFilterSelectFilter': LazyComponent<typeof import("../components/Core/Filter/SelectFilter.vue")['default']>
+    'LazyCoreFilterTextFilter': LazyComponent<typeof import("../components/Core/Filter/TextFilter.vue")['default']>
     'LazyCoreFormField': LazyComponent<typeof import("../components/Core/Form/FormField.vue")['default']>
     'LazyCoreFormWrapper': LazyComponent<typeof import("../components/Core/Form/FormWrapper.vue")['default']>
     'LazyCoreImageUploader': LazyComponent<typeof import("../components/Core/Image/ImageUploader.vue")['default']>
@@ -81,6 +90,7 @@ interface _GlobalComponents {
     'LazyCoreSelectMultipleSelect': LazyComponent<typeof import("../components/Core/Select/MultipleSelect.vue")['default']>
     'LazyCoreSelectSearchableMultiSelect': LazyComponent<typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']>
     'LazyCoreSelectSearchableSelect': LazyComponent<typeof import("../components/Core/Select/SearchableSelect.vue")['default']>
+    'LazyCoreSelectSingleSelect': LazyComponent<typeof import("../components/Core/Select/SingleSelect.vue")['default']>
     'LazyCoreTableDataTable': LazyComponent<typeof import("../components/Core/Table/DataTable.vue")['default']>
     'LazyLayoutFooterSystemFooter': LazyComponent<typeof import("../components/Layout/Footer/SystemFooter.vue")['default']>
     'LazyLayoutHeaderBar': LazyComponent<typeof import("../components/Layout/Header/HeaderBar.vue")['default']>
@@ -124,6 +134,10 @@ export const CoreActions: typeof import("../components/Core/Actions/Actions.vue"
 export const CoreContentCKEditorUltimate: typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']
 export const CoreContentHtmlContent: typeof import("../components/Core/Content/HtmlContent.vue")['default']
 export const CoreFeedbackToastContainer: typeof import("../components/Core/Feedback/ToastContainer.vue")['default']
+export const CoreFilterDateRangeFilter: typeof import("../components/Core/Filter/DateRangeFilter.vue")['default']
+export const CoreFilterMultiSelectFilter: typeof import("../components/Core/Filter/MultiSelectFilter.vue")['default']
+export const CoreFilterSelectFilter: typeof import("../components/Core/Filter/SelectFilter.vue")['default']
+export const CoreFilterTextFilter: typeof import("../components/Core/Filter/TextFilter.vue")['default']
 export const CoreFormField: typeof import("../components/Core/Form/FormField.vue")['default']
 export const CoreFormWrapper: typeof import("../components/Core/Form/FormWrapper.vue")['default']
 export const CoreImageUploader: typeof import("../components/Core/Image/ImageUploader.vue")['default']
@@ -137,6 +151,7 @@ export const CoreSelectEnumSelect: typeof import("../components/Core/Select/Enum
 export const CoreSelectMultipleSelect: typeof import("../components/Core/Select/MultipleSelect.vue")['default']
 export const CoreSelectSearchableMultiSelect: typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']
 export const CoreSelectSearchableSelect: typeof import("../components/Core/Select/SearchableSelect.vue")['default']
+export const CoreSelectSingleSelect: typeof import("../components/Core/Select/SingleSelect.vue")['default']
 export const CoreTableDataTable: typeof import("../components/Core/Table/DataTable.vue")['default']
 export const LayoutFooterSystemFooter: typeof import("../components/Layout/Footer/SystemFooter.vue")['default']
 export const LayoutHeaderBar: typeof import("../components/Layout/Header/HeaderBar.vue")['default']
@@ -174,6 +189,10 @@ export const LazyCoreActions: LazyComponent<typeof import("../components/Core/Ac
 export const LazyCoreContentCKEditorUltimate: LazyComponent<typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']>
 export const LazyCoreContentHtmlContent: LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
 export const LazyCoreFeedbackToastContainer: LazyComponent<typeof import("../components/Core/Feedback/ToastContainer.vue")['default']>
+export const LazyCoreFilterDateRangeFilter: LazyComponent<typeof import("../components/Core/Filter/DateRangeFilter.vue")['default']>
+export const LazyCoreFilterMultiSelectFilter: LazyComponent<typeof import("../components/Core/Filter/MultiSelectFilter.vue")['default']>
+export const LazyCoreFilterSelectFilter: LazyComponent<typeof import("../components/Core/Filter/SelectFilter.vue")['default']>
+export const LazyCoreFilterTextFilter: LazyComponent<typeof import("../components/Core/Filter/TextFilter.vue")['default']>
 export const LazyCoreFormField: LazyComponent<typeof import("../components/Core/Form/FormField.vue")['default']>
 export const LazyCoreFormWrapper: LazyComponent<typeof import("../components/Core/Form/FormWrapper.vue")['default']>
 export const LazyCoreImageUploader: LazyComponent<typeof import("../components/Core/Image/ImageUploader.vue")['default']>
@@ -187,6 +206,7 @@ export const LazyCoreSelectEnumSelect: LazyComponent<typeof import("../component
 export const LazyCoreSelectMultipleSelect: LazyComponent<typeof import("../components/Core/Select/MultipleSelect.vue")['default']>
 export const LazyCoreSelectSearchableMultiSelect: LazyComponent<typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']>
 export const LazyCoreSelectSearchableSelect: LazyComponent<typeof import("../components/Core/Select/SearchableSelect.vue")['default']>
+export const LazyCoreSelectSingleSelect: LazyComponent<typeof import("../components/Core/Select/SingleSelect.vue")['default']>
 export const LazyCoreTableDataTable: LazyComponent<typeof import("../components/Core/Table/DataTable.vue")['default']>
 export const LazyLayoutFooterSystemFooter: LazyComponent<typeof import("../components/Layout/Footer/SystemFooter.vue")['default']>
 export const LazyLayoutHeaderBar: LazyComponent<typeof import("../components/Layout/Header/HeaderBar.vue")['default']>

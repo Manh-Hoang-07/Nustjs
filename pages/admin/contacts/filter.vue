@@ -23,20 +23,14 @@
       <!-- Trạng thái -->
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2">Trạng thái</label>
-        <select
+        <SelectFilter
           v-model="localFilters.status"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Tất cả trạng thái"
+          :api-endpoint="contactStatusApi"
+          label-field="label"
+          value-field="value"
           @change="applyFilters"
-        >
-          <option value="">Tất cả trạng thái</option>
-          <option 
-            v-for="status in statusEnums" 
-            :key="status.value" 
-            :value="status.value"
-          >
-            {{ status.label }}
-          </option>
-        </select>
+        />
       </div>
 
       <!-- Từ ngày -->
@@ -122,8 +116,9 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { getEnumSync } from '@/constants/enums'
+import { ref, watch } from 'vue'
+import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
+import { adminEndpoints } from '@/api/endpoints'
 import { debounce } from 'lodash-es'
 
 // Props
@@ -139,8 +134,8 @@ const emit = defineEmits(['update:filters'])
 
 // State
 const localFilters = ref({ ...props.initialFilters })
-const statusEnums = ref([])
 const stats = ref(null)
+const contactStatusApi = adminEndpoints.enums('basic_status')
 
 // Debounced search
 const debouncedSearch = debounce(() => {
@@ -167,11 +162,6 @@ function resetFilters() {
 watch(() => props.initialFilters, (newFilters) => {
   localFilters.value = { ...newFilters }
 }, { deep: true })
-
-// Load enums
-onMounted(() => {
-  statusEnums.value = getEnumSync('contact_status')
-})
 </script>
 
 

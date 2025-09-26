@@ -12,13 +12,13 @@
         />
         
         <!-- Lọc theo trạng thái -->
-        <AdminFilterItem
+    <AdminFilterItem
           id="status"
           label="Trạng thái"
           type="select"
           v-model="filters.status"
           placeholder="Tất cả trạng thái"
-          :options="statusOptions"
+      :options="statusOptions"
         />
         
         <!-- Sắp xếp theo -->
@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
 
 const props = defineProps({
@@ -60,6 +60,8 @@ const props = defineProps({
     default: () => ({})
   }
 })
+
+const statusEnums = computed(() => props.statusEnums || [])
 
 const emit = defineEmits(['update:filters'])
 
@@ -70,10 +72,16 @@ const filters = reactive({
 })
 
 // Các tùy chọn cho select
-const statusOptions = [
-  { value: 'active', label: 'Hoạt động' },
-  { value: 'inactive', label: 'Không hoạt động' }
-]
+const statusOptions = computed(() => {
+  const options = [{ value: '', label: 'Tất cả trạng thái' }]
+  const list = Array.isArray(statusEnums.value) ? statusEnums.value : []
+  for (const it of list) {
+    const value = it.value ?? it.id ?? ''
+    const label = it.label ?? it.name ?? String(value)
+    options.push({ value, label })
+  }
+  return options
+})
 
 const sortOptions = [
   { value: 'created_at_desc', label: 'Mới nhất' },

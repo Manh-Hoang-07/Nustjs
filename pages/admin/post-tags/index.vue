@@ -45,12 +45,13 @@
             </td>
             <td class="px-6 py-4">
               <span 
-                :class="{
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium': true,
-                  'bg-green-100 text-green-800': tag.status === 'active',
-                  'bg-red-100 text-red-800': tag.status === 'inactive',
-                  'bg-gray-100 text-gray-800': !tag.status
-                }"
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                :class="(
+                  statusEnums.find(s => s.value === tag.status)?.class ||
+                  statusEnums.find(s => s.value === tag.status)?.badge_class ||
+                  statusEnums.find(s => s.value === tag.status)?.color_class ||
+                  'bg-gray-100 text-gray-800'
+                )"
               >
                 {{ getStatusText(tag.status) }}
               </span>
@@ -134,7 +135,7 @@ import { useDataTable } from '@/composables/data/useDataTable'
 import { useToast } from '@/composables/ui/useToast'
 import { useApiClient } from '@/composables/api/useApiClient'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import Modal from '@/components/Core/Modal/Modal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
@@ -151,7 +152,7 @@ const {
   fetchData, 
   updateFilters,
   deleteItem 
-} = useDataTable(endpoints.postTags.list, {
+} = useDataTable(adminEndpoints.postTags.list, {
   defaultFilters: {
     search: '',
     sort_by: 'created_at_desc'
@@ -180,14 +181,14 @@ onMounted(async () => {
 // Load enums and options
 async function loadEnums() {
   try {
-    // Status options
-    statusEnums.value = [
-      { value: 'active', label: 'Hoạt động' },
-      { value: 'inactive', label: 'Không hoạt động' }
-    ]
+    const response = await apiClient.get(adminEndpoints.enums('basic_status'))
+    if (response.data?.success) {
+      statusEnums.value = response.data.data || []
+    } else {
+      statusEnums.value = []
+    }
   } catch (error) {
-    console.error('Error loading enums:', error)
-    showError('Không thể tải dữ liệu cần thiết')
+    statusEnums.value = []
   }
 }
 
@@ -258,11 +259,8 @@ function handlePageChange(page) {
 }
 
 function getStatusText(status) {
-  const statusMap = {
-    'active': 'Hoạt động',
-    'inactive': 'Không hoạt động'
-  }
-  return statusMap[status] || 'Không xác định'
+  const found = (statusEnums.value || []).find(s => s.value === status)
+  return found?.label || status || 'Không xác định'
 }
 
 function formatDate(dateString) {

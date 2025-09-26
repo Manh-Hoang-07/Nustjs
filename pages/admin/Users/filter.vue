@@ -3,30 +3,26 @@
     <form @submit.prevent="applyFilters">
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <!-- Tìm kiếm theo tên -->
-        <AdminFilterItem
-          id="search"
-          label="Tìm kiếm"
-          type="text"
+        <TextFilter
           v-model="filters.search"
+          label="Tìm kiếm"
           placeholder="Tìm theo tên đăng nhập, email"
         />
         
         <!-- Lọc theo trạng thái -->
-        <AdminFilterItem
-          id="status"
-          label="Trạng thái"
-          type="select"
+        <SelectFilter
           v-model="filters.status"
+          label="Trạng thái"
           placeholder="Tất cả trạng thái"
-          :options="statusOptions"
+          :api-endpoint="statusApi"
+          label-field="label"
+          value-field="value"
         />
         
         <!-- Sắp xếp theo -->
-        <AdminFilterItem
-          id="sort_by"
-          label="Sắp xếp theo"
-          type="select"
+        <SelectFilter
           v-model="filters.sort_by"
+          label="Sắp xếp theo"
           :options="sortOptions"
         />
         
@@ -52,7 +48,9 @@
 
 <script setup>
 import { reactive, computed } from 'vue'
-import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
+import TextFilter from '@/components/Core/Filter/TextFilter.vue'
+import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
+import { adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   initialFilters: {
@@ -73,11 +71,8 @@ const filters = reactive({
   sort_by: props.initialFilters.sort_by || 'created_at:desc',
 })
 
-// Các tùy chọn cho select (lấy từ props.statusEnums) và phản ứng khi props thay đổi
-const statusOptions = computed(() => (props.statusEnums || []).map(it => ({
-  value: it.value ?? it.id,
-  label: it.label ?? it.name
-})))
+// API cho enum trạng thái người dùng
+const statusApi = adminEndpoints.enums('user_status')
 
 const sortOptions = [
   { value: 'created_at:desc', label: 'Mới nhất' },

@@ -15,7 +15,7 @@
 
 <script setup>
 import TagForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch } from 'vue'
 import { useApiFormSubmit } from '@/utils/form'
 
@@ -31,7 +31,7 @@ const showModal = ref(false)
 const loading = ref(false)
 
 const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: endpoints.postTags.create,
+  endpoint: adminEndpoints.postTags.create,
   emit,
   onClose: props.onClose,
   eventName: 'created',

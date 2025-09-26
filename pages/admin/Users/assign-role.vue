@@ -38,9 +38,9 @@ import { computed, ref, watch } from 'vue'
 import Modal from '@/components/Core/Modal/Modal.vue'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import MultipleSelect from '@/components/Core/Select/MultipleSelect.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { useApiFormSubmit } from '@/utils/form'
-import apiClient from '@/api/apiClient'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 
 const props = defineProps({
   show: Boolean,
@@ -49,6 +49,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['role-assigned'])
+const { apiClient } = useApiClient()
 
 const userDetail = ref(null)
 const roles = ref([])
@@ -71,7 +72,7 @@ watch(() => props.show, async (newValue) => {
 
 async function fetchUserDetail() {
   try {
-    const response = await apiClient.get(endpoints.users.show(props.user.id))
+    const response = await apiClient.get(adminEndpoints.users.show(props.user.id))
     if (response.data.success) {
       userDetail.value = response.data.data
     }
@@ -82,7 +83,7 @@ async function fetchUserDetail() {
 
 async function loadRoles() {
   try {
-    const response = await apiClient.get(endpoints.roles.list)
+    const response = await apiClient.get(adminEndpoints.roles.list)
     if (response.data.success) {
       roles.value = response.data.data
     } else {
@@ -109,7 +110,7 @@ const defaultValues = computed(() => {
 })
 
 const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: endpoints.users.assignRoles(props.user?.id),
+  endpoint: adminEndpoints.users.assignRoles(props.user?.id),
   emit,
   onClose: props.onClose,
   eventName: 'role-assigned',

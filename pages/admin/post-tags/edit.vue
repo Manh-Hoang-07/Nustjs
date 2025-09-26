@@ -15,7 +15,7 @@
 
 <script setup>
 import TagForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch, reactive } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 
@@ -77,7 +77,7 @@ async function handleSubmit(formData) {
       _method: 'PUT'
     }
     
-    const response = await api.post(endpoints.postTags.update(props.tag.id), dataWithMethod)
+    const response = await api.post(adminEndpoints.postTags.update(props.tag.id), dataWithMethod)
     emit('updated')
     props.onClose()
   } catch (error) {

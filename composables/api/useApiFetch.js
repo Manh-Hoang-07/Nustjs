@@ -9,7 +9,7 @@ import { useApiClient } from './useApiClient.js'
  * @returns {Object} - { data, loading, error, fetchData }
  */
 export default function useApiFetch(url, params = ref({}), immediate = true) {
-  const { apiClient: api } = useApiClient()
+  const { apiClient } = useApiClient()
   const data = ref(null)
   const loading = ref(false)
   const error = ref(null)
@@ -18,7 +18,7 @@ export default function useApiFetch(url, params = ref({}), immediate = true) {
     loading.value = true
     error.value = null
     try {
-      const res = await api.get(url, { params: params.value })
+      const res = await apiClient.get(url, { params: params.value })
       data.value = res.data
     } catch (e) {
       error.value = e

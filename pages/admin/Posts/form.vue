@@ -72,18 +72,15 @@
         <!-- Trạng thái -->
       <div>
         <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
-        <select
+        <SearchableSelect
           id="status"
-          :value="formData.status"
-          @change="formData.status = $event.target.value"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          :class="{ 'border-red-500': validationErrors.status || apiErrors.status }"
-        >
-          <option value="">-- Chọn trạng thái --</option>
-          <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+          v-model="formData.status"
+          :api-endpoint="statusApi"
+          label-field="label"
+          value-field="value"
+          placeholder="-- Chọn trạng thái --"
+          :error="validationErrors.status || apiErrors.status"
+        />
         <p v-if="validationErrors.status" class="mt-1 text-sm text-red-600">{{ validationErrors.status }}</p>
         <p v-else-if="apiErrors.status" class="mt-1 text-sm text-red-600">{{ apiErrors.status }}</p>
       </div>
@@ -228,15 +225,11 @@ import Modal from '@/components/Core/Modal/Modal.vue'
 import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
-import { POSTS_ENDPOINTS } from '@/api/endpoints'
+import { POSTS_ENDPOINTS, adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   show: Boolean,
   post: Object,
-  statusEnums: {
-    type: Array,
-    default: () => []
-  },
   categoryEnums: {
     type: Array,
     default: () => []
@@ -253,16 +246,8 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
-// Status options từ props
-const statusOptions = computed(() => {
-  if (Array.isArray(props.statusEnums)) {
-    return props.statusEnums.map(enumItem => ({
-      value: enumItem.value,
-      label: enumItem.label
-    }))
-  }
-  return []
-})
+// API cho enum trạng thái
+const statusApi = adminEndpoints.enums('post_status')
 
 //
 

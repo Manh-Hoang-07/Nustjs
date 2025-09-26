@@ -29,8 +29,7 @@
 </template>
 <script setup>
 import { ref, watch } from 'vue'
-import api from '../../api/apiClient.js'
-import { getImageUrl as getImageUrlFromConfig } from '../../config/api.js'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 const props = defineProps({
   modelValue: File || String || null,
   defaultUrl: String || null
@@ -50,8 +49,15 @@ watch(() => props.modelValue, (val) => {
   }
 }, { immediate: true })
 
-function getImageUrl(url) {
-  return getImageUrlFromConfig(url)
+function getImageUrl(path) {
+  if (!path) return null
+  if (typeof path === 'string' && path.startsWith('http')) return path
+  const BASE_URL = 'http://127.0.0.1:8000'
+  if (typeof path === 'string' && path.startsWith('/storage/')) {
+    return `${BASE_URL}${path}`
+  }
+  const storagePath = typeof path === 'string' && path.startsWith('/') ? path : `/storage/${path}`
+  return `${BASE_URL}${storagePath}`
 }
 
 async function onFileChange(e) {
@@ -66,7 +72,8 @@ async function onFileChange(e) {
       const formData = new FormData()
       formData.append('file', file)
       
-      const res = await api.post('/api/files/upload', formData, {
+      const { apiClient } = useApiClient()
+      const res = await apiClient.post('/api/files/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       

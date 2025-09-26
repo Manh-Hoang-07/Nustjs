@@ -17,13 +17,12 @@
 </template>
 <script setup>
 import PermissionForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch, reactive } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
-import apiClient from '@/api/apiClient'
 
 
-const { apiClient: api } = useApiClient()
+const { apiClient } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
@@ -61,7 +60,7 @@ async function fetchPermissionDetails() {
   
   loading.value = true
   try {
-    const response = await api.get(`/api/admin/permissions/${props.permission.id}`)
+    const response = await apiClient.get(`/api/admin/permissions/${props.permission.id}`)
     
     permissionData.value = response.data.data || response.data
   } catch (error) {
@@ -83,7 +82,7 @@ async function handleSubmit(formData) {
       ...formData,
       _method: 'PUT'
     }
-    await api.post(endpoints.permissions.update(props.permission.id), dataWithMethod)
+    await apiClient.post(adminEndpoints.permissions.update(props.permission.id), dataWithMethod)
     emit('updated')
     props.onClose()
   } catch (error) {

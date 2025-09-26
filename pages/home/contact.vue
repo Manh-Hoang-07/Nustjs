@@ -231,14 +231,13 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { CONTACT_ENDPOINTS } from '@/api/endpoints'
-import api from '@/api/apiClient'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 import { useToast } from '@/composables/ui/useToast'
-import { useSystemConfigInfo } from '@/composables/system/useSystemConfig'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
 
-// Sử dụng system config
-const { siteInfo } = useSystemConfigInfo()
+// Removed system config composable; define empty defaults
+const siteInfo = reactive({ name: '', email: '', phone: '', address: '', description: '' })
 
 // Page meta
 definePageMeta({
@@ -289,7 +288,8 @@ const validationRules = computed(() => ({
 // Submit contact form
 const handleSubmit = async (formData) => {
   try {
-    const response = await api.post(CONTACT_ENDPOINTS.PUBLIC_CONTACTS, {
+    const { apiClient } = useApiClient()
+    const response = await apiClient.post(CONTACT_ENDPOINTS.PUBLIC_CONTACTS, {
       name: formData.name?.trim() || null,
       email: formData.email.trim(),
       phone: formData.phone?.trim() || null,

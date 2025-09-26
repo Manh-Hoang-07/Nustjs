@@ -52,7 +52,7 @@
         <label for="parent_id" class="block text-sm font-medium text-gray-700 mb-1">Vai trò cha</label>
         <SearchableSelect
           v-model="formData.parent_id"
-          :search-api="endpoints.roles.list"
+          :search-api="adminEndpoints.roles.list"
           placeholder="Tìm kiếm vai trò cha..."
           :error="validationErrors.parent_id || apiErrors.parent_id"
           :exclude-id="props.role?.id"
@@ -84,7 +84,7 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Quyền</label>
         <SearchableMultiSelect
           v-model="formData.permissions"
-          :search-api="endpoints.permissions.list"
+          :search-api="adminEndpoints.permissions.list"
           placeholder="Tìm kiếm quyền..."
           :error="validationErrors.permissions || apiErrors.permissions"
           label-field="display_name"
@@ -119,10 +119,10 @@ import { ref, computed, reactive, watch, onMounted } from 'vue'
 import Modal from '@/components/Core/Modal/Modal.vue'
 import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { useApiClient } from '@/composables/api/useApiClient'
 
-const { apiClient: api } = useApiClient()
+const { apiClient } = useApiClient()
 
 const props = defineProps({
   show: Boolean,

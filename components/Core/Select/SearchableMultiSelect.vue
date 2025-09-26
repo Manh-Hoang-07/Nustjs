@@ -75,7 +75,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { debounce } from '../../../utils/optimization.js'
-import apiClient from '@/api/apiClient'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 
 const props = defineProps({
   modelValue: {
@@ -159,6 +159,7 @@ const loadDefaultOptions = async () => {
   if (options.value.length === 0) {
     loading.value = true
     try {
+      const { apiClient } = useApiClient()
       const response = await apiClient.get(`${props.searchApi}?per_page=50`)
       const allOptions = response.data.data || []
       
@@ -185,6 +186,7 @@ const debouncedSearch = debounce(async () => {
   
   loading.value = true
   try {
+    const { apiClient } = useApiClient()
     const response = await apiClient.get(`${props.searchApi}?search=${encodeURIComponent(searchQuery.value)}&per_page=50`)
     const searchResults = response.data.data || []
     
@@ -315,6 +317,7 @@ watch(() => props.modelValue, async (newValue) => {
     // Fetch missing items from API
     if (missingIds.length > 0) {
       try {
+        const { apiClient } = useApiClient()
         const response = await apiClient.get(`${props.searchApi}?ids=${missingIds.join(',')}`)
         if (response.data.data) {
           const requestedIdSet = new Set(missingIds)

@@ -16,7 +16,12 @@
           </div>
           <span 
             class="px-2 py-1 text-xs font-semibold rounded-full"
-            :class="getStatusClass(contact?.status)"
+            :class="(
+              statusEnums.find(s => s.value === contact?.status)?.class ||
+              statusEnums.find(s => s.value === contact?.status)?.badge_class ||
+              statusEnums.find(s => s.value === contact?.status)?.color_class ||
+              'bg-gray-100 text-gray-800'
+            )"
           >
             {{ getStatusLabel(contact?.status) }}
           </span>
@@ -67,13 +72,16 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
-import { getEnumLabel } from '@/constants/enums'
+// Removed static enum helpers; enums are loaded via API
+import { adminEndpoints } from '@/api/endpoints'
 import Modal from '@/components/Core/Modal/Modal.vue'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
-import api from '@/api/apiClient'
-import endpoints from '@/api/endpoints'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 import { useToast } from '@/composables/ui/useToast'
+
+const { apiClient } = useApiClient()
+const statusEnums = ref([])
 
 // Props
 const props = defineProps({
@@ -112,18 +120,11 @@ const validationRules = computed(() => ({
 
 // Methods
 function getStatusLabel(status) {
-  return getEnumLabel('contact_status', status) || status || 'Không xác định'
+  const found = (statusEnums.value || []).find(s => s.value === status)
+  return found?.label || status || 'Không xác định'
 }
 
-function getStatusClass(status) {
-  switch (status) {
-    case 'pending': return 'bg-yellow-100 text-yellow-800'
-    case 'in_progress': return 'bg-blue-100 text-blue-800'
-    case 'completed': return 'bg-green-100 text-green-800'
-    case 'cancelled': return 'bg-red-100 text-red-800'
-    default: return 'bg-gray-100 text-gray-800'
-  }
-}
+// Removed getStatusClass; class is derived from API enums directly in template
 
 // Removed quick action helpers; keep minimal state only
 let currentFormData = ref({ admin_notes: '' })
@@ -132,7 +133,7 @@ let currentFormData = ref({ admin_notes: '' })
 const handleSubmit = async (formData) => {
   try {
     // Send email along with admin_notes to satisfy backend validation
-    await api.patch(endpoints.contacts.update(props.contact.id), {
+    await apiClient.patch(adminEndpoints.contacts.update(props.contact.id), {
       admin_notes: formData.admin_notes?.trim() || null,
       email: props.contact?.email || undefined
     })
@@ -158,4 +159,18 @@ watch(() => props.contact, () => {
   Object.keys(apiErrors).forEach(key => delete apiErrors[key])
   currentFormData.value.admin_notes = props.contact?.admin_notes || ''
 }, { immediate: true })
+
+// Load enums
+onMounted(async () => {
+  try {
+    const response = await apiClient.get(adminEndpoints.enums('contact_status'))
+    if (response.data?.success) {
+      statusEnums.value = response.data.data || []
+    } else {
+      statusEnums.value = []
+    }
+  } catch (e) {
+    statusEnums.value = []
+  }
+})
 </script>

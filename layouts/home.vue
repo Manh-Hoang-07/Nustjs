@@ -229,7 +229,6 @@
 <script setup>
 import { computed, watch } from 'vue'
 import { useUserNavigation } from '@/composables/navigation/useUserNavigation'
-import { useSystemConfigInfo } from '@/composables/system/useSystemConfig'
 
 // Sử dụng auth store
 const authStore = useAuthStore()
@@ -241,8 +240,8 @@ const {
   currentPath 
 } = useUserNavigation()
 
-// Sử dụng system config
-const { siteInfo } = useSystemConfigInfo()
+// Removed system config composable; use empty defaults
+const siteInfo = reactive({ name: '', email: '', phone: '', address: '', description: '' })
 
 // Reactive auth state
 const isAuthenticated = computed(() => authStore.isAuthenticated)

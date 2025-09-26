@@ -18,11 +18,11 @@
 
 <script setup>
 import CategoryForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, reactive, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 
-const api = useApiClient()
+const { apiClient } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
@@ -61,7 +61,7 @@ async function fetchCategoryDetails() {
   
   loading.value = true
   try {
-    const response = await api.get(`/api/admin/post-categories/${props.category.id}`)
+    const response = await apiClient.get(adminEndpoints.postCategories.show(props.category.id))
     
     categoryData.value = response.data.data || response.data
   } catch (error) {
@@ -83,7 +83,7 @@ async function handleSubmit(formData) {
       _method: 'PUT'
     }
     
-    const response = await api.post(endpoints.postCategories.update(props.category.id), dataWithMethod)
+    const response = await apiClient.post(adminEndpoints.postCategories.update(props.category.id), dataWithMethod)
     emit('updated')
     props.onClose()
   } catch (error) {

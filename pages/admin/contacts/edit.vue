@@ -104,14 +104,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
-import { getEnumSync } from '@/constants/enums'
+import { reactive, computed, watch } from 'vue'
 import Modal from '@/components/Core/Modal/Modal.vue'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
 import FormField from '@/components/Core/Form/FormField.vue'
-import api from '@/api/apiClient'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { useToast } from '@/composables/ui/useToast'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 
 // Props
 const props = defineProps({
@@ -139,6 +138,7 @@ const emit = defineEmits(['updated'])
 // State
 const apiErrors = reactive({})
 const { showSuccess, showError } = useToast()
+const { apiClient } = useApiClient()
 
 // Default values
 const defaultValues = computed(() => {
@@ -205,7 +205,7 @@ const statusOptions = computed(() =>
 // Submit handler
 const handleSubmit = async (formData) => {
   try {
-    await api.put(endpoints.contacts.update(props.contact.id), {
+    await apiClient.put(adminEndpoints.contacts.update(props.contact.id), {
       name: formData.name?.trim() || null,
       email: formData.email.trim(),
       phone: formData.phone?.trim() || null,

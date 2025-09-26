@@ -15,11 +15,11 @@
 </template>
 <script setup>
 import UserForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch } from 'vue'
 import { formatDate } from '@/utils/formatters'
 import { useApiFormSubmit } from '@/utils/form'
-import apiClient from '@/api/apiClient'
+import { useApiClient } from '@/composables/api/useApiClient.js'
 
 const props = defineProps({
   show: Boolean,
@@ -29,13 +29,14 @@ const props = defineProps({
   onClose: Function
 })
 const emit = defineEmits(['updated'])
+const { apiClient } = useApiClient()
 
 const showModal = ref(false)
 const userDetail = ref(null)
 const loading = ref(false)
 
 const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: endpoints.users.update(props.user?.id),
+  endpoint: adminEndpoints.users.update(props.user?.id),
   emit,
   onClose: props.onClose,
   eventName: 'updated',
@@ -54,7 +55,7 @@ watch(() => props.show, async (newValue) => {
 async function fetchUserDetail() {
   try {
     loading.value = true
-    const response = await apiClient.get(endpoints.users.show(props.user.id))
+    const response = await apiClient.get(adminEndpoints.users.show(props.user.id))
     if (response.data.success) {
       const data = response.data.data || {}
       const profile = data.profile || {}

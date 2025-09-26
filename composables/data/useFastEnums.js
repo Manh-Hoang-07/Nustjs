@@ -1,5 +1,4 @@
 import { ref, computed } from 'vue'
-import { ENUMS as STATIC_ENUMS, getEnum as getStaticEnum } from '../constants/enums.js'
 
 // Dynamic cache để lưu enum từ API
 const dynamicCache = new Map()
@@ -22,10 +21,7 @@ export function useFastEnums() {
     // Reset error
     error.value = null
 
-    // 1. Check static enums first (fastest) - nếu không force refresh
-    if (useStatic && !forceRefresh && STATIC_ENUMS[type]) {
-      return STATIC_ENUMS[type]
-    }
+    // Static enums removed; always prefer cache or API
     
     // 2. Check dynamic cache - nếu không force refresh
     if (!forceRefresh && dynamicCache.has(type)) {
@@ -66,11 +62,6 @@ export function useFastEnums() {
       error.value = err.message
       console.error(`Failed to load enum ${type}:`, err)
       
-      // Fallback to static enum if available
-      if (STATIC_ENUMS[type]) {
-        return STATIC_ENUMS[type]
-      }
-      
       return []
     } finally {
       loading.value = false
@@ -83,7 +74,8 @@ export function useFastEnums() {
    * @returns {Array} Enum data hoặc empty array
    */
   const getEnumSync = (type) => {
-    return STATIC_ENUMS[type] || []
+    // No static enums; return empty array synchronously
+    return []
   }
 
   /**
@@ -170,7 +162,6 @@ export function useFastEnums() {
     hasCache,
     getCacheInfo,
     
-    // Static enums for direct access
-    staticEnums: STATIC_ENUMS
+    // Static enums removed
   }
 } 

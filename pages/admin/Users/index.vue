@@ -38,7 +38,12 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                :class="getStatusClass(user.status)"
+                :class="(
+                  statusEnums.find(s => s.value === user.status)?.class ||
+                  statusEnums.find(s => s.value === user.status)?.badge_class ||
+                  statusEnums.find(s => s.value === user.status)?.color_class ||
+                  'bg-gray-100 text-gray-800'
+                )"
               >
                 {{ getStatusLabel(user.status) }}
               </span>
@@ -152,15 +157,15 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { getEnumSync, getEnumLabel } from '@/constants/enums'
-import apiClient from '@/api/apiClient'
+// Removed static enum helpers; enums are loaded via API
+import { useApiClient } from '@/composables/api/useApiClient.js'
 import { useDataTable } from '@/composables/data/useDataTable'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 
 // Lazy load components
 const CreateUser = defineAsyncComponent(() => import('./create.vue'))
@@ -178,7 +183,7 @@ const {
   fetchData, 
   updateFilters, 
   deleteItem 
-} = useDataTable(endpoints.users.list, {
+} = useDataTable(adminEndpoints.users.list, {
   defaultFilters: {
     search: '',
     status: '',
@@ -187,6 +192,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
+const { apiClient } = useApiClient()
 
 // State
 const selectedUser = ref(null)
@@ -221,7 +227,7 @@ function fetchEnums() {
   // Trạng thái: lấy từ API basic_status
   ;(async () => {
     try {
-      const response = await apiClient.get(endpoints.enums('user_status'))
+      const response = await apiClient.get(adminEndpoints.enums('user_status'))
       if (response.data?.success) {
         statusEnums.value = response.data.data || []
       } else {
@@ -232,13 +238,24 @@ function fetchEnums() {
     }
   })()
 
-  // Giới tính: dùng enum tĩnh hiện có
-  genderEnums.value = getEnumSync('gender')
+  // Giới tính: lấy từ API
+  ;(async () => {
+    try {
+      const response = await apiClient.get(adminEndpoints.enums('gender'))
+      if (response.data?.success) {
+        genderEnums.value = response.data.data || []
+      } else {
+        genderEnums.value = []
+      }
+    } catch (e) {
+      genderEnums.value = []
+    }
+  })()
 }
 
 async function loadRoles() {
   try {
-    const response = await apiClient.get(endpoints.roles.list)
+    const response = await apiClient.get(adminEndpoints.roles.list)
     if (response.data?.success) {
       roleEnums.value = response.data.data || []
     }
@@ -348,18 +365,6 @@ function getStatusLabel(status) {
   return found?.label || found?.name || status || 'Không xác định'
 }
 
-function getStatusName(status) {
-  return getEnumLabel('user_status', status) || status
-}
-
-function getStatusClass(status) {
-  switch (status) {
-    case 'active': return 'bg-green-100 text-green-800'
-    case 'pending': return 'bg-yellow-100 text-yellow-800'
-    case 'inactive': return 'bg-gray-100 text-gray-800'
-    case 'banned': return 'bg-red-100 text-red-800'
-    default: return 'bg-gray-100 text-gray-800'
-  }
-}
+// Removed getStatusClass; class is derived from API enums directly in template
 </script>
 

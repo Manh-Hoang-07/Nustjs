@@ -13,6 +13,7 @@
     <!-- Bộ lọc -->
     <CategoryFilter 
       :initial-filters="filters"
+      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
@@ -35,7 +36,12 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span 
                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
-                :class="getStatusClass(category.status)"
+                :class="(
+                  statusEnums.find(s => s.value === category.status)?.class ||
+                  statusEnums.find(s => s.value === category.status)?.badge_class ||
+                  statusEnums.find(s => s.value === category.status)?.color_class ||
+                  'bg-gray-100 text-gray-800'
+                )"
               >
                 {{ getStatusLabel(category.status) }}
               </span>
@@ -106,7 +112,6 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { getEnumSync, getEnumLabel } from '@/constants/enums'
 import { useDataTable } from '@/composables/data/useDataTable'
 import { useToast } from '@/composables/ui/useToast'
 import { useApiClient } from '@/composables/api/useApiClient'
@@ -114,7 +119,7 @@ import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 
 // Lazy load components
 const CreateCategory = defineAsyncComponent(() => import('./create.vue'))
@@ -130,7 +135,7 @@ const {
   fetchData, 
   updateFilters, 
   deleteItem 
-} = useDataTable(endpoints.postCategories.list, {
+} = useDataTable(adminEndpoints.postCategories.list, {
   defaultFilters: {
     search: '',
     status: '',
@@ -139,7 +144,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const { apiClient: api } = useApiClient()
+const { apiClient } = useApiClient()
 
 // State
 const selectedCategory = ref(null)
@@ -152,19 +157,23 @@ const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  // Load enums immediately (static)
-  fetchEnums()
-  
-  // Fetch categories
-  await fetchData()
+  await Promise.all([
+    fetchData(),
+    fetchStatusEnums()
+  ])
 })
 
-function fetchEnums() {
-  // Sử dụng static enum thay vì gọi API
-  statusEnums.value = [
-    { value: 'active', label: 'Hoạt động' },
-    { value: 'inactive', label: 'Không hoạt động' }
-  ]
+async function fetchStatusEnums() {
+  try {
+    const response = await apiClient.get(adminEndpoints.enums('basic_status'))
+    if (response.data?.success) {
+      statusEnums.value = response.data.data || []
+    } else {
+      statusEnums.value = []
+    }
+  } catch (error) {
+    statusEnums.value = []
+  }
 }
 
 
@@ -231,17 +240,8 @@ function handlePageChange(page) {
 
 // Status helper functions
 function getStatusLabel(status) {
-  const statusMap = {
-    'active': 'Hoạt động',
-    'inactive': 'Không hoạt động'
-  }
-  return statusMap[status] || status || 'Không xác định'
-}
-
-function getStatusClass(status) {
-  if (status === 'active') return 'bg-green-100 text-green-800'
-  if (status === 'inactive') return 'bg-red-100 text-red-800'
-  return 'bg-gray-100 text-gray-800'
+  const found = (statusEnums.value || []).find(it => it.value === status || it.id === status)
+  return found?.label || found?.name || status || 'Không xác định'
 }
 
 function formatDate(dateString) {

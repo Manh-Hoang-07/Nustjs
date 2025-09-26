@@ -19,12 +19,12 @@
 </template>
 <script setup>
 import PostForm from './form.vue'
-import endpoints from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
 import { ref, reactive, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 
 
-const { apiClient: api } = useApiClient()
+const { apiClient } = useApiClient()
 
 const props = defineProps({
   show: Boolean,
@@ -72,7 +72,7 @@ async function fetchPostDetails() {
   
   loading.value = true
   try {
-    const response = await api.get(endpoints.posts.show(props.post.id))
+    const response = await apiClient.get(adminEndpoints.posts.show(props.post.id))
     
     postData.value = response.data.data || response.data
   } catch (error) {
@@ -94,7 +94,7 @@ async function handleSubmit(formData) {
       _method: 'PUT'
     }
     
-    const response = await api.post(endpoints.posts.update(props.post.id), dataWithMethod)
+    const response = await apiClient.post(adminEndpoints.posts.update(props.post.id), dataWithMethod)
     emit('updated')
     props.onClose()
   } catch (error) {
