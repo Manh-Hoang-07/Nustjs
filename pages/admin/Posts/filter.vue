@@ -3,29 +3,23 @@
     <form @submit.prevent="applyFilters">
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <!-- Tìm kiếm theo tên -->
-        <AdminFilterItem
-          id="search"
-          label="Tìm kiếm"
-          type="text"
+        <TextFilter
           v-model="filters.search"
           placeholder="Tìm theo tên bài viết"
         />
         <!-- Lọc theo trạng thái -->
         <SelectFilter
           v-model="filters.status"
-          label="Trạng thái"
-          placeholder="Tất cả trạng thái"
           :api-endpoint="statusApi"
           label-field="label"
           value-field="value"
+          placeholder="Tất cả trạng thái"
         />
         <!-- Sắp xếp theo -->
-        <AdminFilterItem
-          id="sort_by"
-          label="Sắp xếp theo"
-          type="select"
+        <SelectFilter
           v-model="filters.sort_by"
           :options="sortOptions"
+          placeholder="Sắp xếp theo"
         />
         
         <div class="flex items-end space-x-2">
@@ -49,8 +43,8 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
-import AdminFilterItem from '@/components/Admin/Filter/AdminFilterItem.vue'
+import { reactive } from 'vue'
+import TextFilter from '@/components/Core/Filter/TextFilter.vue'
 import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
 import { adminEndpoints } from '@/api/endpoints'
 
@@ -93,6 +87,3 @@ function resetFilters() {
   emit('update:filters', { ...filters })
 }
 </script>
-
-
-

@@ -3,31 +3,23 @@
     <form @submit.prevent="applyFilters">
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <!-- Tìm kiếm theo tên -->
-        <AdminFilterItem
-          id="search"
-          label="Tìm kiếm"
-          type="text"
+        <TextFilter
           v-model="filters.search"
           placeholder="Tìm theo tên danh mục"
         />
-        
         <!-- Lọc theo trạng thái -->
-    <AdminFilterItem
-          id="status"
-          label="Trạng thái"
-          type="select"
+        <SelectFilter
           v-model="filters.status"
+          :api-endpoint="statusApi"
+          label-field="label"
+          value-field="value"
           placeholder="Tất cả trạng thái"
-      :options="statusOptions"
         />
-        
         <!-- Sắp xếp theo -->
-        <AdminFilterItem
-          id="sort_by"
-          label="Sắp xếp theo"
-          type="select"
+        <SelectFilter
           v-model="filters.sort_by"
           :options="sortOptions"
+          placeholder="Sắp xếp theo"
         />
         
         <div class="flex items-end space-x-2">
@@ -51,8 +43,10 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
-import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
+import { reactive } from 'vue'
+import TextFilter from '@/components/Core/Filter/TextFilter.vue'
+import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
+import { adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   initialFilters: {
@@ -60,8 +54,6 @@ const props = defineProps({
     default: () => ({})
   }
 })
-
-const statusEnums = computed(() => props.statusEnums || [])
 
 const emit = defineEmits(['update:filters'])
 
@@ -71,25 +63,14 @@ const filters = reactive({
   sort_by: props.initialFilters.sort_by || 'created_at_desc',
 })
 
-// Các tùy chọn cho select
-const statusOptions = computed(() => {
-  const options = [{ value: '', label: 'Tất cả trạng thái' }]
-  const list = Array.isArray(statusEnums.value) ? statusEnums.value : []
-  for (const it of list) {
-    const value = it.value ?? it.id ?? ''
-    const label = it.label ?? it.name ?? String(value)
-    options.push({ value, label })
-  }
-  return options
-})
+// API cho enum trạng thái
+const statusApi = adminEndpoints.enums('basic_status')
 
 const sortOptions = [
   { value: 'created_at_desc', label: 'Mới nhất' },
   { value: 'created_at_asc', label: 'Cũ nhất' },
-  { value: 'name_asc', label: 'Tên danh mục (A-Z)' },
-  { value: 'name_desc', label: 'Tên danh mục (Z-A)' },
-  { value: 'sort_order_asc', label: 'Thứ tự tăng dần' },
-  { value: 'sort_order_desc', label: 'Thứ tự giảm dần' }
+  { value: 'name_asc', label: 'Tên (A-Z)' },
+  { value: 'name_desc', label: 'Tên (Z-A)' }
 ]
 
 // Áp dụng bộ lọc
@@ -106,6 +87,3 @@ function resetFilters() {
   emit('update:filters', { ...filters })
 }
 </script>
-
-
-

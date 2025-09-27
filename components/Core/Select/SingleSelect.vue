@@ -69,6 +69,7 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
+import { adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   modelValue: {
@@ -122,6 +123,10 @@ const props = defineProps({
   excludeId: {
     type: [String, Number],
     default: null
+  },
+  enumType: {
+    type: String,
+    default: ''
   }
 })
 
@@ -161,10 +166,26 @@ async function ensureOptionsLoaded() {
     internalOptions.value = props.options
     return
   }
-  if (!props.searchApi) return
+  
   loading.value = true
   try {
     const { apiClient } = useApiClient()
+    
+    // Handle enum type
+    if (props.enumType) {
+      const response = await apiClient.get(adminEndpoints.enums(props.enumType))
+      if (response.data?.success) {
+        const data = response.data.data || []
+        internalOptions.value = data.map(item => ({ 
+          value: item.value, 
+          label: item.label 
+        }))
+      }
+      return
+    }
+    
+    // Handle search API
+    if (!props.searchApi) return
     const query = new URLSearchParams({ per_page: '50', ...props.params }).toString()
     const url = `${props.searchApi}${query ? `?${query}` : ''}`
     const response = await apiClient.get(url)
@@ -211,6 +232,13 @@ watch(() => props.options, (newOpts) => {
     internalOptions.value = newOpts
   }
 }, { immediate: true })
+
+watch(() => props.enumType, () => {
+  if (props.enumType) {
+    internalOptions.value = [] // Clear current options
+    ensureOptionsLoaded()
+  }
+})
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)

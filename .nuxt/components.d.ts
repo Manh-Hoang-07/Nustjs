@@ -12,9 +12,7 @@ type HydrationStrategies = {
 }
 type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }>)
 interface _GlobalComponents {
-      'AdminFilterItem': typeof import("../components/Admin/Filter/AdminFilterItem.vue")['default']
-    'AdminTable': typeof import("../components/Admin/Table/AdminTable.vue")['default']
-    'CoreActions': typeof import("../components/Core/Actions/Actions.vue")['default']
+      'CoreActions': typeof import("../components/Core/Actions/Actions.vue")['default']
     'CoreContentCKEditorUltimate': typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']
     'CoreContentHtmlContent': typeof import("../components/Core/Content/HtmlContent.vue")['default']
     'CoreFeedbackToastContainer': typeof import("../components/Core/Feedback/ToastContainer.vue")['default']
@@ -31,7 +29,6 @@ interface _GlobalComponents {
     'CoreModalConfirmModal': typeof import("../components/Core/Modal/ConfirmModal.vue")['default']
     'CoreModal': typeof import("../components/Core/Modal/Modal.vue")['default']
     'CoreNavigationPagination': typeof import("../components/Core/Navigation/Pagination.vue")['default']
-    'CoreSelectEnumSelect': typeof import("../components/Core/Select/EnumSelect.vue")['default']
     'CoreSelectMultipleSelect': typeof import("../components/Core/Select/MultipleSelect.vue")['default']
     'CoreSelectSearchableMultiSelect': typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']
     'CoreSelectSearchableSelect': typeof import("../components/Core/Select/SearchableSelect.vue")['default']
@@ -67,9 +64,7 @@ interface _GlobalComponents {
     'Body': typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
     'NuxtIsland': typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
     'NuxtRouteAnnouncer': typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
-      'LazyAdminFilterItem': LazyComponent<typeof import("../components/Admin/Filter/AdminFilterItem.vue")['default']>
-    'LazyAdminTable': LazyComponent<typeof import("../components/Admin/Table/AdminTable.vue")['default']>
-    'LazyCoreActions': LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
+      'LazyCoreActions': LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
     'LazyCoreContentCKEditorUltimate': LazyComponent<typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']>
     'LazyCoreContentHtmlContent': LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
     'LazyCoreFeedbackToastContainer': LazyComponent<typeof import("../components/Core/Feedback/ToastContainer.vue")['default']>
@@ -86,7 +81,6 @@ interface _GlobalComponents {
     'LazyCoreModalConfirmModal': LazyComponent<typeof import("../components/Core/Modal/ConfirmModal.vue")['default']>
     'LazyCoreModal': LazyComponent<typeof import("../components/Core/Modal/Modal.vue")['default']>
     'LazyCoreNavigationPagination': LazyComponent<typeof import("../components/Core/Navigation/Pagination.vue")['default']>
-    'LazyCoreSelectEnumSelect': LazyComponent<typeof import("../components/Core/Select/EnumSelect.vue")['default']>
     'LazyCoreSelectMultipleSelect': LazyComponent<typeof import("../components/Core/Select/MultipleSelect.vue")['default']>
     'LazyCoreSelectSearchableMultiSelect': LazyComponent<typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']>
     'LazyCoreSelectSearchableSelect': LazyComponent<typeof import("../components/Core/Select/SearchableSelect.vue")['default']>
@@ -128,8 +122,6 @@ declare module 'vue' {
   export interface GlobalComponents extends _GlobalComponents { }
 }
 
-export const AdminFilterItem: typeof import("../components/Admin/Filter/AdminFilterItem.vue")['default']
-export const AdminTable: typeof import("../components/Admin/Table/AdminTable.vue")['default']
 export const CoreActions: typeof import("../components/Core/Actions/Actions.vue")['default']
 export const CoreContentCKEditorUltimate: typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']
 export const CoreContentHtmlContent: typeof import("../components/Core/Content/HtmlContent.vue")['default']
@@ -147,7 +139,6 @@ export const CoreLoadingSkeletonLoader: typeof import("../components/Core/Loadin
 export const CoreModalConfirmModal: typeof import("../components/Core/Modal/ConfirmModal.vue")['default']
 export const CoreModal: typeof import("../components/Core/Modal/Modal.vue")['default']
 export const CoreNavigationPagination: typeof import("../components/Core/Navigation/Pagination.vue")['default']
-export const CoreSelectEnumSelect: typeof import("../components/Core/Select/EnumSelect.vue")['default']
 export const CoreSelectMultipleSelect: typeof import("../components/Core/Select/MultipleSelect.vue")['default']
 export const CoreSelectSearchableMultiSelect: typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']
 export const CoreSelectSearchableSelect: typeof import("../components/Core/Select/SearchableSelect.vue")['default']
@@ -183,8 +174,6 @@ export const Html: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const NuxtRouteAnnouncer: typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
-export const LazyAdminFilterItem: LazyComponent<typeof import("../components/Admin/Filter/AdminFilterItem.vue")['default']>
-export const LazyAdminTable: LazyComponent<typeof import("../components/Admin/Table/AdminTable.vue")['default']>
 export const LazyCoreActions: LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
 export const LazyCoreContentCKEditorUltimate: LazyComponent<typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']>
 export const LazyCoreContentHtmlContent: LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
@@ -202,7 +191,6 @@ export const LazyCoreLoadingSkeletonLoader: LazyComponent<typeof import("../comp
 export const LazyCoreModalConfirmModal: LazyComponent<typeof import("../components/Core/Modal/ConfirmModal.vue")['default']>
 export const LazyCoreModal: LazyComponent<typeof import("../components/Core/Modal/Modal.vue")['default']>
 export const LazyCoreNavigationPagination: LazyComponent<typeof import("../components/Core/Navigation/Pagination.vue")['default']>
-export const LazyCoreSelectEnumSelect: LazyComponent<typeof import("../components/Core/Select/EnumSelect.vue")['default']>
 export const LazyCoreSelectMultipleSelect: LazyComponent<typeof import("../components/Core/Select/MultipleSelect.vue")['default']>
 export const LazyCoreSelectSearchableMultiSelect: LazyComponent<typeof import("../components/Core/Select/SearchableMultiSelect.vue")['default']>
 export const LazyCoreSelectSearchableSelect: LazyComponent<typeof import("../components/Core/Select/SearchableSelect.vue")['default']>

@@ -3,21 +3,17 @@
     <form @submit.prevent="applyFilters">
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <!-- Tìm kiếm theo tên -->
-        <AdminFilterItem
-          id="search"
-          label="Tìm kiếm"
-          type="text"
+        <TextFilter
           v-model="filters.search"
-          placeholder="Tìm theo tên thẻ"
+          placeholder="Tìm theo tên tag"
         />
-        
-        <!-- Sắp xếp theo -->
-        <AdminFilterItem
-          id="sort_by"
-          label="Sắp xếp theo"
-          type="select"
-          v-model="filters.sort_by"
-          :options="sortOptions"
+        <!-- Lọc theo trạng thái -->
+        <SelectFilter
+          v-model="filters.status"
+          :api-endpoint="statusApi"
+          label-field="label"
+          value-field="value"
+          placeholder="Tất cả trạng thái"
         />
         
         <div class="flex items-end space-x-2">
@@ -42,7 +38,9 @@
 
 <script setup>
 import { reactive } from 'vue'
-import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
+import TextFilter from '@/components/Core/Filter/TextFilter.vue'
+import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
+import { adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   initialFilters: {
@@ -55,18 +53,11 @@ const emit = defineEmits(['update:filters'])
 
 const filters = reactive({
   search: props.initialFilters.search || '',
-  sort_by: props.initialFilters.sort_by || 'created_at_desc',
+  status: props.initialFilters.status || '',
 })
 
-// Các tùy chọn cho select
-const sortOptions = [
-  { value: 'created_at_desc', label: 'Mới nhất' },
-  { value: 'created_at_asc', label: 'Cũ nhất' },
-  { value: 'name_asc', label: 'Tên thẻ (A-Z)' },
-  { value: 'name_desc', label: 'Tên thẻ (Z-A)' },
-  { value: 'post_count_desc', label: 'Số bài viết cao nhất' },
-  { value: 'post_count_asc', label: 'Số bài viết thấp nhất' }
-]
+// API cho enum trạng thái
+const statusApi = adminEndpoints.enums('basic_status')
 
 // Áp dụng bộ lọc
 function applyFilters() {
@@ -78,10 +69,6 @@ function resetFilters() {
   Object.keys(filters).forEach(key => {
     filters[key] = ''
   })
-  filters.sort_by = 'created_at_desc'
   emit('update:filters', { ...filters })
 }
 </script>
-
-
-

@@ -2,29 +2,22 @@
   <div class="bg-white p-4 rounded-lg shadow mb-6">
     <form @submit.prevent="applyFilters">
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <!-- T�m ki?m theo t�n -->
-        <AdminFilterItem
-          id="search"
-          label="T�m ki?m"
-          type="text"
+        <!-- Tìm kiếm theo tên -->
+        <TextFilter
           v-model="filters.search"
-          placeholder="T�m theo t�n vai tr�"
+          placeholder="Tìm theo tên vai trò"
         />
-        <!-- L?c theo tr?ng th�i -->
-        <AdminFilterItem
-          id="status"
-          label="Tr?ng th�i"
-          type="select"
+        <!-- Lọc theo trạng thái -->
+        <SelectFilter
           v-model="filters.status"
           :options="statusOptions"
+          placeholder="Tất cả trạng thái"
         />
-        <!-- S?p x?p theo -->
-        <AdminFilterItem
-          id="sort_by"
-          label="S?p x?p theo"
-          type="select"
+        <!-- Sắp xếp theo -->
+        <SelectFilter
           v-model="filters.sort_by"
           :options="sortOptions"
+          placeholder="Sắp xếp theo"
         />
         
         <div class="flex items-end space-x-2">
@@ -32,14 +25,14 @@
             type="submit"
             class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
           >
-            L?c
+            Lọc
           </button>
           <button
             type="button"
             @click="resetFilters"
             class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none"
           >
-            �?t l?i
+            Đặt lại
           </button>
         </div>
       </div>
@@ -49,7 +42,8 @@
 
 <script setup>
 import { reactive, computed } from 'vue'
-import AdminFilterItem from '/components/Admin/Filter/AdminFilterItem.vue'
+import TextFilter from '@/components/Core/Filter/TextFilter.vue'
+import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
 
 const props = defineProps({
   initialFilters: {
@@ -70,9 +64,9 @@ const filters = reactive({
   sort_by: props.initialFilters.sort_by || 'created_at_desc',
 })
 
-// C�c t�y ch?n cho select
+// Các tùy chọn cho select
 const statusOptions = computed(() => {
-  const options = [{ value: '', label: 'T?t c? tr?ng th�i' }]
+  const options = [{ value: '', label: 'Tất cả trạng thái' }]
   
   if (Array.isArray(props.statusEnums)) {
     options.push(...props.statusEnums.map(item => ({
@@ -85,18 +79,18 @@ const statusOptions = computed(() => {
 })
 
 const sortOptions = [
-  { value: 'created_at_desc', label: 'M?i nh?t' },
-  { value: 'created_at_asc', label: 'Cu nh?t' },
-  { value: 'name_asc', label: 'T�n (A-Z)' },
-  { value: 'name_desc', label: 'T�n (Z-A)' }
+  { value: 'created_at_desc', label: 'Mới nhất' },
+  { value: 'created_at_asc', label: 'Cũ nhất' },
+  { value: 'name_asc', label: 'Tên (A-Z)' },
+  { value: 'name_desc', label: 'Tên (Z-A)' }
 ]
 
-// �p d?ng b? l?c
+// Áp dụng bộ lọc
 function applyFilters() {
   emit('update:filters', { ...filters })
 }
 
-// �?t l?i b? l?c
+// Đặt lại bộ lọc
 function resetFilters() {
   Object.keys(filters).forEach(key => {
     filters[key] = ''
@@ -104,5 +98,4 @@ function resetFilters() {
   filters.sort_by = 'created_at_desc'
   emit('update:filters', { ...filters })
 }
-</script> 
-
+</script>

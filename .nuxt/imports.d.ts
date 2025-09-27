@@ -33,7 +33,6 @@ export { default as form, formToFormData, validateForm, useFormDefaults, useApiF
 export { default as formatters, formatCurrency, formatNumber, formatDate, formatDateTime, formatRelativeTime } from '../utils/formatters';
 export { debounce, lazyLoadImage, generateSrcSet, generateSizes, optimizeImageUrl, generatePlaceholder } from '../utils/optimization';
 export { useAuthStore } from '../stores/auth';
-export { useUserStore } from '../stores/userStore';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { useColorMode } from '../node_modules/@nuxtjs/color-mode/dist/runtime/composables';
 export { definePageMeta } from '../node_modules/nuxt/dist/pages/runtime/composables';
