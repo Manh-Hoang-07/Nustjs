@@ -12,7 +12,7 @@ declare global {
   const computed: typeof import('vue')['computed']
   const createError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['createError']
   const customRef: typeof import('vue')['customRef']
-  const debounce: typeof import('../../utils/optimization')['debounce']
+  const debounce: typeof import('../../utils/debounce')['debounce']
   const defineAppConfig: typeof import('../../node_modules/nuxt/dist/app/nuxt')['defineAppConfig']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
@@ -36,9 +36,9 @@ declare global {
   const formatNumber: typeof import('../../utils/formatters')['formatNumber']
   const formatRelativeTime: typeof import('../../utils/formatters')['formatRelativeTime']
   const formatters: typeof import('../../utils/formatters')['default']
-  const generatePlaceholder: typeof import('../../utils/optimization')['generatePlaceholder']
-  const generateSizes: typeof import('../../utils/optimization')['generateSizes']
-  const generateSrcSet: typeof import('../../utils/optimization')['generateSrcSet']
+  const generatePlaceholder: typeof import('../../utils/image')['generatePlaceholder']
+  const generateSizes: typeof import('../../utils/image')['generateSizes']
+  const generateSrcSet: typeof import('../../utils/image')['generateSrcSet']
   const getAppManifest: typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
@@ -56,7 +56,7 @@ declare global {
   const isShallow: typeof import('vue')['isShallow']
   const isVue2: typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue2']
   const isVue3: typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue3']
-  const lazyLoadImage: typeof import('../../utils/optimization')['lazyLoadImage']
+  const lazyLoadImage: typeof import('../../utils/image')['lazyLoadImage']
   const loadPayload: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['loadPayload']
   const markRaw: typeof import('vue')['markRaw']
   const mergeModels: typeof import('vue')['mergeModels']
@@ -80,7 +80,7 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
-  const optimizeImageUrl: typeof import('../../utils/optimization')['optimizeImageUrl']
+  const optimizeImageUrl: typeof import('../../utils/image')['optimizeImageUrl']
   const prefetchComponents: typeof import('../../node_modules/nuxt/dist/app/composables/preload')['prefetchComponents']
   const preloadComponents: typeof import('../../node_modules/nuxt/dist/app/composables/preload')['preloadComponents']
   const preloadPayload: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['preloadPayload']
@@ -104,6 +104,7 @@ declare global {
   const shallowRef: typeof import('vue')['shallowRef']
   const showError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['showError']
   const storeToRefs: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['storeToRefs']
+  const throttle: typeof import('../../utils/debounce')['throttle']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
@@ -217,7 +218,7 @@ declare module 'vue' {
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['createError']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
-    readonly debounce: UnwrapRef<typeof import('../../utils/optimization')['debounce']>
+    readonly debounce: UnwrapRef<typeof import('../../utils/debounce')['debounce']>
     readonly defineAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['defineAppConfig']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
@@ -241,9 +242,9 @@ declare module 'vue' {
     readonly formatNumber: UnwrapRef<typeof import('../../utils/formatters')['formatNumber']>
     readonly formatRelativeTime: UnwrapRef<typeof import('../../utils/formatters')['formatRelativeTime']>
     readonly formatters: UnwrapRef<typeof import('../../utils/formatters')['default']>
-    readonly generatePlaceholder: UnwrapRef<typeof import('../../utils/optimization')['generatePlaceholder']>
-    readonly generateSizes: UnwrapRef<typeof import('../../utils/optimization')['generateSizes']>
-    readonly generateSrcSet: UnwrapRef<typeof import('../../utils/optimization')['generateSrcSet']>
+    readonly generatePlaceholder: UnwrapRef<typeof import('../../utils/image')['generatePlaceholder']>
+    readonly generateSizes: UnwrapRef<typeof import('../../utils/image')['generateSizes']>
+    readonly generateSrcSet: UnwrapRef<typeof import('../../utils/image')['generateSrcSet']>
     readonly getAppManifest: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
@@ -261,7 +262,7 @@ declare module 'vue' {
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
     readonly isVue2: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue2']>
     readonly isVue3: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue3']>
-    readonly lazyLoadImage: UnwrapRef<typeof import('../../utils/optimization')['lazyLoadImage']>
+    readonly lazyLoadImage: UnwrapRef<typeof import('../../utils/image')['lazyLoadImage']>
     readonly loadPayload: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['loadPayload']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly mergeModels: UnwrapRef<typeof import('vue')['mergeModels']>
@@ -285,7 +286,7 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
-    readonly optimizeImageUrl: UnwrapRef<typeof import('../../utils/optimization')['optimizeImageUrl']>
+    readonly optimizeImageUrl: UnwrapRef<typeof import('../../utils/image')['optimizeImageUrl']>
     readonly prefetchComponents: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preload')['prefetchComponents']>
     readonly preloadComponents: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preload')['preloadComponents']>
     readonly preloadPayload: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['preloadPayload']>
@@ -309,6 +310,7 @@ declare module 'vue' {
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
     readonly showError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['showError']>
     readonly storeToRefs: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['storeToRefs']>
+    readonly throttle: UnwrapRef<typeof import('../../utils/debounce')['throttle']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>

@@ -15,7 +15,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { debounce } from '@/utils/optimization'
+import { debounce } from '@/utils/debounce'
 
 const props = defineProps({
   modelValue: {

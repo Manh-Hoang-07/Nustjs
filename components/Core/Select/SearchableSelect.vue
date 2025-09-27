@@ -58,7 +58,7 @@
 
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
-import { debounce } from '@/utils/optimization'
+import { debounce } from '@/utils/debounce'
 import { useApiClient } from '@/composables/api/useApiClient'
 
 const props = defineProps({

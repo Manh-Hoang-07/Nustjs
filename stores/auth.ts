@@ -21,24 +21,6 @@ interface LoginCredentials {
   remember?: boolean
 }
 
-interface RegisterData {
-  name: string
-  email: string
-  password: string
-  password_confirmation: string
-}
-
-interface ProfileData {
-  name?: string
-  email?: string
-  avatar?: File
-}
-
-interface PasswordData {
-  current_password: string
-  password: string
-  password_confirmation: string
-}
 
 interface ApiResponse<T = any> {
   success: boolean
@@ -93,7 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
       const cookies = document.cookie.split(';')
       for (let cookie of cookies) {
         const [name, value] = cookie.trim().split('=')
-        if (name === 'auth_token') {
+        if (name === 'auth_token' && value) {
           return decodeURIComponent(value)
         }
       }
@@ -151,30 +133,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const register = async (userData: RegisterData): Promise<AuthResult> => {
-    try {
-      const response = await apiClient.post('/api/register', userData)
-
-      if (response.data.success) {
-        return { success: true, data: response.data.data }
-      } else {
-        return { success: false, message: response.data.message || 'Đăng ký thất bại' }
-      }
-    } catch (error: any) {
-      // Enhanced error handling
-      if (error.response?.status === 422) {
-        return { success: false, message: 'Dữ liệu không hợp lệ' }
-      } else if (error.response?.status === 409) {
-        return { success: false, message: 'Email đã tồn tại' }
-      } else if (error.code === 'ECONNABORTED') {
-        return { success: false, message: 'Kết nối bị timeout, vui lòng thử lại' }
-      } else if (!error.response) {
-        return { success: false, message: 'Không thể kết nối đến server' }
-      }
-      
-      return { success: false, message: error.userMessage || 'Lỗi kết nối' }
-    }
-  }
 
   const logout = async (): Promise<void> => {
     try {
@@ -290,40 +248,7 @@ export const useAuthStore = defineStore('auth', () => {
     await fetchUserInfo(true)
   }
 
-  const updateProfile = async (profileData: ProfileData): Promise<AuthResult> => {
-    try {
-      const response = await $fetch('/api/profile', {
-        method: 'PUT',
-        body: profileData
-      })
 
-      if (response.success) {
-        user.value = { ...user.value, ...response.data } as User
-        return { success: true, data: response.data }
-      } else {
-        return { success: false, message: response.message || 'Cập nhật thất bại' }
-      }
-    } catch (error: any) {
-      return { success: false, message: error.userMessage || 'Lỗi cập nhật' }
-    }
-  }
-
-  const changePassword = async (passwordData: PasswordData): Promise<AuthResult> => {
-    try {
-      const response = await $fetch('/api/change-password', {
-        method: 'POST',
-        body: passwordData
-      })
-
-      if (response.success) {
-        return { success: true, message: 'Đổi mật khẩu thành công' }
-      } else {
-        return { success: false, message: response.message || 'Đổi mật khẩu thất bại' }
-      }
-    } catch (error: any) {
-      return { success: false, message: error.userMessage || 'Lỗi đổi mật khẩu' }
-    }
-  }
 
   // Initialize auth from localStorage
   const initFromStorage = async (): Promise<boolean> => {
@@ -408,12 +333,9 @@ export const useAuthStore = defineStore('auth', () => {
     
     // Auth methods
     login,
-    register,
     logout,
     checkAuth,
     refreshUserInfo,
-    updateProfile,
-    changePassword,
     initFromStorage,
     clearAuthState,
     
@@ -444,13 +366,10 @@ export const useAuthStore = defineStore('auth', () => {
     
     // Actions
     login,
-    register,
     logout,
     fetchUserInfo,
     checkAuth,
     refreshUserInfo,
-    updateProfile,
-    changePassword,
     initFromStorage,
     clearAuthState,
     

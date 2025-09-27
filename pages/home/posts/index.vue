@@ -210,7 +210,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 import { useDataTable } from '@/composables/data/useDataTable'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
-import { debounce } from '@/utils/optimization'
+import { debounce } from '@/utils/debounce'
 import { formatDate } from '@/utils/formatters'
 
 // Hàm format excerpt đơn giản

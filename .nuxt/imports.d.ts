@@ -29,9 +29,10 @@ export { withCtx, withDirectives, withKeys, withMemo, withModifiers, withScopeId
 export { requestIdleCallback, cancelIdleCallback } from '#app/compat/idle-callback';
 export { setInterval } from '#app/compat/interval';
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
+export { debounce, throttle } from '../utils/debounce';
 export { default as form, formToFormData, validateForm, useFormDefaults, useApiFormSubmit } from '../utils/form';
 export { default as formatters, formatCurrency, formatNumber, formatDate, formatDateTime, formatRelativeTime } from '../utils/formatters';
-export { debounce, lazyLoadImage, generateSrcSet, generateSizes, optimizeImageUrl, generatePlaceholder } from '../utils/optimization';
+export { lazyLoadImage, generateSrcSet, generateSizes, optimizeImageUrl, generatePlaceholder } from '../utils/image';
 export { useAuthStore } from '../stores/auth';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { useColorMode } from '../node_modules/@nuxtjs/color-mode/dist/runtime/composables';

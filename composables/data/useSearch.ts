@@ -1,5 +1,5 @@
 import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
-import { debounce } from '@/utils/optimization'
+import { debounce } from '@/utils/debounce'
 
 // ===== TYPES =====
 
