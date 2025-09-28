@@ -1,5 +1,6 @@
 import { ref, reactive, computed, type Ref, type ComputedRef } from 'vue'
 import { useApiClient } from '../api/useApiClient'
+import useUrlState from '@/composables/utils/useUrlState'
 
 // ===== TYPES =====
 
@@ -9,6 +10,14 @@ interface DataTableOptions {
   cacheEnabled?: boolean
   debounceTime?: number
   pageSize?: number
+  // URL sync options
+  enableUrlSync?: boolean
+  filterKeys?: string[]
+  sortKeys?: string[]
+  paginationKeys?: string[]
+  resetPageOnFilter?: boolean
+  resetPageOnSort?: boolean
+  resetOnRouteChange?: boolean
 }
 
 interface PaginationMeta {
@@ -58,6 +67,7 @@ interface DataTableResult<T = any> {
   deleteItem: (id: number) => Promise<void>
   clearCache: () => void
   refresh: () => Promise<{ data: T[]; meta: PaginationMeta }>
+  getCurrentQuery?: () => Record<string, any>
 }
 
 // ===== COMPOSABLE =====
@@ -72,7 +82,15 @@ export function useDataTable<T = any>(
     defaultSort = 'created_at_desc',
     cacheEnabled = false,
     debounceTime = 300,
-    pageSize = 10
+    pageSize = 10,
+    // URL sync options
+    enableUrlSync = false,
+    filterKeys = [],
+    sortKeys = [],
+    paginationKeys = ['page', 'per_page'],
+    resetPageOnFilter = true,
+    resetPageOnSort = false,
+    resetOnRouteChange = true
   } = options
 
   // State
@@ -92,6 +110,30 @@ export function useDataTable<T = any>(
   const filters = reactive({ ...defaultFilters })
   const cache = new Map<string, CacheItem>()
   let debounceTimer: NodeJS.Timeout | null = null
+
+  // URL sync setup (if enabled)
+  let urlState: any = null
+  if (enableUrlSync) {
+    // Use the same filters object for URL sync
+    const urlFilters = ref(filters)
+    const urlPagination = ref({ currentPage: 1, perPage: pageSize })
+    const urlSort = ref({})
+    
+    urlState = useUrlState(
+      urlFilters,
+      urlPagination,
+      urlSort,
+      () => {}, // No auto fetch, we'll handle it manually
+      {
+        filterKeys: filterKeys || [],
+        sortKeys: sortKeys || [],
+        paginationKeys,
+        resetPageOnFilter,
+        resetPageOnSort,
+        resetOnRouteChange
+      }
+    )
+  }
 
   // Computed
   const hasData: ComputedRef<boolean> = computed(() => items.value.length > 0)
@@ -149,11 +191,24 @@ export function useDataTable<T = any>(
     error.value = null
     
     try {
-      const requestParams = { 
+      // Use URL state params if URL sync is enabled
+      let requestParams = { 
         ...filters, 
         ...params,
         per_page: pageSize
       }
+      
+      if (enableUrlSync && urlState) {
+        const urlQuery = urlState.getCurrentQuery()
+        // Merge URL query with local filters and params
+        requestParams = {
+          ...filters,        // Local filters as base
+          ...urlQuery,       // URL query overrides
+          ...params,         // Direct params override everything
+          per_page: pageSize
+        }
+      }
+      
       const cacheKey = getCacheKey(requestParams)
       
       // Check cache first
@@ -197,7 +252,15 @@ export function useDataTable<T = any>(
     if (!hasChanged) return
     
     Object.assign(filters, newFilters)
-    fetchData()
+    
+    // Use URL state if enabled
+    if (enableUrlSync && urlState) {
+      urlState.onUpdateFilters(newFilters)
+      // Also call fetchData directly to ensure immediate update
+      fetchData()
+    } else {
+      fetchData()
+    }
   }
 
   const resetFilters = (): void => {
@@ -206,17 +269,37 @@ export function useDataTable<T = any>(
     if (!hasChanged) return
     
     Object.assign(filters, defaultFilters)
-    fetchData()
+    
+    // Use URL state if enabled
+    if (enableUrlSync && urlState) {
+      urlState.onResetFilters()
+      // Also call fetchData directly to ensure immediate update
+      fetchData()
+    } else {
+      fetchData()
+    }
   }
 
   // Pagination functions
   const changePage = (page: number): void => {
-    fetchData({ page, per_page: pageSize })
+    if (enableUrlSync && urlState) {
+      urlState.onPageChange(page)
+      // Also call fetchData directly to ensure immediate update
+      fetchData({ page, per_page: pageSize })
+    } else {
+      fetchData({ page, per_page: pageSize })
+    }
   }
 
   const changePageSize = (size: number): void => {
     pagination.per_page = size
-    fetchData({ page: 1, per_page: size })
+    if (enableUrlSync && urlState) {
+      urlState.onUpdatePerPage(size)
+      // Also call fetchData directly to ensure immediate update
+      fetchData({ page: 1, per_page: size })
+    } else {
+      fetchData({ page: 1, per_page: size })
+    }
   }
 
   // CRUD functions
@@ -286,6 +369,11 @@ export function useDataTable<T = any>(
     updateItem,
     deleteItem,
     clearCache,
-    refresh
+    refresh,
+    
+    // URL sync methods (if enabled)
+    ...(enableUrlSync && urlState ? {
+      getCurrentQuery: urlState.getCurrentQuery
+    } : {})
   }
 }

@@ -83,6 +83,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import usePagination from '@/composables/ui/usePagination'
+import useUrlState from '@/composables/utils/useUrlState'
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/vue/24/solid'
 
 // Props
@@ -105,7 +106,10 @@ const props = defineProps({
   perPageParam: { type: String, default: 'per_page' },
   
   // Admin mode
-  isAdmin: { type: Boolean, default: false }
+  isAdmin: { type: Boolean, default: false },
+  
+  // URL state management
+  enableUrlSync: { type: Boolean, default: true }
 })
 
 // Emits
@@ -119,6 +123,31 @@ const {
   setPage,
   setTotal
 } = usePagination()
+
+// URL state management (if enabled)
+const urlState = props.enableUrlSync ? (() => {
+  const filters = ref({})
+  const pagination = ref({ currentPage: props.currentPage, perPage: 10 })
+  const sort = ref({})
+  
+  const urlStateResult = useUrlState(
+    filters,
+    pagination,
+    sort,
+    () => {}, // No auto fetch
+    {
+      filterKeys: [],
+      debounceMs: 300,
+      resetPageOnFilter: false,
+      resetPageOnSort: false
+    }
+  )
+  
+  return {
+    ...urlStateResult,
+    pagination
+  }
+})() : null
 
 // Local perPage variable
 const perPage = ref(10)
@@ -201,6 +230,11 @@ const handlePageChange = (page) => {
   currentPage.value = page
   setPage(page)
   
+  // Update URL state if enabled
+  if (urlState && page !== '...') {
+    urlState.onPageChange(page)
+  }
+  
   if (props.autoLoad) {
     loadData()
   }
@@ -228,6 +262,19 @@ const inputPage = ref(currentPage.value)
 watch(() => currentPage.value, (val) => {
   inputPage.value = val
 })
+
+// Sync URL state with current page
+if (urlState) {
+  watch(() => urlState.pagination.value.currentPage, (newPage) => {
+    if (newPage && newPage !== currentPage.value) {
+      currentPage.value = newPage
+      setPage(newPage)
+      if (props.autoLoad) {
+        loadData()
+      }
+    }
+  })
+}
 
 // Methods
 

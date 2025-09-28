@@ -225,7 +225,7 @@ const formatExcerpt = (text, maxLength = 150) => {
 // Sử dụng API client có sẵn
 const { apiClient } = useApiClient()
 
-// Sử dụng useDataTable cho posts
+// Sử dụng useDataTable với URL sync cho posts
 const {
   items: posts,
   loading,
@@ -240,7 +240,10 @@ const {
     category_id: '',
     sort: 'latest'
   },
-  pageSize: 10
+  pageSize: 10,
+  enableUrlSync: true,
+  filterKeys: ['search', 'category_id', 'sort'],
+  sortKeys: ['sort_by', 'sort_order']
 })
 
 // State cho categories và tags

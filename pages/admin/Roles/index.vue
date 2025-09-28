@@ -1,12 +1,12 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Qu?n lý vai trò</h1>
+      <h1 class="text-2xl font-bold">Qu?n lï¿½ vai trï¿½</h1>
       <button 
         @click="openCreateModal" 
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-        Thêm vai trò m?i
+        Thï¿½m vai trï¿½ m?i
       </button>
     </div>
 
@@ -24,10 +24,10 @@
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên vai trò</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên hi?n th?</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng thái</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tï¿½n vai trï¿½</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tï¿½n hi?n th?</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng thï¿½i</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tï¿½c</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -58,14 +58,14 @@
           </tr>
           <tr v-if="items.length === 0">
             <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-              Không có d? li?u
+              Khï¿½ng cï¿½ d? li?u
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Phân trang -->
+    <!-- Phï¿½n trang -->
     <Pagination 
       v-if="items.length > 0"
       :current-page="pagination.current_page"
@@ -75,7 +75,7 @@
       @page-change="handlePageChange"
     />
 
-    <!-- Modal thêm m?i -->
+    <!-- Modal thï¿½m m?i -->
     <CreateRole
       v-if="showCreateModal"
       :show="showCreateModal"
@@ -94,12 +94,12 @@
       @updated="handleRoleUpdated"
     />
 
-    <!-- Modal xác nh?n xóa -->
+    <!-- Modal xï¿½c nh?n xï¿½a -->
     <ConfirmModal
       v-if="showDeleteModal"
       :show="showDeleteModal"
-      title="Xác nh?n xóa"
-      :message="`B?n có ch?c ch?n mu?n xóa vai trò ${selectedRole?.name || ''}?`"
+      title="Xï¿½c nh?n xï¿½a"
+      :message="`B?n cï¿½ ch?c ch?n mu?n xï¿½a vai trï¿½ ${selectedRole?.name || ''}?`"
       :on-close="closeDeleteModal"
       @confirm="deleteRole"
     />
@@ -142,7 +142,10 @@ const {
     search: '',
     status: '',
     sort_by: 'created_at_desc'
-  }
+  },
+  enableUrlSync: true,
+  filterKeys: ['search', 'status', 'sort_by'],
+  sortKeys: ['sort_by', 'sort_order']
 })
 
 const { showSuccess, showError } = useToast()
@@ -216,22 +219,22 @@ function closeDeleteModal() {
 async function handleRoleCreated() {
   await fetchData()
   closeCreateModal()
-  showSuccess('Vai trò dã du?c t?o thành công')
+  showSuccess('Vai trï¿½ dï¿½ du?c t?o thï¿½nh cï¿½ng')
 }
 
 async function handleRoleUpdated() {
   await fetchData()
   closeEditModal()
-  showSuccess('Vai trò dã du?c c?p nh?t thành công')
+  showSuccess('Vai trï¿½ dï¿½ du?c c?p nh?t thï¿½nh cï¿½ng')
 }
 
 async function deleteRole() {
   try {
     await deleteItem(selectedRole.value.id)
     closeDeleteModal()
-    showSuccess('Vai trò dã du?c xóa thành công')
+    showSuccess('Vai trï¿½ dï¿½ du?c xï¿½a thï¿½nh cï¿½ng')
   } catch (error) {
-    showError('Không th? xóa vai trò')
+    showError('Khï¿½ng th? xï¿½a vai trï¿½')
   }
 }
 
@@ -243,7 +246,7 @@ function handlePageChange(page) {
 function getStatusLabel(status) {
   const list = statusEnums.value || []
   const found = list.find(it => it.value === status || it.id === status)
-  return found?.label || found?.name || status || 'Không xác d?nh'
+  return found?.label || found?.name || status || 'Khï¿½ng xï¿½c d?nh'
 }
 
 // Removed getStatusClass; class is derived from API enums directly in template
@@ -251,7 +254,7 @@ function getStatusLabel(status) {
 </script>
 
 <style>
-/* Cho phép cu?n ngang table khi màn hình nh? */
+/* Cho phï¿½p cu?n ngang table khi mï¿½n hï¿½nh nh? */
 .table-responsive {
   overflow-x: auto;
 }

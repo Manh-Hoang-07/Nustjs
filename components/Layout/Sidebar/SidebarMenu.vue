@@ -70,12 +70,12 @@
             :key="child.path"
             :to="child.path" 
             :prefetch="false"
-            @click="() => { $emit('select', child); router.push(child.path) }"
+            @click="() => { $emit('select', child); handleMenuClick(child.path) }"
             :class="[
               'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
               'hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 hover:text-white',
               'hover:shadow-md hover:scale-105',
-                           route.path === child.path 
+                           isActivePath(child.path) 
                ? 'bg-gradient-to-r from-blue-500/80 to-purple-600/80 text-white shadow-md scale-105' 
                : 'text-slate-400'
             ]"
@@ -90,12 +90,12 @@
           v-else
           :to="item.path" 
           :prefetch="false"
-          @click="() => { $emit('select', item); router.push(item.path) }"
+          @click="() => { $emit('select', item); handleMenuClick(item.path) }"
           :class="[
             'group flex items-center w-full px-3 py-3 text-sm font-medium rounded-xl transition-all duration-200 min-h-[48px]',
             'hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-500/20 hover:text-white',
             'hover:shadow-lg hover:scale-105',
-                         route.path === item.path 
+                         isActivePath(item.path) 
                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg scale-105' 
                : 'text-slate-300'
           ]"
@@ -111,6 +111,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useNavigation } from '@/composables/navigation/useNavigation'
 
 const props = defineProps({
   menuItems: { type: [Array, Object], required: true },
@@ -119,9 +120,42 @@ const props = defineProps({
 })
 
 const route = useRoute()
-const router = useRouter()
+const { navigateTo, navigateToWithQuery } = useNavigation()
 
 const expandedMenus = ref([])
+
+// Handle menu click - always go to the exact configured path
+const handleMenuClick = (path) => {
+  if (path.includes('?')) {
+    // Path already has query parameters, use exactly as configured
+    const [pathname, search] = path.split('?')
+    const query = Object.fromEntries(new URLSearchParams(search))
+    navigateToWithQuery(pathname, query)
+  } else {
+    // Path without query parameters, clear any existing query
+    navigateTo(path)
+  }
+}
+
+// Check if a path is active (handles query parameters)
+const isActivePath = (path) => {
+  if (path.includes('?')) {
+    // For paths with query parameters, compare both path and query
+    const [pathname, search] = path.split('?')
+    const query = Object.fromEntries(new URLSearchParams(search))
+    
+    // Check if path matches and all query parameters match
+    if (route.path !== pathname) return false
+    
+    for (const [key, value] of Object.entries(query)) {
+      if (route.query[key] !== value) return false
+    }
+    return true
+  } else {
+    // For paths without query parameters, just compare path
+    return route.path === path
+  }
+}
 
 // Handle menuItems (could be computed or array)
 const menuItemsArray = computed(() => {

@@ -242,7 +242,7 @@ const categorySlug = route.params.slug
 // Sử dụng API client
 const apiClient = useApiClient()
 
-// Sử dụng useDataTable cho posts
+// Sử dụng useDataTable với URL sync cho posts
 const {
   items: posts,
   loading,
@@ -257,7 +257,10 @@ const {
     search: '',
     sort: 'latest'
   },
-  pageSize: 10
+  pageSize: 10,
+  enableUrlSync: true,
+  filterKeys: ['category_slug', 'search', 'sort'],
+  sortKeys: ['sort_by', 'sort_order']
 })
 
 // State cho categories và tags

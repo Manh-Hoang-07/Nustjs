@@ -1,12 +1,12 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Qu?n lý quy?n</h1>
+      <h1 class="text-2xl font-bold">Qu?n lï¿½ quy?n</h1>
       <button 
         @click="openCreateModal" 
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-        Thêm quy?n m?i
+        Thï¿½m quy?n m?i
       </button>
     </div>
 
@@ -24,10 +24,10 @@
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên quy?n</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên hi?n th?</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng thái</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tï¿½n quy?n</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tï¿½n hi?n th?</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng thï¿½i</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tï¿½c</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -56,20 +56,20 @@
                 @delete="confirmDelete"
               />
               <span v-if="permission.has_children" class="text-gray-500 text-sm">
-                Không th? s?a/xóa (có {{ permission.children_count }} quy?n con)
+                Khï¿½ng th? s?a/xï¿½a (cï¿½ {{ permission.children_count }} quy?n con)
               </span>
             </td>
           </tr>
           <tr v-if="items.length === 0">
             <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-              Không có d? li?u
+              Khï¿½ng cï¿½ d? li?u
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Phân trang -->
+    <!-- Phï¿½n trang -->
     <Pagination 
       v-if="items.length > 0"
       :current-page="pagination.current_page"
@@ -79,7 +79,7 @@
       @page-change="handlePageChange"
     />
 
-    <!-- Modal thêm m?i -->
+    <!-- Modal thï¿½m m?i -->
     <CreatePermission
       v-if="showCreateModal"
       :show="showCreateModal"
@@ -98,12 +98,12 @@
       @updated="handlePermissionUpdated"
     />
 
-    <!-- Modal xác nh?n xóa -->
+    <!-- Modal xï¿½c nh?n xï¿½a -->
     <ConfirmModal
       v-if="showDeleteModal"
       :show="showDeleteModal"
-      title="Xác nh?n xóa"
-      message="B?n có ch?c ch?n mu?n xóa quy?n này không?"
+      title="Xï¿½c nh?n xï¿½a"
+      message="B?n cï¿½ ch?c ch?n mu?n xï¿½a quy?n nï¿½y khï¿½ng?"
       @confirm="deletePermission"
       @cancel="closeDeleteModal"
     />
@@ -146,7 +146,10 @@ const {
     search: '',
     status: '',
     sort_by: 'created_at_desc'
-  }
+  },
+  enableUrlSync: true,
+  filterKeys: ['search', 'status', 'sort_by'],
+  sortKeys: ['sort_by', 'sort_order']
 })
 
 const { showSuccess, showError } = useToast()
@@ -207,22 +210,22 @@ function closeDeleteModal() {
 async function handlePermissionCreated() {
   await fetchData()
   closeCreateModal()
-  showSuccess('Quy?n dã du?c t?o thành công')
+  showSuccess('Quy?n dï¿½ du?c t?o thï¿½nh cï¿½ng')
 }
 
 async function handlePermissionUpdated() {
   await fetchData()
   closeEditModal()
-  showSuccess('Quy?n dã du?c c?p nh?t thành công')
+  showSuccess('Quy?n dï¿½ du?c c?p nh?t thï¿½nh cï¿½ng')
 }
 
 async function deletePermission() {
   try {
     await deleteItem(selectedPermission.value.id)
     closeDeleteModal()
-    showSuccess('Quy?n dã du?c xóa thành công')
+    showSuccess('Quy?n dï¿½ du?c xï¿½a thï¿½nh cï¿½ng')
   } catch (error) {
-    showError('Không th? xóa quy?n')
+    showError('Khï¿½ng th? xï¿½a quy?n')
   }
 }
 
@@ -248,14 +251,14 @@ async function fetchStatusEnums() {
 function getStatusLabel(status) {
   const list = statusEnums.value || []
   const found = list.find(it => it.value === status || it.id === status)
-  return found?.label || found?.name || status || 'Không xác d?nh'
+  return found?.label || found?.name || status || 'Khï¿½ng xï¿½c d?nh'
 }
 
 // Removed getStatusClass; class is derived from API enums directly in template
 </script>
 
 <style>
-/* Ð?m b?o table luôn cu?n ngang du?c trên mobile */
+/* ï¿½?m b?o table luï¿½n cu?n ngang du?c trï¿½n mobile */
 .bg-white > .overflow-x-auto {
   width: 100%;
 }

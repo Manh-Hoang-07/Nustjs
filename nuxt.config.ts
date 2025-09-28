@@ -9,8 +9,6 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode'
   ],
 
-  // tailwindcss: {},
-
   runtimeConfig: {
     public: {
       apiBase: 'http://127.0.0.1:8000'
@@ -47,12 +45,6 @@ export default defineNuxtConfig({
     '~/assets/css/main.css',
     '~/assets/css/global.css'
   ],
-
-  // colorMode: {
-  //   preference: 'light',
-  //   fallback: 'light',
-  //   classSuffix: ''
-  // },
 
   vite: {
     resolve: {

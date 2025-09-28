@@ -1,3 +1,2 @@
-// Utils Composables
-export { useAuthInit } from './useAuthInit'
-export { default as useSyncQueryPagination } from './useSyncQueryPagination'
+// URL State Management Composables
+export { default as useUrlState } from './useUrlState'

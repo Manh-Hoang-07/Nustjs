@@ -227,8 +227,9 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, watch, reactive } from 'vue'
 import { useUserNavigation } from '@/composables/navigation/useUserNavigation'
+import { useAuthStore } from '@/stores/auth'
 
 // Sử dụng auth store
 const authStore = useAuthStore()

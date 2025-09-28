@@ -1,12 +1,12 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Qu?n lý bài vi?t</h1>
+      <h1 class="text-2xl font-bold">Qu?n lï¿½ bï¿½i vi?t</h1>
       <button 
         @click="openCreateModal" 
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-        Thêm bài vi?t m?i
+        Thï¿½m bï¿½i vi?t m?i
       </button>
     </div>
 
@@ -23,11 +23,11 @@
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiêu d?</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiï¿½u d?</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh m?c</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng thái</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày t?o</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng thï¿½i</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngï¿½y t?o</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tï¿½c</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -59,14 +59,14 @@
           </tr>
           <tr v-if="items.length === 0">
             <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-              Không có d? li?u
+              Khï¿½ng cï¿½ d? li?u
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Phân trang -->
+    <!-- Phï¿½n trang -->
     <Pagination 
       v-if="items.length > 0"
       :current-page="pagination.current_page"
@@ -76,7 +76,7 @@
       @page-change="handlePageChange"
     />
 
-    <!-- Modal thêm m?i -->
+    <!-- Modal thï¿½m m?i -->
     <CreatePost
       v-if="showCreateModal"
       :show="showCreateModal"
@@ -99,12 +99,12 @@
       @updated="handlePostUpdated"
     />
 
-    <!-- Modal xác nh?n xóa -->
+    <!-- Modal xï¿½c nh?n xï¿½a -->
     <ConfirmModal
       v-if="showDeleteModal"
       :show="showDeleteModal"
-      title="Xác nh?n xóa"
-      :message="`B?n có ch?c ch?n mu?n xóa bài vi?t ${selectedPost?.name || ''}?`"
+      title="Xï¿½c nh?n xï¿½a"
+      :message="`B?n cï¿½ ch?c ch?n mu?n xï¿½a bï¿½i vi?t ${selectedPost?.name || ''}?`"
       :on-close="closeDeleteModal"
       @confirm="deletePost"
     />
@@ -148,7 +148,10 @@ const {
     status: '',
     category_id: '',
     sort_by: 'created_at_desc'
-  }
+  },
+  enableUrlSync: true,
+  filterKeys: ['search', 'status', 'category_id', 'sort_by'],
+  sortKeys: ['sort_by', 'sort_order']
 })
 
 const { showSuccess, showError } = useToast()
@@ -228,22 +231,22 @@ function closeDeleteModal() {
 async function handlePostCreated() {
   await fetchData()
   closeCreateModal()
-  showSuccess('Bài vi?t dã du?c t?o thành công')
+  showSuccess('Bï¿½i vi?t dï¿½ du?c t?o thï¿½nh cï¿½ng')
 }
 
 async function handlePostUpdated() {
   await fetchData()
   closeEditModal()
-  showSuccess('Bài vi?t dã du?c c?p nh?t thành công')
+  showSuccess('Bï¿½i vi?t dï¿½ du?c c?p nh?t thï¿½nh cï¿½ng')
 }
 
 async function deletePost() {
   try {
     await deleteItem(selectedPost.value.id)
     closeDeleteModal()
-    showSuccess('Bài vi?t dã du?c xóa thành công')
+    showSuccess('Bï¿½i vi?t dï¿½ du?c xï¿½a thï¿½nh cï¿½ng')
   } catch (error) {
-    showError('Không th? xóa bài vi?t')
+    showError('Khï¿½ng th? xï¿½a bï¿½i vi?t')
   }
 }
 
@@ -254,14 +257,14 @@ function handlePageChange(page) {
 // Status helper functions
 function getStatusLabel(status) {
   const found = (statusEnums.value || []).find(s => s.value === status)
-  return found?.label || status || 'Không xác d?nh'
+  return found?.label || status || 'Khï¿½ng xï¿½c d?nh'
 }
 
 // Removed getStatusClass; class is derived from API enums directly in template
 
 function getCategoryNames(categories) {
   if (!categories || !Array.isArray(categories) || categories.length === 0) {
-    return '—'
+    return 'ï¿½'
   }
   return categories.map(cat => cat.name).join(', ')
 }
@@ -273,7 +276,7 @@ function formatDate(dateString) {
 </script>
 
 <style>
-/* Cho phép cu?n ngang table khi màn hình nh? */
+/* Cho phï¿½p cu?n ngang table khi mï¿½n hï¿½nh nh? */
 .table-responsive {
   overflow-x: auto;
 }

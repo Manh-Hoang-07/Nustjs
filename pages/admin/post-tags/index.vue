@@ -156,7 +156,10 @@ const {
   defaultFilters: {
     search: '',
     sort_by: 'created_at_desc'
-  }
+  },
+  enableUrlSync: true,
+  filterKeys: ['search', 'sort_by'],
+  sortKeys: ['sort_by', 'sort_order']
 })
 
 const { showSuccess, showError } = useToast()

@@ -180,7 +180,10 @@ const {
     search: '',
     status: '',
     sort_by: 'created_at:desc'
-  }
+  },
+  enableUrlSync: true,
+  filterKeys: ['search', 'status', 'sort_by'],
+  sortKeys: ['sort_by', 'sort_order']
 })
 
 const { showSuccess, showError } = useToast()

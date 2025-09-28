@@ -1,5 +1,6 @@
-import { ref, reactive, onMounted, computed, type Ref, type ComputedRef } from 'vue'
+import { ref, reactive, onMounted, computed, watch, type Ref, type ComputedRef } from 'vue'
 import { useApiClient } from '../api/useApiClient'
+import useUrlState from '../utils/useUrlState'
 
 // ===== TYPES =====
 
@@ -145,6 +146,27 @@ export default function useCrudAdmin<T = any>(options: CrudOptions<T>): CrudResu
       view: false
     }
   })
+
+  // URL state management
+  const urlFilters = ref({ ...state.filters })
+  const urlPagination = ref({
+    currentPage: state.pagination.current_page,
+    perPage: state.pagination.per_page
+  })
+  const urlSort = ref({})
+  
+  const urlState = useUrlState(
+    urlFilters,
+    urlPagination,
+    urlSort,
+    () => {}, // No auto fetch
+    {
+      filterKeys: ['search', 'status', 'date_from', 'date_to', ...Object.keys(defaultFilters)],
+      debounceMs: debounceTime,
+      resetPageOnFilter: true,
+      resetPageOnSort: false
+    }
+  )
 
   // Computed properties
   const computedProps: CrudComputedProps = {
@@ -375,24 +397,73 @@ export default function useCrudAdmin<T = any>(options: CrudOptions<T>): CrudResu
       
       const urlObj = new URL(url)
       const page = urlObj.searchParams.get('page')
-      crudOperations.fetchItems(parseInt(page || '1'))
+      const pageNum = parseInt(page || '1')
+      
+      // Update URL state
+      urlPagination.value.currentPage = pageNum
+      
+      // Update local state
+      state.filters.page = pageNum
+      state.pagination.current_page = pageNum
+      
+      crudOperations.fetchItems(pageNum)
     },
 
     applyFilters(): void {
       debouncedSearch(() => {
+        // Update URL state with current filters
+        urlFilters.value = { ...state.filters, page: 1 }
+        urlPagination.value.currentPage = 1
+        
+        // Update local state
+        state.filters.page = 1
+        state.pagination.current_page = 1
         crudOperations.fetchItems(1)
       })
     },
 
     resetFilters(): void {
-      Object.assign(state.filters, {
+      const resetFilters = {
         search: '',
         page: 1,
         ...defaultFilters
-      })
+      }
+      
+      // Update URL state
+      urlFilters.value = resetFilters
+      urlPagination.value.currentPage = 1
+      
+      // Update local state
+      Object.assign(state.filters, resetFilters)
+      state.pagination.current_page = 1
+      
       crudOperations.fetchItems(1)
     }
   }
+
+  // Watch URL state changes
+  watch(() => urlFilters.value, (newFilters) => {
+    // Sync URL filters to local state
+    Object.assign(state.filters, newFilters)
+  }, { deep: true })
+
+  watch(() => urlPagination.value, (newPagination) => {
+    // Sync URL pagination to local state
+    state.pagination.current_page = newPagination.currentPage
+    state.pagination.per_page = newPagination.perPage
+    state.filters.page = newPagination.currentPage
+  }, { deep: true })
+
+  watch(() => state.filters, (newFilters) => {
+    // Sync local filters to URL state
+    urlFilters.value = { ...newFilters }
+  }, { deep: true })
+
+  watch(() => state.pagination, (newPagination) => {
+    // Sync local pagination to URL state
+    urlPagination.value.currentPage = newPagination.current_page
+    urlPagination.value.perPage = newPagination.per_page
+  }, { deep: true })
 
   // Initialize
   onMounted(() => {
