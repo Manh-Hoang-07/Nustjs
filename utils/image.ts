@@ -116,3 +116,4 @@ export const generatePlaceholder = (width: number, height: number, text: string 
   
   return canvas.toDataURL()
 }
+
