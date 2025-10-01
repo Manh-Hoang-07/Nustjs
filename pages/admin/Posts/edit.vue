@@ -20,9 +20,8 @@
 <script setup>
 import PostForm from './form.vue'
 import { adminEndpoints } from '@/api/endpoints'
-import { ref, reactive, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
-
 
 const { apiClient } = useApiClient()
 
@@ -41,6 +40,7 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  apiErrors: Object,
   onClose: Function
 })
 const emit = defineEmits(['updated'])
@@ -48,13 +48,10 @@ const emit = defineEmits(['updated'])
 const showModal = ref(false)
 const postData = ref(null)
 const loading = ref(false)
-const apiErrors = reactive({})
 
 watch(() => props.show, (newValue) => {
   showModal.value = newValue
   if (newValue) {
-    Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-    
     // Luôn fetch dữ liệu chi tiết từ API khi mở modal
     if (props.post?.id) {
       fetchPostDetails()
@@ -65,8 +62,6 @@ watch(() => props.show, (newValue) => {
   }
 }, { immediate: true })
 
-
-
 async function fetchPostDetails() {
   if (!props.post?.id) return
   
@@ -76,6 +71,7 @@ async function fetchPostDetails() {
     
     postData.value = response.data.data || response.data
   } catch (error) {
+    console.error('Error fetching post details:', error)
     // Fallback về dữ liệu từ list view nếu API lỗi
     postData.value = props.post
   } finally {
@@ -84,31 +80,8 @@ async function fetchPostDetails() {
 }
 
 async function handleSubmit(formData) {
-  try {
-    if (!props.post) return;
-    Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-    
-    // Thêm _method = PUT để Laravel hiểu đây là PUT request
-    const dataWithMethod = {
-      ...formData,
-      _method: 'PUT'
-    }
-    
-    const response = await apiClient.post(adminEndpoints.posts.update(props.post.id), dataWithMethod)
-    emit('updated')
-    props.onClose()
-  } catch (error) {
-    if (error.response?.status === 422 && error.response?.data?.errors) {
-      const errors = error.response.data.errors
-      for (const field in errors) {
-        if (Array.isArray(errors[field])) {
-          apiErrors[field] = errors[field][0]
-        } else {
-          apiErrors[field] = errors[field]
-        }
-      }
-    }
-  }
+  // Emit data to parent component để xử lý bằng composable
+  emit('updated', formData)
 }
 
 function onClose() {

@@ -31,8 +31,14 @@
 import { ref, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 const props = defineProps({
-  modelValue: File || String || null,
-  defaultUrl: String || null
+  modelValue: {
+    type: [File, String],
+    default: null
+  },
+  defaultUrl: {
+    type: String,
+    default: null
+  }
 })
 const emit = defineEmits(['update:modelValue', 'remove'])
 const previewUrl = ref(null)

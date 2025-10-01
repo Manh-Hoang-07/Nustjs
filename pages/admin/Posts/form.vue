@@ -75,7 +75,7 @@
         <SearchableSelect
           id="status"
           v-model="formData.status"
-          :api-endpoint="statusApi"
+          :search-api="statusApi"
           label-field="label"
           value-field="value"
           placeholder="-- Chọn trạng thái --"
@@ -104,7 +104,7 @@
         <label for="primary_postcategory_id" class="block text-sm font-medium text-gray-700 mb-1">Danh mục chính</label>
         <SearchableSelect
           v-model="formData.primary_postcategory_id"
-          :search-api="POSTS_ENDPOINTS.ADMIN_POST_CATEGORIES"
+          :search-api="adminEndpoints.postCategories?.list || '/api/admin/post-categories'"
           :label-field="'name'"
           placeholder="Chọn danh mục chính"
           :error="validationErrors.primary_postcategory_id || apiErrors.primary_postcategory_id"
@@ -117,7 +117,7 @@
       <div>
         <SearchableMultiSelect
           v-model="formData.category_ids"
-          :search-api="POSTS_ENDPOINTS.ADMIN_POST_CATEGORIES"
+          :search-api="adminEndpoints.postCategories?.list || '/api/admin/post-categories'"
           :label-field="'name'"
           placeholder="Chọn danh mục"
           :error="validationErrors.category_ids || apiErrors.category_ids"
@@ -128,7 +128,7 @@
       <div>
         <SearchableMultiSelect
           v-model="formData.tag_ids"
-          :search-api="POSTS_ENDPOINTS.ADMIN_POST_TAGS"
+          :search-api="adminEndpoints.postTags?.list || '/api/admin/post-tags'"
           :label-field="'name'"
           placeholder="Chọn thẻ"
           :error="validationErrors.tag_ids || apiErrors.tag_ids"
@@ -225,11 +225,22 @@ import Modal from '@/components/Core/Modal/Modal.vue'
 import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
-import { POSTS_ENDPOINTS, adminEndpoints } from '@/api/endpoints'
+import { adminEndpoints } from '@/api/endpoints'
+
+// Debug: Kiểm tra adminEndpoints (có thể xóa sau khi test xong)
+// console.log('adminEndpoints:', adminEndpoints)
+// console.log('postCategories:', adminEndpoints.postCategories)
+// console.log('postTags:', adminEndpoints.postTags)
+// console.log('postCategories.list:', adminEndpoints.postCategories?.list)
+// console.log('postTags.list:', adminEndpoints.postTags?.list)
 
 const props = defineProps({
   show: Boolean,
   post: Object,
+  statusEnums: {
+    type: Array,
+    default: () => []
+  },
   categoryEnums: {
     type: Array,
     default: () => []
@@ -312,8 +323,9 @@ watch(() => props.post, async (newVal) => {
     formData.content = newVal.content || ''
     
     // Xử lý ảnh - set URL vào v-model để ImageUploader hiển thị
-    formData.cover_image = newVal.cover_image || null
-    formData.image = newVal.image || null
+    // Chỉ set ảnh nếu URL hợp lệ (không phải placeholder)
+    formData.cover_image = (newVal.cover_image && !newVal.cover_image.includes('via.placeholder')) ? newVal.cover_image : null
+    formData.image = (newVal.image && !newVal.image.includes('via.placeholder')) ? newVal.image : null
     
     formData.status = newVal.status !== undefined ? newVal.status : ''
     formData.published_at = newVal.published_at ? formatDateTimeForInput(newVal.published_at) : ''

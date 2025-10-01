@@ -78,31 +78,33 @@
 
     <!-- Modal thêm mới -->
     <CreatePost
-      v-if="showCreateModal"
-      :show="showCreateModal"
+      v-if="modals.create"
+      :show="modals.create"
       :status-enums="statusEnums"
       :category-enums="categoryEnums"
       :tag-enums="tagEnums"
+      :api-errors="apiErrors"
       :on-close="closeCreateModal"
       @created="handlePostCreated"
     />
 
     <!-- Modal chỉnh sửa -->
     <EditPost
-      v-if="showEditModal"
-      :show="showEditModal"
+      v-if="modals.edit"
+      :show="modals.edit"
       :post="selectedPost"
       :status-enums="statusEnums"
       :category-enums="categoryEnums"
       :tag-enums="tagEnums"
+      :api-errors="apiErrors"
       :on-close="closeEditModal"
       @updated="handlePostUpdated"
     />
 
     <!-- Modal xác nhận xóa -->
     <ConfirmModal
-      v-if="showDeleteModal"
-      :show="showDeleteModal"
+      v-if="modals.delete"
+      :show="modals.delete"
       title="Xác nhận xóa"
       :message="`Bạn có chắc chắn muốn xóa bài viết ${selectedPost?.name || ''}?`"
       :on-close="closeDeleteModal"
@@ -119,7 +121,7 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
@@ -140,9 +142,33 @@ const {
   pagination, 
   filters, 
   fetchData, 
-  updateFilters, 
-  deleteItem 
-} = useDataTable(adminEndpoints.posts.list, {
+  updateFilters,
+  // CRUD operations
+  createItem,
+  updateItem,
+  deleteItem,
+  // Modal handlers
+  openCreateModal: openCreateModalComposable,
+  closeCreateModal: closeCreateModalComposable,
+  openEditModal: openEditModalComposable,
+  closeEditModal: closeEditModalComposable,
+  openDeleteModal: openDeleteModalComposable,
+  closeDeleteModal: closeDeleteModalComposable,
+  // Selection
+  selectedItem,
+  // Modal state
+  modals,
+  // Error handling
+  apiErrors,
+  clearApiErrors
+} = useCrudDataTable({
+  endpoints: {
+    list: adminEndpoints.posts.list,
+    create: adminEndpoints.posts.create,
+    update: (id) => adminEndpoints.posts.update(id),
+    delete: (id) => adminEndpoints.posts.delete(id)
+  },
+  resourceName: 'bài viết',
   defaultFilters: {
     search: '',
     status: '',
@@ -158,15 +184,12 @@ const { showSuccess, showError } = useToast()
 const { apiClient } = useApiClient()
 
 // State
-const selectedPost = ref(null)
 const statusEnums = ref([])
 const categoryEnums = ref([])
 const tagEnums = ref([])
 
-// Modal state
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const showDeleteModal = ref(false)
+// Use selectedItem from composable as selectedPost
+const selectedPost = selectedItem
 
 // Fetch data
 onMounted(async () => {
@@ -198,53 +221,45 @@ async function fetchEnums() {
   tagEnums.value = []
 }
 
-// Modal handlers
-function openCreateModal() {
-  showCreateModal.value = true
-}
-
-function closeCreateModal() {
-  showCreateModal.value = false
-}
-
-function openEditModal(post) {
-  selectedPost.value = post
-  showEditModal.value = true
-}
-
-function closeEditModal() {
-  showEditModal.value = false
-  selectedPost.value = null
-}
+// Modal handlers - sử dụng composable handlers
+const openCreateModal = openCreateModalComposable
+const closeCreateModal = closeCreateModalComposable
+const openEditModal = openEditModalComposable
+const closeEditModal = closeEditModalComposable
+const openDeleteModal = openDeleteModalComposable
+const closeDeleteModal = closeDeleteModalComposable
 
 function confirmDelete(post) {
-  selectedPost.value = post
-  showDeleteModal.value = true
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false
-  selectedPost.value = null
+  openDeleteModal(post)
 }
 
 // Action handlers
-async function handlePostCreated() {
-  await fetchData()
-  closeCreateModal()
-  showSuccess('Bài viết đã được tạo thành công')
+async function handlePostCreated(postData) {
+  try {
+    await createItem(postData)
+    showSuccess('Bài viết đã được tạo thành công')
+  } catch (error) {
+    showError('Không thể tạo bài viết')
+  }
 }
 
-async function handlePostUpdated() {
-  await fetchData()
-  closeEditModal()
-  showSuccess('Bài viết đã được cập nhật thành công')
+async function handlePostUpdated(postData) {
+  try {
+    await updateItem(postData)
+    showSuccess('Bài viết đã được cập nhật thành công')
+  } catch (error) {
+    showError('Không thể cập nhật bài viết')
+  }
 }
 
 async function deletePost() {
   try {
-    await deleteItem(selectedPost.value.id)
-    closeDeleteModal()
-    showSuccess('Bài viết đã được xóa thành công')
+    const success = await deleteItem()
+    if (success) {
+      showSuccess('Bài viết đã được xóa thành công')
+    } else {
+      showError('Không thể xóa bài viết')
+    }
   } catch (error) {
     showError('Không thể xóa bài viết')
   }
