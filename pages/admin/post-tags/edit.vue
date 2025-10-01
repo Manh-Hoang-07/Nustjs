@@ -23,6 +23,7 @@ const props = defineProps({
   show: Boolean,
   tag: Object,
   statusEnums: Array,
+  apiErrors: Object,
   onClose: Function
 })
 
@@ -31,7 +32,6 @@ const emit = defineEmits(['updated'])
 const showModal = ref(false)
 const tagDetail = ref(null)
 const loading = ref(false)
-const apiErrors = reactive({})
 
 const api = useApiClient()
 
@@ -67,31 +67,7 @@ async function fetchTagDetail() {
 }
 
 async function handleSubmit(formData) {
-  try {
-    if (!props.tag) return;
-    Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-    
-    // Thêm _method = PUT để Laravel hiểu đây là PUT request
-    const dataWithMethod = {
-      ...formData,
-      _method: 'PUT'
-    }
-    
-    const response = await api.post(adminEndpoints.postTags.update(props.tag.id), dataWithMethod)
-    emit('updated')
-    props.onClose()
-  } catch (error) {
-    if (error.response?.status === 422 && error.response?.data?.errors) {
-      const errors = error.response.data.errors
-      for (const field in errors) {
-        if (Array.isArray(errors[field])) {
-          apiErrors[field] = errors[field][0]
-        } else {
-          apiErrors[field] = errors[field]
-        }
-      }
-    }
-  }
+  emit('updated', formData)
 }
 
 function onClose() {

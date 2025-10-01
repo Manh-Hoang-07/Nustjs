@@ -26,40 +26,20 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  apiErrors: Object,
   onClose: Function
 })
 
 const emit = defineEmits(['created'])
 
 const showModal = ref(false)
-const apiErrors = reactive({})
 
 watch(() => props.show, (newValue) => {
   showModal.value = newValue
-  if (newValue) {
-    Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-  }
 }, { immediate: true })
 
 async function handleSubmit(formData) {
-  try {
-    Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-    
-    const response = await apiClient.post(adminEndpoints.postCategories.create, formData)
-    emit('created')
-    props.onClose()
-  } catch (error) {
-    if (error.response?.status === 422 && error.response?.data?.errors) {
-      const errors = error.response.data.errors
-      for (const field in errors) {
-        if (Array.isArray(errors[field])) {
-          apiErrors[field] = errors[field][0]
-        } else {
-          apiErrors[field] = errors[field]
-        }
-      }
-    }
-  }
+  emit('created', formData)
 }
 
 function onClose() {

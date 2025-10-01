@@ -75,27 +75,29 @@
 
     <!-- Modal thêm mới -->
     <CreateCategory
-      v-if="showCreateModal"
-      :show="showCreateModal"
+      v-if="modals.create"
+      :show="modals.create"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeCreateModal"
       @created="handleCategoryCreated"
     />
 
     <!-- Modal chỉnh sửa -->
     <EditCategory
-      v-if="showEditModal"
-      :show="showEditModal"
+      v-if="modals.edit"
+      :show="modals.edit"
       :category="selectedCategory"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeEditModal"
       @updated="handleCategoryUpdated"
     />
 
     <!-- Modal xác nhận xóa -->
     <ConfirmModal
-      v-if="showDeleteModal"
-      :show="showDeleteModal"
+      v-if="modals.delete"
+      :show="modals.delete"
       title="Xác nhận xóa"
       :message="`Bạn có chắc chắn muốn xóa danh mục ${selectedCategory?.name || ''}?`"
       :on-close="closeDeleteModal"
@@ -112,7 +114,7 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
 import { useApiClient } from '@/composables/api/useApiClient'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
@@ -127,15 +129,39 @@ const EditCategory = defineAsyncComponent(() => import('./edit.vue'))
 const CategoryFilter = defineAsyncComponent(() => import('./filter.vue'))
 
 // Use composables
-const { 
-  items, 
-  loading, 
-  pagination, 
-  filters, 
-  fetchData, 
-  updateFilters, 
-  deleteItem 
-} = useDataTable(adminEndpoints.postCategories.list, {
+const {
+  items,
+  loading,
+  pagination,
+  filters,
+  fetchData,
+  updateFilters,
+  // CRUD operations
+  createItem,
+  updateItem,
+  deleteItem,
+  // Modal handlers
+  openCreateModal: openCreateModalComposable,
+  closeCreateModal: closeCreateModalComposable,
+  openEditModal: openEditModalComposable,
+  closeEditModal: closeEditModalComposable,
+  openDeleteModal: openDeleteModalComposable,
+  closeDeleteModal: closeDeleteModalComposable,
+  // Selection
+  selectedItem,
+  // Modal state
+  modals,
+  // Error handling
+  apiErrors,
+  clearApiErrors
+} = useCrudDataTable({
+  endpoints: {
+    list: adminEndpoints.postCategories.list,
+    create: adminEndpoints.postCategories.create,
+    update: (id) => adminEndpoints.postCategories.update(id),
+    delete: (id) => adminEndpoints.postCategories.delete(id)
+  },
+  resourceName: 'danh mục bài viết',
   defaultFilters: {
     search: '',
     status: '',
@@ -150,13 +176,10 @@ const { showSuccess, showError } = useToast()
 const { apiClient } = useApiClient()
 
 // State
-const selectedCategory = ref(null)
 const statusEnums = ref([])
 
-// Modal state
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const showDeleteModal = ref(false)
+// Alias selectedItem from composable
+const selectedCategory = selectedItem
 
 // Fetch data
 onMounted(async () => {
@@ -185,56 +208,54 @@ function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
 
-// Modal handlers
+// Modal handlers - wrap composable handlers with debug logs
 function openCreateModal() {
-  showCreateModal.value = true
+  console.log('openCreateModal called')
+  openCreateModalComposable()
 }
 
 function closeCreateModal() {
-  showCreateModal.value = false
+  console.log('closeCreateModal called')
+  closeCreateModalComposable()
 }
 
 function openEditModal(category) {
-  selectedCategory.value = category
-  showEditModal.value = true
+  console.log('openEditModal called with category:', category)
+  openEditModalComposable(category)
 }
 
 function closeEditModal() {
-  showEditModal.value = false
-  selectedCategory.value = null
+  console.log('closeEditModal called')
+  closeEditModalComposable()
 }
 
 function confirmDelete(category) {
-  selectedCategory.value = category
-  showDeleteModal.value = true
+  console.log('confirmDelete called with category:', category)
+  openDeleteModalComposable(category)
 }
 
 function closeDeleteModal() {
-  showDeleteModal.value = false
-  selectedCategory.value = null
+  console.log('closeDeleteModal called')
+  closeDeleteModalComposable()
 }
 
 // Action handlers
-async function handleCategoryCreated() {
-  await fetchData()
-  closeCreateModal()
+async function handleCategoryCreated(data) {
+  console.log('handleCategoryCreated called with data:', data)
+  await createItem(data)
   showSuccess('Danh mục đã được tạo thành công')
 }
 
-async function handleCategoryUpdated() {
-  await fetchData()
-  closeEditModal()
+async function handleCategoryUpdated(data) {
+  console.log('handleCategoryUpdated called with data:', data)
+  await updateItem(data)
   showSuccess('Danh mục đã được cập nhật thành công')
 }
 
 async function deleteCategory() {
-  try {
-    await deleteItem(selectedCategory.value.id)
-    closeDeleteModal()
-    showSuccess('Danh mục đã được xóa thành công')
-  } catch (error) {
-    showError('Không thể xóa danh mục')
-  }
+  console.log('deleteCategory called')
+  await deleteItem()
+  showSuccess('Danh mục đã được xóa thành công')
 }
 
 function handlePageChange(page) {

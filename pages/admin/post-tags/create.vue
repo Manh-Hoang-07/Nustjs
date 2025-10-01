@@ -22,6 +22,7 @@ import { useApiFormSubmit } from '@/utils/form'
 const props = defineProps({
   show: Boolean,
   statusEnums: Array,
+  apiErrors: Object,
   onClose: Function
 })
 
@@ -30,21 +31,13 @@ const emit = defineEmits(['created'])
 const showModal = ref(false)
 const loading = ref(false)
 
-const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: adminEndpoints.postTags.create,
-  emit,
-  onClose: props.onClose,
-  eventName: 'created',
-  method: 'post'
-})
-
 // Watch show prop để cập nhật showModal
 watch(() => props.show, (newValue) => {
   showModal.value = newValue
 }, { immediate: true })
 
 async function handleSubmit(formData) {
-  await submit(formData)
+  emit('created', formData)
 }
 
 function onClose() {

@@ -85,25 +85,27 @@
 
     <!-- Modal thêm mới -->
     <CreateTag
-      v-if="showCreateModal"
-      :show="showCreateModal"
+      v-if="modals.create"
+      :show="modals.create"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeCreateModal"
       @created="handleTagCreated"
     />
 
     <!-- Modal chỉnh sửa -->
     <EditTag
-      v-if="showEditModal"
-      :show="showEditModal"
+      v-if="modals.edit"
+      :show="modals.edit"
       :tag="selectedTag"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeEditModal"
       @updated="handleTagUpdated"
     />
 
     <!-- Delete Confirmation Modal -->
-    <Modal v-model="showDeleteModal" :title="'Xác nhận xóa'">
+    <Modal v-model="modals.delete" :title="'Xác nhận xóa'">
       <div class="text-center">
         <p class="text-gray-600 mb-4">Bạn có chắc chắn muốn xóa thẻ này không?</p>
         <div class="flex justify-center space-x-3">
@@ -131,7 +133,7 @@ definePageMeta({
 })
 
 import { ref, onMounted } from 'vue'
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
 import { useApiClient } from '@/composables/api/useApiClient'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
@@ -144,15 +146,39 @@ import CreateTag from './create.vue'
 import EditTag from './edit.vue'
 
 // Use composables
-const { 
-  items, 
-  loading, 
-  pagination, 
+const {
+  items,
+  loading,
+  pagination,
   filters,
-  fetchData, 
+  fetchData,
   updateFilters,
-  deleteItem 
-} = useDataTable(adminEndpoints.postTags.list, {
+  // CRUD operations
+  createItem,
+  updateItem,
+  deleteItem,
+  // Modal handlers
+  openCreateModal: openCreateModalComposable,
+  closeCreateModal: closeCreateModalComposable,
+  openEditModal: openEditModalComposable,
+  closeEditModal: closeEditModalComposable,
+  openDeleteModal: openDeleteModalComposable,
+  closeDeleteModal: closeDeleteModalComposable,
+  // Selection
+  selectedItem,
+  // Modal state
+  modals,
+  // Error handling
+  apiErrors,
+  clearApiErrors
+} = useCrudDataTable({
+  endpoints: {
+    list: adminEndpoints.postTags.list,
+    create: adminEndpoints.postTags.create,
+    update: (id) => adminEndpoints.postTags.update(id),
+    delete: (id) => adminEndpoints.postTags.delete(id)
+  },
+  resourceName: 'thẻ bài viết',
   defaultFilters: {
     search: '',
     sort_by: 'created_at_desc'
@@ -166,13 +192,10 @@ const { showSuccess, showError } = useToast()
 const { apiClient } = useApiClient()
 
 // State
-const selectedTag = ref(null)
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const showDeleteModal = ref(false)
-
-// Enums and options
 const statusEnums = ref([])
+
+// Alias selectedItem from composable
+const selectedTag = selectedItem
 
 // Fetch data
 onMounted(async () => {
@@ -200,61 +223,54 @@ function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
 
-// Modal handlers
+// Modal handlers - wrap composable handlers with debug logs
 function openCreateModal() {
-  showCreateModal.value = true
+  console.log('openCreateModal called')
+  openCreateModalComposable()
 }
 
 function closeCreateModal() {
-  showCreateModal.value = false
+  console.log('closeCreateModal called')
+  closeCreateModalComposable()
 }
 
 function openEditModal(tag) {
-  selectedTag.value = tag
-  showEditModal.value = true
+  console.log('openEditModal called with tag:', tag)
+  openEditModalComposable(tag)
 }
 
 function closeEditModal() {
-  showEditModal.value = false
-  selectedTag.value = null
+  console.log('closeEditModal called')
+  closeEditModalComposable()
 }
 
-function openDeleteModal(tag) {
-  selectedTag.value = tag
-  showDeleteModal.value = true
+function confirmDelete(tag) {
+  console.log('confirmDelete called with tag:', tag)
+  openDeleteModalComposable(tag)
 }
 
 function closeDeleteModal() {
-  showDeleteModal.value = false
-  selectedTag.value = null
+  console.log('closeDeleteModal called')
+  closeDeleteModalComposable()
 }
 
 // CRUD operations
-async function handleTagCreated() {
-  await fetchData()
-  closeCreateModal()
+async function handleTagCreated(data) {
+  console.log('handleTagCreated called with data:', data)
+  await createItem(data)
   showSuccess('Thẻ đã được tạo thành công')
 }
 
-async function handleTagUpdated() {
-  await fetchData()
-  closeEditModal()
+async function handleTagUpdated(data) {
+  console.log('handleTagUpdated called with data:', data)
+  await updateItem(data)
   showSuccess('Thẻ đã được cập nhật thành công')
 }
 
-async function confirmDelete(tag) {
-  openDeleteModal(tag)
-}
-
 async function handleDelete() {
-  try {
-    await deleteItem(selectedTag.value.id)
-    showSuccess('Xóa thẻ thành công')
-    closeDeleteModal()
-    await fetchData()
-  } catch (error) {
-    showError('Lỗi khi xóa thẻ')
-  }
+  console.log('handleDelete called')
+  await deleteItem()
+  showSuccess('Xóa thẻ thành công')
 }
 
 function handlePageChange(page) {

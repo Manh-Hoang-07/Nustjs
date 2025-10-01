@@ -152,10 +152,11 @@
 
     <!-- Modal chỉnh sửa -->
     <ContactEdit
-      v-if="showEditModal"
-      :show="showEditModal"
+      v-if="modals.edit"
+      :show="modals.edit"
       :contact="selectedContact"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeEditModal"
       @updated="handleContactUpdated"
     />
@@ -171,8 +172,8 @@
 
     <!-- Modal xác nhận xóa -->
     <ConfirmModal
-      v-if="showDeleteModal"
-      :show="showDeleteModal"
+      v-if="modals.delete"
+      :show="modals.delete"
       title="Xác nhận xóa"
       :message="`Bạn có chắc chắn muốn xóa liên hệ từ ${selectedContact?.name || selectedContact?.email || ''}?`"
       :on-close="closeDeleteModal"
@@ -193,7 +194,7 @@ definePageMeta({
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
 // Removed static enum helpers; enums are loaded via API
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
@@ -210,15 +211,39 @@ const ContactNotes = defineAsyncComponent(() => import('./notes.vue'))
 const ContactFilter = defineAsyncComponent(() => import('./filter.vue'))
 
 // Use composables
-const { 
-  items, 
-  loading, 
-  pagination, 
-  filters, 
-  fetchData, 
-  updateFilters, 
-  deleteItem 
-} = useDataTable(adminEndpoints.contacts.list, {
+const {
+  items,
+  loading,
+  pagination,
+  filters,
+  fetchData,
+  updateFilters,
+  // CRUD operations
+  createItem,
+  updateItem,
+  deleteItem,
+  // Modal handlers
+  openCreateModal: openCreateModalComposable,
+  closeCreateModal: closeCreateModalComposable,
+  openEditModal: openEditModalComposable,
+  closeEditModal: closeEditModalComposable,
+  openDeleteModal: openDeleteModalComposable,
+  closeDeleteModal: closeDeleteModalComposable,
+  // Selection
+  selectedItem,
+  // Modal state
+  modals,
+  // Error handling
+  apiErrors,
+  clearApiErrors
+} = useCrudDataTable({
+  endpoints: {
+    list: adminEndpoints.contacts.list,
+    create: adminEndpoints.contacts.create,
+    update: (id) => adminEndpoints.contacts.update(id),
+    delete: (id) => adminEndpoints.contacts.delete(id)
+  },
+  resourceName: 'liên hệ',
   defaultFilters: {
     search: '',
     status: '',
@@ -235,14 +260,14 @@ const { showSuccess, showError } = useToast()
 const { apiClient } = useApiClient()
 
 // State
-const selectedContact = ref(null)
 const statusEnums = ref([])
 
-// Modal state
+// Alias selectedItem from composable
+const selectedContact = selectedItem
+
+// Additional modal state for special features
 const showViewModal = ref(false)
-const showEditModal = ref(false)
 const showNotesModal = ref(false)
-const showDeleteModal = ref(false)
 
 // Fetch data
 onMounted(async () => {
@@ -269,70 +294,69 @@ async function fetchEnums() {
   }
 }
 
-// Modal handlers
+// Modal handlers - wrap composable handlers with debug logs
 function openViewModal(contact) {
+  console.log('openViewModal called with contact:', contact)
   selectedContact.value = contact
   showViewModal.value = true
 }
 
 function closeViewModal() {
+  console.log('closeViewModal called')
   showViewModal.value = false
   selectedContact.value = null
 }
 
 function openEditModal(contact) {
-  selectedContact.value = contact
-  showEditModal.value = true
+  console.log('openEditModal called with contact:', contact)
+  openEditModalComposable(contact)
 }
 
 function closeEditModal() {
-  showEditModal.value = false
-  selectedContact.value = null
+  console.log('closeEditModal called')
+  closeEditModalComposable()
 }
 
 function openNotesModal(contact) {
+  console.log('openNotesModal called with contact:', contact)
   selectedContact.value = contact
   showNotesModal.value = true
 }
 
 function closeNotesModal() {
+  console.log('closeNotesModal called')
   showNotesModal.value = false
   selectedContact.value = null
 }
 
 function confirmDelete(contact) {
-  selectedContact.value = contact
-  showDeleteModal.value = true
+  console.log('confirmDelete called with contact:', contact)
+  openDeleteModalComposable(contact)
 }
 
 function closeDeleteModal() {
-  showDeleteModal.value = false
-  selectedContact.value = null
+  console.log('closeDeleteModal called')
+  closeDeleteModalComposable()
 }
 
 // Action handlers
-async function handleContactUpdated() {
-  await fetchData()
-  closeEditModal()
+async function handleContactUpdated(data) {
+  console.log('handleContactUpdated called with data:', data)
+  await updateItem(data)
   showSuccess('Liên hệ đã được cập nhật thành công')
 }
 
-// Removed unused handleStatusUpdated
-
 async function handleNotesUpdated() {
+  console.log('handleNotesUpdated called')
   await fetchData()
   closeNotesModal()
   showSuccess('Ghi chú đã được cập nhật thành công')
 }
 
 async function deleteContact() {
-  try {
-    await deleteItem(selectedContact.value.id)
-    closeDeleteModal()
-    showSuccess('Liên hệ đã được xóa thành công')
-  } catch (error) {
-    showError('Không thể xóa liên hệ')
-  }
+  console.log('deleteContact called')
+  await deleteItem()
+  showSuccess('Liên hệ đã được xóa thành công')
 }
 
 async function updateContactStatus(contact, newStatus) {

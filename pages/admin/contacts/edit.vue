@@ -126,6 +126,7 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
+  apiErrors: Object,
   onClose: {
     type: Function,
     required: true
@@ -136,7 +137,6 @@ const props = defineProps({
 const emit = defineEmits(['updated'])
 
 // State
-const apiErrors = reactive({})
 const { showSuccess, showError } = useToast()
 const { apiClient } = useApiClient()
 
@@ -204,32 +204,16 @@ const statusOptions = computed(() =>
 
 // Submit handler
 const handleSubmit = async (formData) => {
-  try {
-    await apiClient.put(adminEndpoints.contacts.update(props.contact.id), {
-      name: formData.name?.trim() || null,
-      email: formData.email.trim(),
-      phone: formData.phone?.trim() || null,
-      subject: formData.subject?.trim() || null,
-      content: formData.content.trim(),
-      status: formData.status,
-      admin_notes: formData.admin_notes?.trim() || null
-    })
-    
-    showSuccess('Liên hệ đã được cập nhật thành công')
-    emit('updated')
-  } catch (error) {
-    console.error('Contact update error:', error)
-    
-    if (error.response?.data?.errors) {
-      Object.assign(apiErrors, error.response.data.errors)
-    } else {
-      showError('Không thể cập nhật liên hệ')
-    }
+  const payload = {
+    name: formData.name?.trim() || null,
+    email: formData.email.trim(),
+    phone: formData.phone?.trim() || null,
+    subject: formData.subject?.trim() || null,
+    content: formData.content.trim(),
+    status: formData.status,
+    admin_notes: formData.admin_notes?.trim() || null
   }
+  
+  emit('updated', payload)
 }
-
-// Watch for contact changes to clear errors
-watch(() => props.contact, () => {
-  Object.keys(apiErrors).forEach(key => delete apiErrors[key])
-}, { immediate: true })
 </script>
