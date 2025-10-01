@@ -1,8 +1,3 @@
-// Data Composables
-export { useCrudAdmin } from './useCrudAdmin'
-export { useDataTable } from './useDataTable'
-export { useSearch } from './useSearch'
-
-// New unified data table composables
+// Main Data Composables
 export { useBaseDataTable } from './useBaseDataTable'
 export { useCrudDataTable } from './useCrudDataTable'

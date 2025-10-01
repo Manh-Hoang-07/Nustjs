@@ -221,7 +221,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useDataTable } from '@/composables/data/useDataTable'
+// Removed unused import
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 
 const route = useRoute()

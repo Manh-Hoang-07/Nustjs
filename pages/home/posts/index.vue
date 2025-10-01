@@ -208,7 +208,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useBaseDataTable } from '@/composables/data'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 import { debounce } from '@/utils/debounce'
 import { formatDate } from '@/utils/formatters'
@@ -225,7 +225,7 @@ const formatExcerpt = (text, maxLength = 150) => {
 // Sử dụng API client có sẵn
 const { apiClient } = useApiClient()
 
-// Sử dụng useDataTable với URL sync cho posts
+// Sử dụng useBaseDataTable với URL sync cho posts
 const {
   items: posts,
   loading,
@@ -234,7 +234,8 @@ const {
   fetchData: fetchPosts,
   updateFilters,
   changePage
-} = useDataTable('/api/posts', {
+} = useBaseDataTable({
+  endpoint: '/api/posts',
   defaultFilters: {
     search: '',
     category_id: '',

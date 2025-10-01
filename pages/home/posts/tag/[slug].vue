@@ -222,7 +222,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useBaseDataTable } from '@/composables/data'
 import { formatDate } from '@/utils/formatters'
 
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
@@ -240,7 +240,7 @@ const tagSlug = route.params.slug
 // Sử dụng API client
 const apiClient = useApiClient()
 
-// Sử dụng useDataTable với URL sync cho posts
+// Sử dụng useBaseDataTable với URL sync cho posts
 const {
   items: posts,
   loading,
@@ -249,7 +249,8 @@ const {
   fetchData: fetchPosts,
   updateFilters,
   changePage
-} = useDataTable('/api/posts', {
+} = useBaseDataTable({
+  endpoint: '/api/posts',
   defaultFilters: {
     tag_slug: tagSlug,
     search: '',
