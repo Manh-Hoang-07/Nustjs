@@ -4,15 +4,15 @@
       :default-values="defaultValues"
       :rules="validationRules"
       :api-errors="apiErrors"
-      :submit-text="permission ? 'C?p nh?t' : 'Th�m m?i'"
+      :submit-text="permission ? 'Cập nhật' : 'Thêm mới'"
       @submit="handleSubmit"
       @cancel="onClose"
     >
       <template #default="{ form, errors, clearError, isSubmitting }">
-        <!-- T�n quy?n -->
+        <!-- Tên quyền -->
         <FormField
           v-model="form.name"
-          label="T�n quy?n"
+          label="Tên quyền"
           name="name"
           :error="errors.name"
           required
@@ -20,10 +20,10 @@
           @update:model-value="clearError('name')"
         />
         
-        <!-- T�n hi?n th? -->
+        <!-- Tên hiển thị -->
         <FormField
           v-model="form.display_name"
-          label="T�n hi?n th?"
+          label="Tên hiển thị"
           name="display_name"
           :error="errors.display_name"
           autocomplete="off"
@@ -40,17 +40,17 @@
           @update:model-value="clearError('guard_name')"
         />
         
-        <!-- Quy?n cha -->
+        <!-- Quyền cha -->
         <div class="form-group">
           <label class="block text-sm font-medium text-gray-700 mb-1">
-            Quy?n cha
+            Quyền cha
           </label>
           <SearchableSelect
             v-model="form.parent_id"
             :search-api="permissionsListApi"
             :exclude-id="permission?.id"
             :error="errors.parent_id"
-            placeholder="T�m ki?m quy?n cha..."
+            placeholder="Tìm kiếm quyền cha..."
             @update:model-value="clearError('parent_id')"
           />
           <div v-if="errors.parent_id" class="mt-1 text-sm text-red-600">
@@ -58,10 +58,10 @@
           </div>
         </div>
         
-        <!-- Tr?ng th�i -->
+        <!-- Trạng thái -->
         <FormField
           v-model="form.status"
-          label="Tr?ng th�i"
+          label="Trạng thái"
           name="status"
           type="select"
           :options="statusOptions"
@@ -96,7 +96,7 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
-const formTitle = computed(() => props.permission ? 'Ch?nh s?a quy?n' : 'Th�m quy?n m?i')
+const formTitle = computed(() => props.permission ? 'Chỉnh sửa quyền' : 'Thêm quyền mới')
 const modalVisible = computed({
   get: () => props.show,
   set: () => onClose()
@@ -112,14 +112,14 @@ const defaultValues = useFormDefaults(props, 'permission', {
 
 const validationRules = computed(() => ({
   name: [
-    { required: 'T�n quy?n l� b?t bu?c.' },
-    { max: [255, 'T�n quy?n kh�ng du?c vu?t qu� 255 k� t?.'] }
+    { required: 'Tên quyền là bắt buộc.' },
+    { max: [255, 'Tên quyền không được vượt quá 255 ký tự.'] }
   ],
   display_name: [
-    { max: [255, 'T�n hi?n th? kh�ng du?c vu?t qu� 255 k� t?.'] }
+    { max: [255, 'Tên hiển thị không được vượt quá 255 ký tự.'] }
   ],
   guard_name: [
-    { max: [255, 'Guard kh�ng du?c vu?t qu� 255 k� t?.'] }
+    { max: [255, 'Guard không được vượt quá 255 ký tự.'] }
   ]
 }))
 

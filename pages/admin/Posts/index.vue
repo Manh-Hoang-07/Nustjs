@@ -1,33 +1,33 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Qu?n l� b�i vi?t</h1>
+      <h1 class="text-2xl font-bold">Quản lý bài viết</h1>
       <button 
         @click="openCreateModal" 
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-        Th�m b�i vi?t m?i
+        Thêm bài viết mới
       </button>
     </div>
 
-    <!-- B? l?c -->
+    <!-- Bộ lọc -->
     <PostFilter 
       :initial-filters="filters"
       @update:filters="handleFilterUpdate" 
     />
 
-    <!-- B?ng d? li?u -->
+    <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
       <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="6" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ti�u d?</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh m?c</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng th�i</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ng�y t?o</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao t�c</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tiêu đề</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Danh mục</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày tạo</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -59,14 +59,14 @@
           </tr>
           <tr v-if="items.length === 0">
             <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-              Kh�ng c� d? li?u
+              Không có dữ liệu
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Ph�n trang -->
+    <!-- Phân trang -->
     <Pagination 
       v-if="items.length > 0"
       :current-page="pagination.current_page"
@@ -76,7 +76,7 @@
       @page-change="handlePageChange"
     />
 
-    <!-- Modal th�m m?i -->
+    <!-- Modal thêm mới -->
     <CreatePost
       v-if="showCreateModal"
       :show="showCreateModal"
@@ -87,7 +87,7 @@
       @created="handlePostCreated"
     />
 
-    <!-- Modal ch?nh s?a -->
+    <!-- Modal chỉnh sửa -->
     <EditPost
       v-if="showEditModal"
       :show="showEditModal"
@@ -99,12 +99,12 @@
       @updated="handlePostUpdated"
     />
 
-    <!-- Modal x�c nh?n x�a -->
+    <!-- Modal xác nhận xóa -->
     <ConfirmModal
       v-if="showDeleteModal"
       :show="showDeleteModal"
-      title="X�c nh?n x�a"
-      :message="`B?n c� ch?c ch?n mu?n x�a b�i vi?t ${selectedPost?.name || ''}?`"
+      title="Xác nhận xóa"
+      :message="`Bạn có chắc chắn muốn xóa bài viết ${selectedPost?.name || ''}?`"
       :on-close="closeDeleteModal"
       @confirm="deletePost"
     />
@@ -231,22 +231,22 @@ function closeDeleteModal() {
 async function handlePostCreated() {
   await fetchData()
   closeCreateModal()
-  showSuccess('B�i vi?t d� du?c t?o th�nh c�ng')
+  showSuccess('Bài viết đã được tạo thành công')
 }
 
 async function handlePostUpdated() {
   await fetchData()
   closeEditModal()
-  showSuccess('B�i vi?t d� du?c c?p nh?t th�nh c�ng')
+  showSuccess('Bài viết đã được cập nhật thành công')
 }
 
 async function deletePost() {
   try {
     await deleteItem(selectedPost.value.id)
     closeDeleteModal()
-    showSuccess('B�i vi?t d� du?c x�a th�nh c�ng')
+    showSuccess('Bài viết đã được xóa thành công')
   } catch (error) {
-    showError('Kh�ng th? x�a b�i vi?t')
+    showError('Không thể xóa bài viết')
   }
 }
 
@@ -257,14 +257,14 @@ function handlePageChange(page) {
 // Status helper functions
 function getStatusLabel(status) {
   const found = (statusEnums.value || []).find(s => s.value === status)
-  return found?.label || status || 'Kh�ng x�c d?nh'
+  return found?.label || status || 'Không xác định'
 }
 
 // Removed getStatusClass; class is derived from API enums directly in template
 
 function getCategoryNames(categories) {
   if (!categories || !Array.isArray(categories) || categories.length === 0) {
-    return '�'
+    return '—'
   }
   return categories.map(cat => cat.name).join(', ')
 }
@@ -276,9 +276,8 @@ function formatDate(dateString) {
 </script>
 
 <style>
-/* Cho ph�p cu?n ngang table khi m�n h�nh nh? */
+/* Cho phép cuộn ngang table khi màn hình nhỏ */
 .table-responsive {
   overflow-x: auto;
 }
-</style> 
-
+</style>

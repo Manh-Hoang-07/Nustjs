@@ -4,15 +4,15 @@
       :default-values="defaultValues"
       :rules="validationRules"
       :api-errors="apiErrors"
-      :submit-text="user ? 'C?p nh?t' : 'Th�m m?i'"
+      :submit-text="user ? 'Cập nhật' : 'Thêm mới'"
       @submit="handleSubmit"
       @cancel="onClose"
     >
       <template #default="{ form, errors, clearError, isSubmitting }">
-        <!-- T�n dang nh?p -->
+        <!-- Tên đăng nhập -->
         <FormField
           v-model="form.username"
-          label="T�n dang nh?p"
+          label="Tên đăng nhập"
           name="username"
           :error="errors.username"
           required
@@ -32,10 +32,10 @@
           @update:model-value="clearError('email')"
         />
         
-        <!-- S? di?n tho?i -->
+        <!-- Số điện thoại -->
         <FormField
           v-model="form.phone"
-          label="S? di?n tho?i"
+          label="Số điện thoại"
           name="phone"
           type="tel"
           :error="errors.phone"
@@ -43,11 +43,11 @@
           @update:model-value="clearError('phone')"
         />
         
-        <!-- M?t kh?u -->
+        <!-- Mật khẩu -->
         <FormField
           v-if="!user"
           v-model="form.password"
-          label="M?t kh?u"
+          label="Mật khẩu"
           name="password"
           type="password"
           :error="errors.password"
@@ -59,7 +59,7 @@
         <FormField
           v-if="!user"
           v-model="form.password_confirmation"
-          label="X�c nh?n m?t kh?u"
+          label="Xác nhận mật khẩu"
           name="password_confirmation"
           type="password"
           :error="errors.password_confirmation"
@@ -68,20 +68,20 @@
           @update:model-value="clearError('password_confirmation')"
         />
         
-        <!-- H? t�n -->
+        <!-- Họ tên -->
         <FormField
           v-model="form.name"
-          label="H? t�n"
+          label="Họ tên"
           name="name"
           :error="errors.name"
           autocomplete="name"
           @update:model-value="clearError('name')"
         />
         
-        <!-- Gi?i t�nh -->
+        <!-- Giới tính -->
         <FormField
           v-model="form.gender"
-          label="Gi?i t�nh"
+          label="Giới tính"
           name="gender"
           type="select"
           :options="genderOptions"
@@ -89,29 +89,29 @@
           @update:model-value="clearError('gender')"
         />
         
-        <!-- Ng�y sinh -->
+        <!-- Ngày sinh -->
         <FormField
           v-model="form.birthday"
-          label="Ng�y sinh"
+          label="Ngày sinh"
           name="birthday"
           type="date"
           :error="errors.birthday"
           @update:model-value="clearError('birthday')"
         />
         
-        <!-- �?a ch? -->
+        <!-- Địa chỉ -->
         <FormField
           v-model="form.address"
-          label="�?a ch?"
+          label="Địa chỉ"
           name="address"
           :error="errors.address"
           autocomplete="street-address"
           @update:model-value="clearError('address')"
         />
         
-        <!-- ?nh d?i di?n -->
+        <!-- Ảnh đại diện -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="user-image">?nh d?i di?n</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="user-image">Ảnh đại diện</label>
           <ImageUploader
             v-model="form.image"
             :default-url="imageUrl"
@@ -119,10 +119,10 @@
           />
         </div>
         
-        <!-- Gi?i thi?u -->
+        <!-- Giới thiệu -->
         <FormField
           v-model="form.about"
-          label="Gi?i thi?u"
+          label="Giới thiệu"
           name="about"
           type="textarea"
           :error="errors.about"
@@ -132,10 +132,10 @@
         
         
         
-        <!-- Tr?ng th�i -->
+        <!-- Trạng thái -->
         <FormField
           v-model="form.status"
-          label="Tr?ng th�i"
+          label="Trạng thái"
           name="status"
           type="select"
           :options="statusOptions"
@@ -179,7 +179,7 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
-const formTitle = computed(() => props.user ? 'Ch?nh s?a ngu?i d�ng' : 'Th�m ngu?i d�ng m?i')
+const formTitle = computed(() => props.user ? 'Chỉnh sửa người dùng' : 'Thêm người dùng mới')
 const modalVisible = computed({
   get: () => props.show,
   set: () => onClose()
@@ -210,31 +210,31 @@ const imageUrl = computed(() => props.user?.image || null)
 
 const validationRules = computed(() => ({
   username: [
-    { required: 'T�n dang nh?p l� b?t bu?c.' },
-    { max: [50, 'T�n dang nh?p kh�ng du?c vu?t qu� 50 k� t?.'] }
+    { required: 'Tên đăng nhập là bắt buộc.' },
+    { max: [50, 'Tên đăng nhập không được vượt quá 50 ký tự.'] }
   ],
   email: [
-    { required: 'Email l� b?t bu?c.' },
-    { email: 'Email kh�ng h?p l?.' }
+    { required: 'Email là bắt buộc.' },
+    { email: 'Email không hợp lệ.' }
   ],
   phone: [
-    { max: [20, 'S? di?n tho?i kh�ng du?c vu?t qu� 20 k� t?.'] }
+    { max: [20, 'Số điện thoại không được vượt quá 20 ký tự.'] }
   ],
   password: props.user ? [] : [
-    { required: 'M?t kh?u l� b?t bu?c.' },
-    { min: [8, 'M?t kh?u ph?i c� �t nh?t 8 k� t?.'] }
+    { required: 'Mật khẩu là bắt buộc.' },
+    { min: [8, 'Mật khẩu phải có ít nhất 8 ký tự.'] }
   ],
   password_confirmation: props.user ? [] : [
-    { required: 'Vui l�ng x�c nh?n m?t kh?u.' }
+    { required: 'Vui lòng xác nhận mật khẩu.' }
   ],
   name: [
-    { max: [255, 'H? t�n kh�ng du?c vu?t qu� 255 k� t?.'] }
+    { max: [255, 'Họ tên không được vượt quá 255 ký tự.'] }
   ],
   address: [
-    { max: [255, '�?a ch? kh�ng du?c vu?t qu� 255 k� t?.'] }
+    { max: [255, 'Địa chỉ không được vượt quá 255 ký tự.'] }
   ],
   about: [
-    { max: [500, 'Gi?i thi?u kh�ng du?c vu?t qu� 500 k� t?.'] }
+    { max: [500, 'Giới thiệu không được vượt quá 500 ký tự.'] }
   ]
 }))
 
@@ -261,5 +261,4 @@ function handleSubmit(form) {
 function onClose() {
   emit('cancel')
 }
-</script> 
-
+</script>

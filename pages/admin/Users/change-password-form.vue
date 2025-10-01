@@ -4,15 +4,15 @@
       :default-values="defaultValues"
       :rules="validationRules"
       :api-errors="apiErrors"
-      submit-text="�?i m?t kh?u"
+      submit-text="Đổi mật khẩu"
       @submit="handleSubmit"
       @cancel="onClose"
     >
       <template #default="{ form, errors, clearError, isSubmitting }">
-        <!-- M?t kh?u m?i -->
+        <!-- Mật khẩu mới -->
         <FormField
           v-model="form.password"
-          label="M?t kh?u m?i"
+          label="Mật khẩu mới"
           name="password"
           type="password"
           :error="errors.password"
@@ -21,10 +21,10 @@
           @update:model-value="clearError('password')"
         />
         
-        <!-- X�c nh?n m?t kh?u m?i -->
+        <!-- Xác nhận mật khẩu mới -->
         <FormField
           v-model="form.password_confirmation"
-          label="X�c nh?n m?t kh?u m?i"
+          label="Xác nhận mật khẩu mới"
           name="password_confirmation"
           type="password"
           :error="errors.password_confirmation"
@@ -54,7 +54,7 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'cancel'])
 
-const formTitle = computed(() => `�?i m?t kh?u cho ${props.user?.username || 'ngu?i d�ng'}`)
+const formTitle = computed(() => `Đổi mật khẩu cho ${props.user?.username || 'người dùng'}`)
 const modalVisible = computed({
   get: () => props.show,
   set: () => onClose()
@@ -67,12 +67,12 @@ const defaultValues = {
 
 const validationRules = {
   password: [
-    { required: 'M?t kh?u m?i l� b?t bu?c.' },
-    { min: [8, 'M?t kh?u ph?i c� �t nh?t 8 k� t?.'] }
+    { required: 'Mật khẩu mới là bắt buộc.' },
+    { min: [8, 'Mật khẩu phải có ít nhất 8 ký tự.'] }
   ],
   password_confirmation: [
-    { required: 'Vui l�ng x�c nh?n m?t kh?u m?i.' },
-    { match: ['password', 'M?t kh?u x�c nh?n kh�ng kh?p.'] }
+    { required: 'Vui lòng xác nhận mật khẩu mới.' },
+    { match: ['password', 'Mật khẩu xác nhận không khớp.'] }
   ]
 }
 

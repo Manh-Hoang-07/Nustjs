@@ -1,33 +1,33 @@
 <template>
   <div class="container mx-auto p-4">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Qu?n l� quy?n</h1>
+      <h1 class="text-2xl font-bold">Quản lý quyền</h1>
       <button 
         @click="openCreateModal" 
         class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
       >
-        Th�m quy?n m?i
+        Thêm quyền mới
       </button>
     </div>
 
-    <!-- B? l?c -->
+    <!-- Bộ lọc -->
     <PermissionFilter 
       :initial-filters="filters"
       :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
-    <!-- B?ng d? li?u -->
+    <!-- Bảng dữ liệu -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
       <SkeletonLoader v-if="loading" type="table" :rows="5" :columns="5" />
       <table v-else class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">T�n quy?n</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">T�n hi?n th?</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tr?ng th�i</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao t�c</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên quyền</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên hiển thị</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -56,20 +56,20 @@
                 @delete="confirmDelete"
               />
               <span v-if="permission.has_children" class="text-gray-500 text-sm">
-                Kh�ng th? s?a/x�a (c� {{ permission.children_count }} quy?n con)
+                Không thể sửa/xóa (có {{ permission.children_count }} quyền con)
               </span>
             </td>
           </tr>
           <tr v-if="items.length === 0">
             <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-              Kh�ng c� d? li?u
+              Không có dữ liệu
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Ph�n trang -->
+    <!-- Phân trang -->
     <Pagination 
       v-if="items.length > 0"
       :current-page="pagination.current_page"
@@ -79,7 +79,7 @@
       @page-change="handlePageChange"
     />
 
-    <!-- Modal th�m m?i -->
+    <!-- Modal thêm mới -->
     <CreatePermission
       v-if="showCreateModal"
       :show="showCreateModal"
@@ -88,7 +88,7 @@
       @created="handlePermissionCreated"
     />
 
-    <!-- Modal ch?nh s?a -->
+        <!-- Modal chỉnh sửa -->
     <EditPermission
       v-if="showEditModal"
       :show="showEditModal"
@@ -98,12 +98,12 @@
       @updated="handlePermissionUpdated"
     />
 
-    <!-- Modal x�c nh?n x�a -->
+    <!-- Modal xác nhận xóa -->
     <ConfirmModal
       v-if="showDeleteModal"
       :show="showDeleteModal"
-      title="X�c nh?n x�a"
-      message="B?n c� ch?c ch?n mu?n x�a quy?n n�y kh�ng?"
+      title="Xác nhận xóa"
+      message="Bạn có chắc chắn muốn xóa quyền này không?"
       @confirm="deletePermission"
       @cancel="closeDeleteModal"
     />
@@ -210,22 +210,22 @@ function closeDeleteModal() {
 async function handlePermissionCreated() {
   await fetchData()
   closeCreateModal()
-  showSuccess('Quy?n d� du?c t?o th�nh c�ng')
+  showSuccess('Quyền đã được tạo thành công')
 }
 
 async function handlePermissionUpdated() {
   await fetchData()
   closeEditModal()
-  showSuccess('Quy?n d� du?c c?p nh?t th�nh c�ng')
+  showSuccess('Quyền đã được cập nhật thành công')
 }
 
 async function deletePermission() {
   try {
     await deleteItem(selectedPermission.value.id)
     closeDeleteModal()
-    showSuccess('Quy?n d� du?c x�a th�nh c�ng')
+    showSuccess('Quyền đã được xóa thành công')
   } catch (error) {
-    showError('Kh�ng th? x�a quy?n')
+    showError('Không thể xóa quyền')
   }
 }
 
@@ -251,14 +251,14 @@ async function fetchStatusEnums() {
 function getStatusLabel(status) {
   const list = statusEnums.value || []
   const found = list.find(it => it.value === status || it.id === status)
-  return found?.label || found?.name || status || 'Kh�ng x�c d?nh'
+  return found?.label || found?.name || status || 'Không xác định'
 }
 
 // Removed getStatusClass; class is derived from API enums directly in template
 </script>
 
 <style>
-/* �?m b?o table lu�n cu?n ngang du?c tr�n mobile */
+/* Đảm bảo table luôn cuộn ngang được trên mobile */
 .bg-white > .overflow-x-auto {
   width: 100%;
 }

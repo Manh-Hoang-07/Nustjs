@@ -1,31 +1,31 @@
 <template>
-  <Modal v-model="modalVisible" title="Ph�n quy?n ngu?i d�ng">
+  <Modal v-model="modalVisible" title="Phân quyền người dùng">
     <FormWrapper
       :default-values="defaultValues"
       :rules="validationRules"
       :api-errors="apiErrors"
-      submit-text="C?p nh?t quy?n"
+      submit-text="Cập nhật quyền"
       @submit="handleSubmit"
       @cancel="onClose"
     >
       <template #default="{ form, errors, clearError, isSubmitting }">
-                 <!-- Th�ng tin user -->
+                 <!-- Thông tin user -->
          <div class="mb-4 p-3 bg-gray-50 rounded-lg">
            <div class="text-sm text-gray-600">
-             <div><strong>T�n:</strong> {{ userDetail?.name || userDetail?.username || 'N/A' }}</div>
+             <div><strong>Tên:</strong> {{ userDetail?.name || userDetail?.username || 'N/A' }}</div>
              <div><strong>Email:</strong> {{ userDetail?.email || 'N/A' }}</div>
            </div>
          </div>
         
                  
          
-                   <!-- Vai tr� -->
+                   <!-- Vai trò -->
           <MultipleSelect
             v-model="form.role_ids"
-            label="Vai tr�"
+            label="Vai trò"
             :options="roleOptions"
             :error="errors.role_ids"
-            placeholder="Ch?n vai tr�..."
+            placeholder="Chọn vai trò..."
             @update:model-value="clearError('role_ids')"
           />
       </template>
@@ -54,13 +54,13 @@ const { apiClient } = useApiClient()
 const userDetail = ref(null)
 const roles = ref([])
 
-const formTitle = computed(() => `Ph�n quy?n cho ${userDetail.value?.name || userDetail.value?.username || 'ngu?i d�ng'}`)
+const formTitle = computed(() => `Phân quyền cho ${userDetail.value?.name || userDetail.value?.username || 'người dùng'}`)
 const modalVisible = computed({
   get: () => props.show,
   set: () => onClose()
 })
 
-// Watch show prop d? fetch user detail v� roles
+// Watch show prop để fetch user detail và roles
 watch(() => props.show, async (newValue) => {
   if (newValue && props.user?.id) {
     await Promise.all([
@@ -119,7 +119,7 @@ const { apiErrors, submit } = useApiFormSubmit({
 
 const validationRules = computed(() => ({
   role_ids: [
-    { required: 'Vui l�ng ch?n �t nh?t m?t vai tr�.' }
+    { required: 'Vui lòng chọn ít nhất một vai trò.' }
   ]
 }))
 
@@ -131,7 +131,7 @@ const roleOptions = computed(() => {
 })
 
 async function handleSubmit(formData) {
-  // Ch? g?i role_ids d? c?p nh?t
+  // Chỉ gửi role_ids để cập nhật
   const dataToSubmit = {
     role_ids: Array.isArray(formData.role_ids) ? formData.role_ids : [formData.role_ids].filter(Boolean)
   }
