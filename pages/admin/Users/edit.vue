@@ -18,7 +18,6 @@ import UserForm from './form.vue'
 import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch } from 'vue'
 import { formatDate } from '@/utils/formatters'
-import { useApiFormSubmit } from '@/utils/form'
 import { useApiClient } from '@/composables/api/useApiClient'
 
 const props = defineProps({
@@ -26,6 +25,7 @@ const props = defineProps({
   user: Object,
   statusEnums: Array,
   genderEnums: Array,
+  apiErrors: Object,
   onClose: Function
 })
 const emit = defineEmits(['updated'])
@@ -34,14 +34,6 @@ const { apiClient } = useApiClient()
 const showModal = ref(false)
 const userDetail = ref(null)
 const loading = ref(false)
-
-const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: adminEndpoints.users.update(props.user?.id),
-  emit,
-  onClose: props.onClose,
-  eventName: 'updated',
-  method: 'put'
-})
 
 // Watch show prop để cập nhật showModal và fetch user detail
 watch(() => props.show, async (newValue) => {
@@ -103,7 +95,8 @@ async function handleSubmit(formData) {
     }
   })
 
-  await submit(payload)
+  // Emit data to parent component để xử lý bằng composable
+  emit('updated', payload)
 }
 
 function onClose() {

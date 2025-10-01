@@ -91,23 +91,25 @@
 
     <!-- Modal thêm mới -->
     <CreateUser
-      v-if="showCreateModal"
-      :show="showCreateModal"
+      v-if="modals.create"
+      :show="modals.create"
       :status-enums="statusEnums"
       :gender-enums="genderEnums"
       :role-enums="roleEnums"
+      :api-errors="apiErrors"
       :on-close="closeCreateModal"
       @created="handleUserCreated"
     />
 
     <!-- Modal chỉnh sửa -->
     <EditUser
-      v-if="showEditModal"
-      :show="showEditModal"
+      v-if="modals.edit"
+      :show="modals.edit"
       :user="selectedUser"
       :status-enums="statusEnums"
       :gender-enums="genderEnums"
       :role-enums="roleEnums"
+      :api-errors="apiErrors"
       :on-close="closeEditModal"
       @updated="handleUserUpdated"
     />
@@ -132,8 +134,8 @@
 
     <!-- Modal xác nhận xóa -->
     <ConfirmModal
-      v-if="showDeleteModal"
-      :show="showDeleteModal"
+      v-if="modals.delete"
+      :show="modals.delete"
       title="Xác nhận xóa"
       :message="`Bạn có chắc chắn muốn xóa người dùng ${selectedUser?.username || ''}?`"
       :on-close="closeDeleteModal"
@@ -151,7 +153,7 @@ definePageMeta({
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
@@ -173,9 +175,33 @@ const {
   pagination, 
   filters, 
   fetchData, 
-  updateFilters, 
-  deleteItem 
-} = useDataTable(adminEndpoints.users.list, {
+  updateFilters,
+  // CRUD operations
+  createItem,
+  updateItem,
+  deleteItem,
+  // Modal handlers
+  openCreateModal: openCreateModalComposable,
+  closeCreateModal: closeCreateModalComposable,
+  openEditModal: openEditModalComposable,
+  closeEditModal: closeEditModalComposable,
+  openDeleteModal: openDeleteModalComposable,
+  closeDeleteModal: closeDeleteModalComposable,
+  // Selection
+  selectedItem,
+  // Modal state
+  modals,
+  // Error handling
+  apiErrors,
+  clearApiErrors
+} = useCrudDataTable({
+  endpoints: {
+    list: adminEndpoints.users.list,
+    create: adminEndpoints.users.create,
+    update: (id) => adminEndpoints.users.update(id),
+    delete: (id) => adminEndpoints.users.delete(id)
+  },
+  resourceName: 'người dùng',
   defaultFilters: {
     search: '',
     status: '',
@@ -183,32 +209,43 @@ const {
   },
   enableUrlSync: true,
   filterKeys: ['search', 'status', 'sort_by'],
-  sortKeys: ['sort_by', 'sort_order']
+  sortKeys: ['sort_by', 'sort_order'],
+  transformItem: (user) => ({
+    ...user,
+    fullName: `${user.first_name || ''} ${user.last_name || ''}`.trim()
+  })
 })
 
 const { showSuccess, showError } = useToast()
 const { apiClient } = useApiClient()
 
 // State
-const selectedUser = ref(null)
 const roleEnums = ref([])
 const statusEnums = ref([])
 const genderEnums = ref([])
 
-// Modal state
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
+// Additional modal state (not handled by CRUD composable)
 const showChangePasswordModal = ref(false)
 const showAssignRoleModal = ref(false)
-const showDeleteModal = ref(false)
+
+// Use selectedItem from composable as selectedUser
+const selectedUser = selectedItem
 
 // Fetch data
 onMounted(async () => {
+  console.log('onMounted called')
+  console.log('items before fetch:', items)
+  console.log('loading before fetch:', loading)
+  
   // Load enums from API
   await loadEnums()
   
   // Fetch users
-  await fetchData()
+  console.log('About to fetch data...')
+  const result = await fetchData()
+  console.log('Fetch result:', result)
+  console.log('items after fetch:', items)
+  console.log('loading after fetch:', loading)
 })
 
 function handleFilterUpdate(newFilters) {
@@ -254,24 +291,22 @@ async function loadRoles() {
   }
 }
 
-// Modal handlers
-function openCreateModal() {
-  showCreateModal.value = true
+// Modal handlers - sử dụng composable handlers
+const openCreateModal = () => {
+  console.log('openCreateModal called')
+  openCreateModalComposable()
 }
-
-function closeCreateModal() {
-  showCreateModal.value = false
+const closeCreateModal = closeCreateModalComposable
+const openEditModal = (user) => {
+  console.log('openEditModal called with user:', user)
+  openEditModalComposable(user)
 }
-
-function openEditModal(user) {
-  selectedUser.value = user
-  showEditModal.value = true
+const closeEditModal = closeEditModalComposable
+const openDeleteModal = (user) => {
+  console.log('openDeleteModal called with user:', user)
+  openDeleteModalComposable(user)
 }
-
-function closeEditModal() {
-  showEditModal.value = false
-  selectedUser.value = null
-}
+const closeDeleteModal = closeDeleteModalComposable
 
 function openChangePasswordModal(user) {
   selectedUser.value = user
@@ -300,26 +335,26 @@ function closeAssignRoleModal() {
 }
 
 function confirmDelete(user) {
-  selectedUser.value = user
-  showDeleteModal.value = true
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false
-  selectedUser.value = null
+  openDeleteModal(user)
 }
 
 // Action handlers
-async function handleUserCreated() {
-  await fetchData()
-  closeCreateModal()
-  showSuccess('Người dùng đã được tạo thành công')
+async function handleUserCreated(userData) {
+  try {
+    await createItem(userData)
+    showSuccess('Người dùng đã được tạo thành công')
+  } catch (error) {
+    showError('Không thể tạo người dùng')
+  }
 }
 
-async function handleUserUpdated() {
-  await fetchData()
-  closeEditModal()
-  showSuccess('Người dùng đã được cập nhật thành công')
+async function handleUserUpdated(userData) {
+  try {
+    await updateItem(userData)
+    showSuccess('Người dùng đã được cập nhật thành công')
+  } catch (error) {
+    showError('Không thể cập nhật người dùng')
+  }
 }
 
 async function handlePasswordChanged() {
@@ -335,9 +370,12 @@ async function handleRoleAssigned() {
 
 async function deleteUser() {
   try {
-    await deleteItem(selectedUser.value.id)
-    closeDeleteModal()
-    showSuccess('Người dùng đã được xóa thành công')
+    const success = await deleteItem()
+    if (success) {
+      showSuccess('Người dùng đã được xóa thành công')
+    } else {
+      showError('Không thể xóa người dùng')
+    }
   } catch (error) {
     showError('Không thể xóa người dùng')
   }

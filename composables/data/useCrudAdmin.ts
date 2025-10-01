@@ -104,7 +104,7 @@ interface CrudResult<T = any> extends CrudState<T>, CrudComputedProps {
 /**
  * Composable để quản lý các thao tác CRUD chung cho tất cả các menu admin
  */
-export default function useCrudAdmin<T = any>(options: CrudOptions<T>): CrudResult<T> {
+export function useCrudAdmin<T = any>(options: CrudOptions<T>): CrudResult<T> {
   const { apiClient } = useApiClient()
   
   // Destructure options với defaults

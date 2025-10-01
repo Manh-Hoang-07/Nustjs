@@ -1,4 +1,8 @@
 // Data Composables
-export { default as useCrudAdmin } from './useCrudAdmin'
-export { default as useDataTable } from './useDataTable'
-export { default as useSearch } from './useSearch'
+export { useCrudAdmin } from './useCrudAdmin'
+export { useDataTable } from './useDataTable'
+export { useSearch } from './useSearch'
+
+// New unified data table composables
+export { useBaseDataTable } from './useBaseDataTable'
+export { useCrudDataTable } from './useCrudDataTable'

@@ -13,27 +13,18 @@
 </template>
 <script setup>
 import UserForm from './form.vue'
-import { adminEndpoints } from '@/api/endpoints'
 import { ref, watch } from 'vue'
-import { useApiFormSubmit } from '@/utils/form'
 
 const props = defineProps({
   show: Boolean,
   statusEnums: Array,
   genderEnums: Array,
+  apiErrors: Object,
   onClose: Function
 })
 const emit = defineEmits(['created'])
 
 const showModal = ref(false)
-
-const { apiErrors, submit } = useApiFormSubmit({
-  endpoint: adminEndpoints.users.create,
-  emit,
-  onClose: props.onClose,
-  eventName: 'created',
-  method: 'post'
-})
 
 // Watch show prop để cập nhật showModal
 watch(() => props.show, (newValue) => {
@@ -53,7 +44,8 @@ async function handleSubmit(formData) {
     }
   })
 
-  await submit(payload)
+  // Emit data to parent component để xử lý bằng composable
+  emit('created', payload)
 }
 
 function onClose() {
