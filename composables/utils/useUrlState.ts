@@ -82,15 +82,19 @@ export default function useUrlState(
   // Đọc query khi vào trang
   onMounted(async () => {
     loadStateFromUrl()
-    // Đợi một chút để đảm bảo state được load trước khi fetch data
-    await nextTick()
-    fetchData()
+    // Gọi fetchData nếu có function được truyền vào
+    if (fetchData) {
+      await nextTick()
+      fetchData()
+    }
   })
 
   // Watch for route changes (back/forward navigation)
   watch(() => route.query, async () => {
     loadStateFromUrl()
     await nextTick()
+    // Chỉ gọi fetchData khi có thay đổi thực sự từ URL
+    // Tránh gọi trùng với useBaseDataTable
     fetchData()
   }, { deep: true })
 

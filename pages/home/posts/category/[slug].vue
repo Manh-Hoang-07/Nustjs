@@ -225,6 +225,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 import { useBaseDataTable } from '@/composables/data'
+import { publicEndpoints } from '@/api/endpoints/public'
 import { formatDate } from '@/utils/formatters'
 
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
@@ -251,8 +252,7 @@ const {
   fetchData: fetchPosts,
   updateFilters,
   changePage
-} = useBaseDataTable({
-  endpoint: '/api/posts',
+} = useBaseDataTable(publicEndpoints.posts.list, {
   defaultFilters: {
     category_slug: categorySlug,
     search: '',

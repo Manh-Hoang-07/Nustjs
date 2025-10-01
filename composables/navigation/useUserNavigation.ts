@@ -38,74 +38,19 @@ export function useUserNavigation(): UserNavigationResult {
       icon: '🏠',
       status: 'active'
     },
-    {
-      name: 'Sản phẩm',
-      icon: '🛍️',
-      status: 'active',
-      children: [
-        {
-          name: 'Tất cả sản phẩm',
-          path: '/home/products',
-          icon: '📦',
-          status: 'active'
-        },
-        {
-          name: 'Sản phẩm mới',
-          path: '/home/products?filter=new',
-          icon: '✨',
-          status: 'active'
-        },
-        {
-          name: 'Sản phẩm bán chạy',
-          path: '/home/products?filter=popular',
-          icon: '🔥',
-          status: 'active'
-        },
-        {
-          name: 'Sản phẩm giảm giá',
-          path: '/home/products?filter=sale',
-          icon: '💰',
-          status: 'active'
-        }
-      ]
-    },
-    {
-      name: 'Danh mục',
-      icon: '📂',
-      status: 'active',
-      children: [
-        {
-          name: 'Điện tử',
-          path: '/home/categories/electronics',
-          icon: '📱',
-          status: 'active'
-        },
-        {
-          name: 'Thời trang',
-          path: '/home/categories/fashion',
-          icon: '👗',
-          status: 'active'
-        },
-        {
-          name: 'Nhà cửa',
-          path: '/home/categories/home',
-          icon: '🏠',
-          status: 'active'
-        },
-        {
-          name: 'Sức khỏe',
-          path: '/home/categories/health',
-          icon: '💊',
-          status: 'active'
-        },
-        {
-          name: 'Thể thao',
-          path: '/home/categories/sports',
-          icon: '⚽',
-          status: 'active'
-        }
-      ]
-    },
+    // Sản phẩm và danh mục sẽ được thêm sau khi tạo các trang tương ứng
+    // {
+    //   name: 'Sản phẩm',
+    //   icon: '🛍️',
+    //   status: 'inactive',
+    //   children: []
+    // },
+    // {
+    //   name: 'Danh mục',
+    //   icon: '📂',
+    //   status: 'inactive',
+    //   children: []
+    // },
     {
       name: 'Tin tức',
       path: '/home/posts',

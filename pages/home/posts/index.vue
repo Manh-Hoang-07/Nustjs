@@ -209,6 +209,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useApiClient } from '@/composables/api/useApiClient'
 import { useBaseDataTable } from '@/composables/data'
+import { publicEndpoints } from '@/api/endpoints/public'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 import { debounce } from '@/utils/debounce'
 import { formatDate } from '@/utils/formatters'
@@ -234,8 +235,7 @@ const {
   fetchData: fetchPosts,
   updateFilters,
   changePage
-} = useBaseDataTable({
-  endpoint: '/api/posts',
+} = useBaseDataTable(publicEndpoints.posts.list, {
   defaultFilters: {
     search: '',
     category_id: '',
@@ -259,7 +259,7 @@ const sortBy = ref('latest')
 // Hàm fetch categories
 const fetchCategories = async () => {
   try {
-    const response = await apiClient.get('/api/post-categories')
+    const response = await apiClient.get(publicEndpoints.postCategories.list)
     categories.value = response.data.data || response.data
   } catch (error) {
     console.error('Error fetching categories:', error)
@@ -269,7 +269,7 @@ const fetchCategories = async () => {
 // Hàm fetch tags
 const fetchTags = async () => {
   try {
-    const response = await apiClient.get('/api/post-tags')
+    const response = await apiClient.get(publicEndpoints.postTags.list)
     tags.value = response.data.data || response.data
   } catch (error) {
     console.error('Error fetching tags:', error)
@@ -317,8 +317,8 @@ onMounted(async () => {
     fetchTags()
   ])
   
-  // Load posts với filters hiện tại
-  await fetchPosts()
+  // Không cần gọi fetchPosts() ở đây vì useBaseDataTable đã tự động gọi
+  // fetchPosts() sẽ được gọi bởi useBaseDataTable trong onMounted
 })
 
 // Xử lý lỗi ảnh

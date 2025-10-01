@@ -135,28 +135,8 @@ export function useBaseDataTable<T = any>(
   const cache = new Map<string, CacheItem>()
   let debounceTimer: NodeJS.Timeout | null = null
 
-  // URL sync setup (if enabled)
+  // URL sync setup (if enabled) - sẽ được setup sau khi fetchData được định nghĩa
   let urlState: any = null
-  if (enableUrlSync) {
-    const urlFilters = ref({ ...filters.value })
-    const urlPagination = ref({ currentPage: 1, perPage: pageSize })
-    const urlSort = ref({})
-    
-    urlState = useUrlState(
-      urlFilters,
-      urlPagination,
-      urlSort,
-      () => {}, // No auto fetch, we'll handle it manually
-      {
-        filterKeys: filterKeys || [],
-        sortKeys: sortKeys || [],
-        paginationKeys,
-        resetPageOnFilter,
-        resetPageOnSort,
-        resetOnRouteChange
-      }
-    )
-  }
 
   // Computed properties
   const computedProps: BaseDataTableComputed = {
@@ -354,6 +334,28 @@ export function useBaseDataTable<T = any>(
     return fetchData()
   }
 
+  // Setup URL sync sau khi fetchData đã được định nghĩa
+  if (enableUrlSync) {
+    const urlFilters = ref({ ...filters.value })
+    const urlPagination = ref({ currentPage: 1, perPage: pageSize })
+    const urlSort = ref({})
+    
+    urlState = useUrlState(
+      urlFilters,
+      urlPagination,
+      urlSort,
+      fetchData, // Pass fetchData function to useUrlState
+      {
+        filterKeys: filterKeys || [],
+        sortKeys: sortKeys || [],
+        paginationKeys,
+        resetPageOnFilter,
+        resetPageOnSort,
+        resetOnRouteChange
+      }
+    )
+  }
+
   // Watch URL state changes (if enabled)
   if (enableUrlSync && urlState) {
     watch(() => urlState.getCurrentQuery(), (newQuery) => {
@@ -362,10 +364,13 @@ export function useBaseDataTable<T = any>(
     }, { deep: true })
   }
 
-  // Initialize
-  onMounted(() => {
-    fetchData()
-  })
+  // Initialize - fetchData sẽ được gọi bởi useUrlState nếu enableUrlSync = true
+  // hoặc có thể gọi thủ công nếu cần
+  if (!enableUrlSync) {
+    onMounted(() => {
+      fetchData()
+    })
+  }
 
   return {
     // State - return refs directly
