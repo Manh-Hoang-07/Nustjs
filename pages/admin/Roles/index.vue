@@ -77,27 +77,29 @@
 
     <!-- Modal thêm mới -->
     <CreateRole
-      v-if="showCreateModal"
-      :show="showCreateModal"
+      v-if="modals.create"
+      :show="modals.create"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeCreateModal"
       @created="handleRoleCreated"
     />
 
     <!-- Modal chỉnh sửa -->
     <EditRole
-      v-if="showEditModal"
-      :show="showEditModal"
+      v-if="modals.edit"
+      :show="modals.edit"
       :role="selectedRole"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeEditModal"
       @updated="handleRoleUpdated"
     />
 
       <!-- Modal xác nhận xóa -->
     <ConfirmModal
-      v-if="showDeleteModal"
-      :show="showDeleteModal"
+      v-if="modals.delete"
+      :show="modals.delete"
       title="Xác nhận xóa"
       :message="`Bạn có chắc chắn muốn xóa vai trò ${selectedRole?.name || ''}?`"
       :on-close="closeDeleteModal"
@@ -114,7 +116,7 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
@@ -135,9 +137,33 @@ const {
   pagination, 
   filters, 
   fetchData, 
-  updateFilters, 
-  deleteItem 
-} = useDataTable(adminEndpoints.roles.list, {
+  updateFilters,
+  // CRUD operations
+  createItem,
+  updateItem,
+  deleteItem,
+  // Modal handlers
+  openCreateModal: openCreateModalComposable,
+  closeCreateModal: closeCreateModalComposable,
+  openEditModal: openEditModalComposable,
+  closeEditModal: closeEditModalComposable,
+  openDeleteModal: openDeleteModalComposable,
+  closeDeleteModal: closeDeleteModalComposable,
+  // Selection
+  selectedItem,
+  // Modal state
+  modals,
+  // Error handling
+  apiErrors,
+  clearApiErrors
+} = useCrudDataTable({
+  endpoints: {
+    list: adminEndpoints.roles.list,
+    create: adminEndpoints.roles.create,
+    update: (id) => adminEndpoints.roles.update(id),
+    delete: (id) => adminEndpoints.roles.delete(id)
+  },
+  resourceName: 'vai trò',
   defaultFilters: {
     search: '',
     status: '',
@@ -152,13 +178,10 @@ const { showSuccess, showError } = useToast()
 const { apiClient } = useApiClient()
 
 // State
-const selectedRole = ref(null)
 const statusEnums = ref([])
 
-// Modal state
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const showDeleteModal = ref(false)
+// Use selectedItem from composable as selectedRole
+const selectedRole = selectedItem
 
 // Fetch data
 onMounted(async () => {
@@ -186,53 +209,45 @@ async function fetchStatusEnums() {
   }
 }
 
-// Modal handlers
-function openCreateModal() {
-  showCreateModal.value = true
-}
-
-function closeCreateModal() {
-  showCreateModal.value = false
-}
-
-function openEditModal(role) {
-  selectedRole.value = role
-  showEditModal.value = true
-}
-
-function closeEditModal() {
-  showEditModal.value = false
-  selectedRole.value = null
-}
+// Modal handlers - sử dụng composable handlers
+const openCreateModal = openCreateModalComposable
+const closeCreateModal = closeCreateModalComposable
+const openEditModal = openEditModalComposable
+const closeEditModal = closeEditModalComposable
+const openDeleteModal = openDeleteModalComposable
+const closeDeleteModal = closeDeleteModalComposable
 
 function confirmDelete(role) {
-  selectedRole.value = role
-  showDeleteModal.value = true
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false
-  selectedRole.value = null
+  openDeleteModal(role)
 }
 
 // Action handlers
-async function handleRoleCreated() {
-  await fetchData()
-  closeCreateModal()
-  showSuccess('Vai trò đã được tạo thành công')
+async function handleRoleCreated(roleData) {
+  try {
+    await createItem(roleData)
+    showSuccess('Vai trò đã được tạo thành công')
+  } catch (error) {
+    showError('Không thể tạo vai trò')
+  }
 }
 
-async function handleRoleUpdated() {
-  await fetchData()
-  closeEditModal()
-  showSuccess('Vai trò đã được cập nhật thành công')
+async function handleRoleUpdated(roleData) {
+  try {
+    await updateItem(roleData)
+    showSuccess('Vai trò đã được cập nhật thành công')
+  } catch (error) {
+    showError('Không thể cập nhật vai trò')
+  }
 }
 
 async function deleteRole() {
   try {
-    await deleteItem(selectedRole.value.id)
-    closeDeleteModal()
-    showSuccess('Vai trò đã được xóa thành công')
+    const success = await deleteItem()
+    if (success) {
+      showSuccess('Vai trò đã được xóa thành công')
+    } else {
+      showError('Không thể xóa vai trò')
+    }
   } catch (error) {
     showError('Không thể xóa vai trò')
   }

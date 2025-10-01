@@ -223,7 +223,7 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
       
       try {
         const transformedData = baseOptions.beforeSubmit ? baseOptions.beforeSubmit(data) : data
-        const response = await apiClient.post(
+        const response = await apiClient.put(
           endpoints.update((selectedItem.value as any).id), 
           transformedData
         )

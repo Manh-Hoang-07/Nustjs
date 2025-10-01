@@ -81,31 +81,33 @@
 
     <!-- Modal thêm mới -->
     <CreatePermission
-      v-if="showCreateModal"
-      :show="showCreateModal"
+      v-if="modals.create"
+      :show="modals.create"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeCreateModal"
       @created="handlePermissionCreated"
     />
 
         <!-- Modal chỉnh sửa -->
     <EditPermission
-      v-if="showEditModal"
-      :show="showEditModal"
+      v-if="modals.edit"
+      :show="modals.edit"
       :permission="selectedPermission"
       :status-enums="statusEnums"
+      :api-errors="apiErrors"
       :on-close="closeEditModal"
       @updated="handlePermissionUpdated"
     />
 
     <!-- Modal xác nhận xóa -->
     <ConfirmModal
-      v-if="showDeleteModal"
-      :show="showDeleteModal"
+      v-if="modals.delete"
+      :show="modals.delete"
       title="Xác nhận xóa"
-      message="Bạn có chắc chắn muốn xóa quyền này không?"
+      :message="`Bạn có chắc chắn muốn xóa quyền ${selectedPermission?.name || ''}?`"
+      :on-close="closeDeleteModal"
       @confirm="deletePermission"
-      @cancel="closeDeleteModal"
     />
   </div>
 </template>
@@ -118,7 +120,7 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { useDataTable } from '@/composables/data/useDataTable'
+import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
@@ -139,9 +141,33 @@ const {
   pagination, 
   filters, 
   fetchData, 
-  updateFilters, 
-  deleteItem 
-} = useDataTable(adminEndpoints.permissions.list, {
+  updateFilters,
+  // CRUD operations
+  createItem,
+  updateItem,
+  deleteItem,
+  // Modal handlers
+  openCreateModal: openCreateModalComposable,
+  closeCreateModal: closeCreateModalComposable,
+  openEditModal: openEditModalComposable,
+  closeEditModal: closeEditModalComposable,
+  openDeleteModal: openDeleteModalComposable,
+  closeDeleteModal: closeDeleteModalComposable,
+  // Selection
+  selectedItem,
+  // Modal state
+  modals,
+  // Error handling
+  apiErrors,
+  clearApiErrors
+} = useCrudDataTable({
+  endpoints: {
+    list: adminEndpoints.permissions.list,
+    create: adminEndpoints.permissions.create,
+    update: (id) => adminEndpoints.permissions.update(id),
+    delete: (id) => adminEndpoints.permissions.delete(id)
+  },
+  resourceName: 'quyền',
   defaultFilters: {
     search: '',
     status: '',
@@ -156,13 +182,10 @@ const { showSuccess, showError } = useToast()
 const { apiClient } = useApiClient()
 
 // State
-const selectedPermission = ref(null)
 const statusEnums = ref([])
 
-// Modal state
-const showCreateModal = ref(false)
-const showEditModal = ref(false)
-const showDeleteModal = ref(false)
+// Use selectedItem from composable as selectedPermission
+const selectedPermission = selectedItem
 
 // Fetch data
 onMounted(async () => {
@@ -177,53 +200,45 @@ function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
 
-// Modal handlers
-function openCreateModal() {
-  showCreateModal.value = true
-}
-
-function closeCreateModal() {
-  showCreateModal.value = false
-}
-
-function openEditModal(permission) {
-  selectedPermission.value = permission
-  showEditModal.value = true
-}
-
-function closeEditModal() {
-  showEditModal.value = false
-  selectedPermission.value = null
-}
+// Modal handlers - sử dụng composable handlers
+const openCreateModal = openCreateModalComposable
+const closeCreateModal = closeCreateModalComposable
+const openEditModal = openEditModalComposable
+const closeEditModal = closeEditModalComposable
+const openDeleteModal = openDeleteModalComposable
+const closeDeleteModal = closeDeleteModalComposable
 
 function confirmDelete(permission) {
-  selectedPermission.value = permission
-  showDeleteModal.value = true
-}
-
-function closeDeleteModal() {
-  showDeleteModal.value = false
-  selectedPermission.value = null
+  openDeleteModal(permission)
 }
 
 // Action handlers
-async function handlePermissionCreated() {
-  await fetchData()
-  closeCreateModal()
-  showSuccess('Quyền đã được tạo thành công')
+async function handlePermissionCreated(permissionData) {
+  try {
+    await createItem(permissionData)
+    showSuccess('Quyền đã được tạo thành công')
+  } catch (error) {
+    showError('Không thể tạo quyền')
+  }
 }
 
-async function handlePermissionUpdated() {
-  await fetchData()
-  closeEditModal()
-  showSuccess('Quyền đã được cập nhật thành công')
+async function handlePermissionUpdated(permissionData) {
+  try {
+    await updateItem(permissionData)
+    showSuccess('Quyền đã được cập nhật thành công')
+  } catch (error) {
+    showError('Không thể cập nhật quyền')
+  }
 }
 
 async function deletePermission() {
   try {
-    await deleteItem(selectedPermission.value.id)
-    closeDeleteModal()
-    showSuccess('Quyền đã được xóa thành công')
+    const success = await deleteItem()
+    if (success) {
+      showSuccess('Quyền đã được xóa thành công')
+    } else {
+      showError('Không thể xóa quyền')
+    }
   } catch (error) {
     showError('Không thể xóa quyền')
   }
