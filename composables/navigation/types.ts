@@ -4,6 +4,7 @@ export interface BaseMenuItem {
   id?: string
   name: string
   path?: string
+  api?: string
   icon: string
   status: 'active' | 'inactive'
   children?: BaseMenuItem[]

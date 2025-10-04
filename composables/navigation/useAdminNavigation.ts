@@ -15,48 +15,56 @@ export function useAdminNavigation(): AdminNavigationResult {
     {
       name: 'Dashboard',
       path: '/admin',
+      api: 'api/admin/dashboard',
       icon: '📊',
       status: 'active'
     },
     {
       name: 'Tài khoản',
       path: '/admin/users',
+      api: 'api/admin/users',
       icon: '👤',
       status: 'active'
     },
     {
       name: 'Quyền',
       path: '/admin/permissions',
+      api: 'api/admin/permissions',
       icon: '🔑',
       status: 'active'
     },
     {
       name: 'Vai trò',
       path: '/admin/roles',
+      api: 'api/admin/roles',
       icon: '👑',
       status: 'active'
     },
     {
       name: 'Tin tức',
       path: '/admin/posts',
+      api: 'api/admin/posts',
       icon: '📰',
       status: 'active'
     },
     {
       name: 'Danh mục bài viết',
       path: '/admin/post-categories',
+      api: 'api/admin/post-categories',
       icon: '📁',
       status: 'active'
     },
     {
       name: 'Thẻ bài viết',
       path: '/admin/post-tags',
+      api: 'api/admin/post-tags',
       icon: '🏷️',
       status: 'active'
     },
     {
       name: 'Liên hệ',
       path: '/admin/contacts',
+      api: 'api/admin/contacts',
       icon: '📞',
       status: 'active'
     }
