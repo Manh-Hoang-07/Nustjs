@@ -62,29 +62,21 @@ export function useUrlPagination(
 
   // Load pagination from URL
   const loadPaginationFromUrl = (): void => {
-    console.log('loadPaginationFromUrl called with route.query:', route.query)
-    
     // Load page
     if (route.query.page) {
       const page = parseInt(route.query.page as string)
-      console.log('Found page in URL:', page)
       if (page > 0) {
         pagination.value.currentPage = page
-        console.log('Set currentPage to:', page)
       }
     }
     
     // Load per_page
     if (route.query.per_page) {
       const perPage = parseInt(route.query.per_page as string)
-      console.log('Found per_page in URL:', perPage)
       if (perPage > 0) {
         pagination.value.perPage = perPage
-        console.log('Set perPage to:', perPage)
       }
     }
-    
-    console.log('Final pagination state:', pagination.value)
   }
 
   // Update pagination in URL

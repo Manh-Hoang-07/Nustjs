@@ -94,7 +94,6 @@ export function useApiClient(options: ApiClientOptions = {}) {
     
     // Check if request is already in progress
     if (preventDuplicateCalls && activeRequests.has(requestKey)) {
-      console.log(`[useApiClient] Request already in progress: ${requestKey}`)
       return activeRequests.get(requestKey) as Promise<AxiosResponse<T>>
     }
 
@@ -126,16 +125,6 @@ export function useApiClient(options: ApiClientOptions = {}) {
         config.headers.Authorization = `Bearer ${token}`
       }
       
-      // Log request details for debugging
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`)
-      console.log('[API Request] Full config:', config)
-      if (config.params) {
-        console.log('[API Request] Params:', config.params)
-        console.log('[API Request] Params type:', typeof config.params)
-        console.log('[API Request] Params keys:', Object.keys(config.params))
-      } else {
-        console.log('[API Request] No params found in config')
-      }
       
       return config
     },
@@ -249,7 +238,6 @@ export function useApiClient(options: ApiClientOptions = {}) {
 
     clearActiveRequests(): void {
       activeRequests.clear()
-      console.log('[useApiClient] Cleared all active requests')
     }
   } as EnhancedApiClient
 

@@ -89,7 +89,6 @@ export function useUrlSync(
 
   // Watch for route changes (back/forward navigation)
   watch(() => route.query, (newQuery, oldQuery) => {
-    console.log('Route query changed:', newQuery)
     loadStateFromUrl()
     // Không gọi fetchData ở đây để tránh trùng lặp với useBaseDataTable
     // useBaseDataTable sẽ tự động gọi fetchData khi cần thiết
@@ -117,17 +116,13 @@ export function useUrlSync(
   }
 
   function loadStateFromUrl(): void {
-    console.log('loadStateFromUrl called with route.query:', route.query)
-    
     // Load pagination
     urlPagination.loadPaginationFromUrl()
     Object.assign(pagination.value, urlPagination.pagination.value)
-    console.log('Pagination loaded from URL:', pagination.value)
 
     // Load filters
     urlFilters.loadFiltersFromUrl()
     Object.assign(filters.value, urlFilters.filters.value)
-    console.log('Filters loaded from URL:', filters.value)
 
     // Load sort
     if (route.query.sort_by) {
@@ -136,7 +131,6 @@ export function useUrlSync(
     if (route.query.sort_order && ['asc', 'desc'].includes(route.query.sort_order as string)) {
       sort.value.sortOrder = route.query.sort_order as 'asc' | 'desc'
     }
-    console.log('Sort loaded from URL:', sort.value)
   }
 
   // Cập nhật URL với tất cả tham số
@@ -257,7 +251,6 @@ export function useUrlSync(
       }
     })
     
-    console.log('getCurrentQuery returning:', query)
     return query
   }
 

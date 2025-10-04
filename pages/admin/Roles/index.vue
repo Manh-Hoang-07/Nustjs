@@ -169,7 +169,6 @@ const {
     status: '',
     sort_by: 'created_at_desc'
   },
-  enableUrlSync: true,
   filterKeys: ['search', 'status', 'sort_by'],
   sortKeys: ['sort_by', 'sort_order']
 })

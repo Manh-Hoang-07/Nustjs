@@ -160,12 +160,8 @@ export function useBaseDataTable<T = any>(
 
   // Main fetch function that combines all composables
   const fetchData = async (params: Record<string, any> = {}): Promise<{ data: T[]; meta: PaginationMeta }> => {
-    console.log('useBaseDataTable fetchData called with params:', params)
-    console.log('endpoint:', endpoint)
-    
     // Prevent multiple simultaneous API calls
     if (isFetching.value || dataFetching.loading.value) {
-      console.log('Already fetching, returning current data')
       return { data: dataFetching.items.value, meta: dataFetching.pagination.value }
     }
     
@@ -201,9 +197,6 @@ export function useBaseDataTable<T = any>(
       
       if (enableUrlSync && urlState) {
         const urlQuery = urlState.getCurrentQuery()
-        console.log('URL query from urlState:', urlQuery)
-        console.log('Local filters:', dataFiltering.filters.value)
-        console.log('Pagination:', dataPagination.pagination.value)
         
         // Merge URL query with local filters and params
         requestParams = {
@@ -228,9 +221,6 @@ export function useBaseDataTable<T = any>(
       }
       
       // Use dataFetching composable to make API call
-      console.log('Final requestParams being sent to API:', requestParams)
-      console.log('Using dataFetching.fetchData with params:', requestParams)
-      
       const result = await dataFetching.fetchData(requestParams)
       
       // Cache result
@@ -330,7 +320,6 @@ export function useBaseDataTable<T = any>(
   if (enableUrlSync && urlState) {
     // Watch URL query changes (from browser navigation)
     watch(() => urlState.getCurrentQuery(), (newQuery, oldQuery) => {
-      console.log('URL query changed:', newQuery)
       // Sync URL query to local filters
       Object.assign(dataFiltering.filters.value, newQuery)
       // Gọi fetchData với tham số từ URL

@@ -184,7 +184,6 @@ const {
     search: '',
     sort_by: 'created_at_desc'
   },
-  enableUrlSync: true,
   filterKeys: ['search', 'sort_by'],
   sortKeys: ['sort_by', 'sort_order']
 })
@@ -231,52 +230,43 @@ function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
 
-// Modal handlers - wrap composable handlers with debug logs
+// Modal handlers
 function openCreateModal() {
-  console.log('openCreateModal called')
   openCreateModalComposable()
 }
 
 function closeCreateModal() {
-  console.log('closeCreateModal called')
   closeCreateModalComposable()
 }
 
 function openEditModal(tag) {
-  console.log('openEditModal called with tag:', tag)
   openEditModalComposable(tag)
 }
 
 function closeEditModal() {
-  console.log('closeEditModal called')
   closeEditModalComposable()
 }
 
 function confirmDelete(tag) {
-  console.log('confirmDelete called with tag:', tag)
   openDeleteModalComposable(tag)
 }
 
 function closeDeleteModal() {
-  console.log('closeDeleteModal called')
   closeDeleteModalComposable()
 }
 
 // CRUD operations
 async function handleTagCreated(data) {
-  console.log('handleTagCreated called with data:', data)
   await createItem(data)
   showSuccess('Thẻ đã được tạo thành công')
 }
 
 async function handleTagUpdated(data) {
-  console.log('handleTagUpdated called with data:', data)
   await updateItem(data)
   showSuccess('Thẻ đã được cập nhật thành công')
 }
 
 async function handleDelete() {
-  console.log('handleDelete called')
   await deleteItem()
   showSuccess('Xóa thẻ thành công')
 }

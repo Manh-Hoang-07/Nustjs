@@ -204,14 +204,6 @@ const {
     delete: (id) => adminEndpoints.users.delete(id)
   },
   resourceName: 'người dùng',
-  defaultFilters: {
-    search: '',
-    status: '',
-    sort_by: 'created_at:desc'
-  },
-  enableUrlSync: true,
-  filterKeys: ['search', 'status', 'sort_by'],
-  sortKeys: ['sort_by', 'sort_order'],
   transformItem: (user) => ({
     ...user,
     fullName: `${user.first_name || ''} ${user.last_name || ''}`.trim()
@@ -238,10 +230,6 @@ const enumsLoaded = ref(false)
 
 // Fetch data
 onMounted(async () => {
-  console.log('onMounted called')
-  console.log('items before fetch:', items)
-  console.log('loading before fetch:', loading)
-  
   // Load enums from API only once
   if (!enumsLoaded.value) {
     await loadEnums()
@@ -264,7 +252,6 @@ async function loadEnums() {
       statusEnums.value = response.data.data || []
     }
   } catch (e) {
-    console.error('Error loading status enums:', e)
     statusEnums.value = []
   }
 
@@ -275,7 +262,6 @@ async function loadEnums() {
       genderEnums.value = response.data.data || []
     }
   } catch (e) {
-    console.error('Error loading gender enums:', e)
     genderEnums.value = []
   }
 
@@ -290,24 +276,20 @@ async function loadRoles() {
       roleEnums.value = response.data.data || []
     }
   } catch (error) {
-    console.error('Error loading roles:', error)
     showError('Không thể tải danh sách vai trò')
   }
 }
 
 // Modal handlers - sử dụng composable handlers
 const openCreateModal = () => {
-  console.log('openCreateModal called')
   openCreateModalComposable()
 }
 const closeCreateModal = closeCreateModalComposable
 const openEditModal = (user) => {
-  console.log('openEditModal called with user:', user)
   openEditModalComposable(user)
 }
 const closeEditModal = closeEditModalComposable
 const openDeleteModal = (user) => {
-  console.log('openDeleteModal called with user:', user)
   openDeleteModalComposable(user)
 }
 const closeDeleteModal = closeDeleteModalComposable

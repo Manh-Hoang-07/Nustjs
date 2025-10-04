@@ -167,7 +167,6 @@ const {
     status: '',
     sort_by: 'created_at_desc'
   },
-  enableUrlSync: true,
   filterKeys: ['search', 'status', 'sort_by'],
   sortKeys: ['sort_by', 'sort_order']
 })
@@ -215,52 +214,43 @@ function handleFilterUpdate(newFilters) {
   updateFilters(newFilters)
 }
 
-// Modal handlers - wrap composable handlers with debug logs
+// Modal handlers
 function openCreateModal() {
-  console.log('openCreateModal called')
   openCreateModalComposable()
 }
 
 function closeCreateModal() {
-  console.log('closeCreateModal called')
   closeCreateModalComposable()
 }
 
 function openEditModal(category) {
-  console.log('openEditModal called with category:', category)
   openEditModalComposable(category)
 }
 
 function closeEditModal() {
-  console.log('closeEditModal called')
   closeEditModalComposable()
 }
 
 function confirmDelete(category) {
-  console.log('confirmDelete called with category:', category)
   openDeleteModalComposable(category)
 }
 
 function closeDeleteModal() {
-  console.log('closeDeleteModal called')
   closeDeleteModalComposable()
 }
 
 // Action handlers
 async function handleCategoryCreated(data) {
-  console.log('handleCategoryCreated called with data:', data)
   await createItem(data)
   showSuccess('Danh mục đã được tạo thành công')
 }
 
 async function handleCategoryUpdated(data) {
-  console.log('handleCategoryUpdated called with data:', data)
   await updateItem(data)
   showSuccess('Danh mục đã được cập nhật thành công')
 }
 
 async function deleteCategory() {
-  console.log('deleteCategory called')
   await deleteItem()
   showSuccess('Danh mục đã được xóa thành công')
 }

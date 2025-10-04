@@ -252,7 +252,6 @@ const {
     date_to: '',
     sort_by: 'created_at_desc'
   },
-  enableUrlSync: true,
   filterKeys: ['search', 'status', 'date_from', 'date_to', 'sort_by'],
   sortKeys: ['sort_by', 'sort_order']
 })
@@ -301,67 +300,56 @@ async function fetchEnums() {
   }
 }
 
-// Modal handlers - wrap composable handlers with debug logs
+// Modal handlers
 function openViewModal(contact) {
-  console.log('openViewModal called with contact:', contact)
   selectedContact.value = contact
   showViewModal.value = true
 }
 
 function closeViewModal() {
-  console.log('closeViewModal called')
   showViewModal.value = false
   selectedContact.value = null
 }
 
 function openEditModal(contact) {
-  console.log('openEditModal called with contact:', contact)
   openEditModalComposable(contact)
 }
 
 function closeEditModal() {
-  console.log('closeEditModal called')
   closeEditModalComposable()
 }
 
 function openNotesModal(contact) {
-  console.log('openNotesModal called with contact:', contact)
   selectedContact.value = contact
   showNotesModal.value = true
 }
 
 function closeNotesModal() {
-  console.log('closeNotesModal called')
   showNotesModal.value = false
   selectedContact.value = null
 }
 
 function confirmDelete(contact) {
-  console.log('confirmDelete called with contact:', contact)
   openDeleteModalComposable(contact)
 }
 
 function closeDeleteModal() {
-  console.log('closeDeleteModal called')
   closeDeleteModalComposable()
 }
 
 // Action handlers
 async function handleContactUpdated(data) {
-  console.log('handleContactUpdated called with data:', data)
   await updateItem(data)
   showSuccess('Liên hệ đã được cập nhật thành công')
 }
 
 async function handleNotesUpdated() {
-  console.log('handleNotesUpdated called')
   await fetchData()
   closeNotesModal()
   showSuccess('Ghi chú đã được cập nhật thành công')
 }
 
 async function deleteContact() {
-  console.log('deleteContact called')
   await deleteItem()
   showSuccess('Liên hệ đã được xóa thành công')
 }
@@ -377,7 +365,6 @@ async function updateContactStatus(contact, newStatus) {
     
     showSuccess('Trạng thái đã được cập nhật thành công')
   } catch (error) {
-    console.error('Error updating contact status:', error)
     showError('Không thể cập nhật trạng thái')
   }
 }
@@ -392,7 +379,6 @@ async function markAsResponded(contact) {
     
     showSuccess('Đã đánh dấu phản hồi thành công')
   } catch (error) {
-    console.error('Error marking contact as responded:', error)
     showError('Không thể đánh dấu phản hồi')
   }
 }
@@ -428,7 +414,6 @@ async function exportContacts() {
     
     showSuccess('Xuất Excel thành công')
   } catch (error) {
-    console.error('Error exporting contacts:', error)
     showError('Không thể xuất Excel')
   }
 }

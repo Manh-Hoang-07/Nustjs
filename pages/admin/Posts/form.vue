@@ -227,12 +227,6 @@ import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
 import { adminEndpoints } from '@/api/endpoints'
 
-// Debug: Kiểm tra adminEndpoints (có thể xóa sau khi test xong)
-// console.log('adminEndpoints:', adminEndpoints)
-// console.log('postCategories:', adminEndpoints.postCategories)
-// console.log('postTags:', adminEndpoints.postTags)
-// console.log('postCategories.list:', adminEndpoints.postCategories?.list)
-// console.log('postTags.list:', adminEndpoints.postTags?.list)
 
 const props = defineProps({
   show: Boolean,

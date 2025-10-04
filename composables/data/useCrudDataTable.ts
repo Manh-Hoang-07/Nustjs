@@ -31,7 +31,7 @@ export interface CrudComputedProps {
   selectedCount: ComputedRef<number>
 }
 
-export interface CrudDataTableOptions<T = any> extends BaseDataTableOptions {
+export interface CrudDataTableOptions<T = any> extends Omit<BaseDataTableOptions, 'enableUrlSync'> {
   endpoints: CrudEndpoints
   resourceName?: string
 }
@@ -82,8 +82,22 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
     ...baseOptions 
   } = options
 
-  // Sử dụng base data table
-  const baseDataTable = useBaseDataTable<T>(endpoints.list, baseOptions)
+  // Thiết lập các giá trị mặc định cho base options
+  // enableUrlSync luôn bật cho CRUD tables, không cần tham số
+  const optimizedBaseOptions = {
+    enableUrlSync: true, // Hard-coded: CRUD tables luôn cần URL sync
+    defaultFilters: {
+      search: '',
+      status: '',
+      sort_by: 'created_at:desc'
+    },
+    filterKeys: ['search', 'status', 'sort_by'],
+    sortKeys: ['sort_by', 'sort_order'],
+    ...baseOptions
+  }
+
+  // Sử dụng base data table với options đã tối ưu
+  const baseDataTable = useBaseDataTable<T>(endpoints.list, optimizedBaseOptions)
 
   // CRUD state
   const selectedItems = ref([]) as Ref<T[]>
@@ -129,7 +143,6 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
   // Modal handlers
   const modalHandlers = {
     openCreateModal(): void {
-      console.log('modalHandlers.openCreateModal called')
       modals.value.create = true
     },
 
@@ -139,7 +152,6 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
     },
 
     openEditModal(item: T): void {
-      console.log('modalHandlers.openEditModal called with item:', item)
       selectedItem.value = item
       modals.value.edit = true
     },
@@ -151,7 +163,6 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
     },
 
     openDeleteModal(item: T): void {
-      console.log('modalHandlers.openDeleteModal called with item:', item)
       selectedItem.value = item
       modals.value.delete = true
     },
@@ -207,7 +218,6 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
         
         return response.data
       } catch (error) {
-        console.error(`Error creating ${resourceName}:`, error)
         errorHandlers.handleApiError(error)
         return null
       } finally {
@@ -233,7 +243,6 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
         
         return response.data
       } catch (error) {
-        console.error(`Error updating ${resourceName}:`, error)
         errorHandlers.handleApiError(error)
         return null
       } finally {
@@ -252,7 +261,6 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
         modalHandlers.closeDeleteModal()
         return true
       } catch (error) {
-        console.error(`Error deleting ${resourceName}:`, error)
         return false
       } finally {
         baseDataTable.loading.value = false
@@ -276,7 +284,6 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
         
         return true
       } catch (error) {
-        console.error(`Error deleting ${resourceName}:`, error)
         return false
       } finally {
         baseDataTable.loading.value = false

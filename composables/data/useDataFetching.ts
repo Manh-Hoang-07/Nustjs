@@ -68,16 +68,11 @@ export function useDataFetching<T = any>(
 
   // Main fetch function
   const fetchData = async (params: Record<string, any> = {}): Promise<{ data: T[]; meta: PaginationMeta }> => {
-    console.log('useDataFetching fetchData called with params:', params)
-    console.log('endpoint:', endpoint)
-    
     // Prevent multiple simultaneous API calls
     if (isFetching.value || loading.value) {
-      console.log('Already fetching, returning current data')
       return { data: items.value, meta: pagination.value }
     }
     
-    console.log('Starting fetch...')
     isFetching.value = true
     loading.value = true
     error.value = null
@@ -85,16 +80,8 @@ export function useDataFetching<T = any>(
     try {
       // Transform params before sending
       const transformedParams = beforeSubmit(params)
-      console.log('Original params:', params)
-      console.log('Transformed params:', transformedParams)
-      console.log('beforeSubmit function:', beforeSubmit)
-      
-      // Fetch from server
-      console.log('Making API call to:', endpoint, 'with params:', transformedParams)
-      console.log('API call config object:', { params: transformedParams })
       
       // Try different approaches to debug
-      console.log('Trying direct URL params approach...')
       const urlParams = new URLSearchParams()
       Object.keys(transformedParams).forEach(key => {
         if (transformedParams[key] !== undefined && transformedParams[key] !== null && transformedParams[key] !== '') {
@@ -102,26 +89,19 @@ export function useDataFetching<T = any>(
         }
       })
       const queryString = urlParams.toString()
-      console.log('Query string:', queryString)
       
       // Try using URL directly instead of params
       const fullUrl = queryString ? `${endpoint}?${queryString}` : endpoint
-      console.log('Full URL:', fullUrl)
       const response = await apiClient.get(fullUrl)
-      console.log('API response:', response)
       
       const { data, meta } = response.data
-      console.log('Response data:', data)
-      console.log('Response meta:', meta)
       
       // Transform items
       const transformedData = data.map(transformItem)
-      console.log('Transformed data:', transformedData)
       
       // Update state
       items.value = transformedData
       Object.assign(pagination.value, meta)
-      console.log('State updated. items:', items.value)
       
       // After fetch hook
       afterFetch(response.data)
