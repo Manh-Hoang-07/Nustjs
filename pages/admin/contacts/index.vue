@@ -27,6 +27,7 @@
     <!-- Bộ lọc -->
     <ContactFilter 
       :initial-filters="filters"
+      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
@@ -202,7 +203,7 @@ import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 import ToastContainer from '@/components/Core/Feedback/ToastContainer.vue'
 import { adminEndpoints } from '@/api/endpoints'
-import { useApiClient } from '@/composables/api/useApiClient'
+import { useGlobalApiClient } from '@/composables/api'
 
 // Lazy load components
 const ContactView = defineAsyncComponent(() => import('./view.vue'))
@@ -257,7 +258,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const { apiClient } = useApiClient()
+const { apiClient } = useGlobalApiClient()
 
 // State
 const statusEnums = ref([])
@@ -269,12 +270,18 @@ const selectedContact = selectedItem
 const showViewModal = ref(false)
 const showNotesModal = ref(false)
 
+// Flag to prevent duplicate enum loading
+const enumsLoaded = ref(false)
+
 // Fetch data
 onMounted(async () => {
-  // Load status enums via API (fallback to static on error)
-  await fetchEnums()
-  // Fetch contacts
-  await fetchData()
+  // Load status enums via API only once
+  if (!enumsLoaded.value) {
+    await fetchEnums()
+    enumsLoaded.value = true
+  }
+  // fetchData() will be called automatically by useCrudDataTable with URL sync
+  // No need to call it manually here
 })
 
 function handleFilterUpdate(newFilters) {

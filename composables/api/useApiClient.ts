@@ -8,6 +8,7 @@ interface ApiClientOptions {
   retryDelay?: number
   timeout?: number
   enableRetry?: boolean
+  preventDuplicateCalls?: boolean
 }
 
 interface EnhancedError extends AxiosError {
@@ -25,9 +26,10 @@ interface ApiClientMethods {
   patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>
   handleError: (error: AxiosError, method: string, url: string) => EnhancedError
   getUserFriendlyMessage: (error: AxiosError) => string
+  clearActiveRequests: () => void
 }
 
-interface EnhancedApiClient extends AxiosInstance, ApiClientMethods {}
+interface EnhancedApiClient extends Omit<AxiosInstance, 'get' | 'post' | 'put' | 'delete' | 'patch'>, ApiClientMethods {}
 
 // ===== COMPOSABLE =====
 
@@ -41,8 +43,12 @@ export function useApiClient(options: ApiClientOptions = {}) {
     retryAttempts = 0, // Tắt retry hoàn toàn
     retryDelay = 1000,
     timeout = 10000, // Giảm timeout từ 30s xuống 10s
-    enableRetry = false // Tắt retry mặc định
+    enableRetry = false, // Tắt retry mặc định
+    preventDuplicateCalls = true // Bật tránh duplicate calls
   } = options
+
+  // Track active requests to prevent duplicates
+  const activeRequests = new Map<string, Promise<AxiosResponse>>()
 
   // Tạo API client với base URL từ runtime config
   const api: AxiosInstance = axios.create({
@@ -63,12 +69,52 @@ export function useApiClient(options: ApiClientOptions = {}) {
       for (let cookie of cookies) {
         const [name, value] = cookie.trim().split('=')
         if (name === 'auth_token') {
-          const token = decodeURIComponent(value)
+          const token = decodeURIComponent(value || '')
           return token
         }
       }
     }
     return null
+  }
+
+  // Helper function để tạo request key
+  function createRequestKey(method: string, url: string, config?: AxiosRequestConfig): string {
+    const params = config?.params ? JSON.stringify(config.params) : ''
+    return `${method}:${url}${params ? `?${params}` : ''}`
+  }
+
+  // Helper function để xử lý request với duplicate prevention
+  async function handleRequest<T>(
+    method: 'get' | 'post' | 'put' | 'delete' | 'patch',
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
+    const requestKey = createRequestKey(method, url, config)
+    
+    // Check if request is already in progress
+    if (preventDuplicateCalls && activeRequests.has(requestKey)) {
+      console.log(`[useApiClient] Request already in progress: ${requestKey}`)
+      return activeRequests.get(requestKey) as Promise<AxiosResponse<T>>
+    }
+
+    // Create new request
+    const requestPromise = (api as any)[method](url, data, config) as Promise<AxiosResponse<T>>
+    
+    // Store active request
+    if (preventDuplicateCalls) {
+      activeRequests.set(requestKey, requestPromise)
+    }
+
+    try {
+      const response = await requestPromise
+      return response
+    } finally {
+      // Remove from active requests when done
+      if (preventDuplicateCalls) {
+        activeRequests.delete(requestKey)
+      }
+    }
   }
 
   // Request interceptor
@@ -104,7 +150,7 @@ export function useApiClient(options: ApiClientOptions = {}) {
     
     async get<T = any>(url: string, config: AxiosRequestConfig = {}): Promise<AxiosResponse<T>> {
       try {
-        return await api.get<T>(url, config)
+        return await handleRequest<T>('get', url, undefined, config)
       } catch (error) {
         throw this.handleError(error as AxiosError, 'GET', url)
       }
@@ -112,7 +158,7 @@ export function useApiClient(options: ApiClientOptions = {}) {
 
     async post<T = any>(url: string, data: any = {}, config: AxiosRequestConfig = {}): Promise<AxiosResponse<T>> {
       try {
-        return await api.post<T>(url, data, config)
+        return await handleRequest<T>('post', url, data, config)
       } catch (error) {
         throw this.handleError(error as AxiosError, 'POST', url)
       }
@@ -120,7 +166,7 @@ export function useApiClient(options: ApiClientOptions = {}) {
 
     async put<T = any>(url: string, data: any = {}, config: AxiosRequestConfig = {}): Promise<AxiosResponse<T>> {
       try {
-        return await api.put<T>(url, data, config)
+        return await handleRequest<T>('put', url, data, config)
       } catch (error) {
         throw this.handleError(error as AxiosError, 'PUT', url)
       }
@@ -128,7 +174,7 @@ export function useApiClient(options: ApiClientOptions = {}) {
 
     async delete<T = any>(url: string, config: AxiosRequestConfig = {}): Promise<AxiosResponse<T>> {
       try {
-        return await api.delete<T>(url, config)
+        return await handleRequest<T>('delete', url, undefined, config)
       } catch (error) {
         throw this.handleError(error as AxiosError, 'DELETE', url)
       }
@@ -136,7 +182,7 @@ export function useApiClient(options: ApiClientOptions = {}) {
 
     async patch<T = any>(url: string, data: any = {}, config: AxiosRequestConfig = {}): Promise<AxiosResponse<T>> {
       try {
-        return await api.patch<T>(url, data, config)
+        return await handleRequest<T>('patch', url, data, config)
       } catch (error) {
         throw this.handleError(error as AxiosError, 'PATCH', url)
       }
@@ -188,10 +234,28 @@ export function useApiClient(options: ApiClientOptions = {}) {
       }
 
       return messages[status || 0] || 'Có lỗi xảy ra, vui lòng thử lại'
+    },
+
+    clearActiveRequests(): void {
+      activeRequests.clear()
+      console.log('[useApiClient] Cleared all active requests')
     }
   } as EnhancedApiClient
 
   return {
     apiClient: enhancedApi
   }
+}
+
+// ===== SINGLETON INSTANCE =====
+
+// Global API client instance để tránh duplicate calls across components
+let globalApiClient: EnhancedApiClient | null = null
+
+export function useGlobalApiClient(): { apiClient: EnhancedApiClient } {
+  if (!globalApiClient) {
+    const { apiClient } = useApiClient({ preventDuplicateCalls: true })
+    globalApiClient = apiClient
+  }
+  return { apiClient: globalApiClient }
 }

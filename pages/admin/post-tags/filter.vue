@@ -10,7 +10,7 @@
         <!-- Lọc theo trạng thái -->
         <SelectFilter
           v-model="filters.status"
-          :api-endpoint="statusApi"
+          :options="statusEnums"
           label-field="label"
           value-field="value"
           placeholder="Tất cả trạng thái"
@@ -40,12 +40,15 @@
 import { reactive } from 'vue'
 import TextFilter from '@/components/Core/Filter/TextFilter.vue'
 import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
-import { adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   initialFilters: {
     type: Object,
     default: () => ({})
+  },
+  statusEnums: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -56,8 +59,6 @@ const filters = reactive({
   status: props.initialFilters.status || '',
 })
 
-// API cho enum trạng thái
-const statusApi = adminEndpoints.enums('basic_status')
 
 // Áp dụng bộ lọc
 function applyFilters() {

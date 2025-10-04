@@ -13,6 +13,7 @@
     <!-- Bộ lọc -->
     <TagFilter 
       :initial-filters="filters"
+      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
@@ -135,7 +136,7 @@ definePageMeta({
 import { ref, onMounted } from 'vue'
 import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
-import { useApiClient } from '@/composables/api/useApiClient'
+import { useGlobalApiClient } from '@/composables/api'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 import { adminEndpoints } from '@/api/endpoints'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
@@ -189,7 +190,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const { apiClient } = useApiClient()
+const { apiClient } = useGlobalApiClient()
 
 // State
 const statusEnums = ref([])
@@ -198,10 +199,17 @@ const statusEnums = ref([])
 const selectedTag = selectedItem
 
 // Fetch data
+// Flag to prevent duplicate enum loading
+const enumsLoaded = ref(false)
+
 onMounted(async () => {
-  // Load enums and options
-  await loadEnums()
-  await fetchData()
+  // Load enums and options only once
+  if (!enumsLoaded.value) {
+    await loadEnums()
+    enumsLoaded.value = true
+  }
+  // fetchData() will be called automatically by useCrudDataTable with URL sync
+  // No need to call it manually here
 })
 
 // Load enums and options

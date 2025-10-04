@@ -26,7 +26,7 @@
         <SelectFilter
           v-model="localFilters.status"
           placeholder="Tất cả trạng thái"
-          :api-endpoint="contactStatusApi"
+          :options="statusEnums"
           label-field="label"
           value-field="value"
           @change="applyFilters"
@@ -118,7 +118,6 @@
 <script setup>
 import { ref, watch } from 'vue'
 import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
-import { adminEndpoints } from '@/api/endpoints'
 import { debounce } from 'lodash-es'
 
 // Props
@@ -126,6 +125,10 @@ const props = defineProps({
   initialFilters: {
     type: Object,
     default: () => ({})
+  },
+  statusEnums: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -135,7 +138,6 @@ const emit = defineEmits(['update:filters'])
 // State
 const localFilters = ref({ ...props.initialFilters })
 const stats = ref(null)
-const contactStatusApi = adminEndpoints.enums('basic_status')
 
 // Debounced search
 const debouncedSearch = debounce(() => {

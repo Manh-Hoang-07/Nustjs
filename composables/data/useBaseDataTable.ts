@@ -1,5 +1,9 @@
 import { ref, reactive, computed, onMounted, watch, toRef, type Ref, type ComputedRef } from 'vue'
-import { useApiClient } from '../api/useApiClient'
+import { useDataFetching } from './useDataFetching'
+import { useDataFiltering } from './useDataFiltering'
+import { useDataPagination } from './useDataPagination'
+import { useDataCaching } from './useDataCaching'
+import { useGlobalApiClient } from '../api/useApiClient'
 import useUrlState from '../utils/useUrlState'
 
 // ===== TYPES =====
@@ -95,8 +99,6 @@ export function useBaseDataTable<T = any>(
   endpoint: string,
   options: BaseDataTableOptions = {}
 ): BaseDataTableResult<T> {
-  const { apiClient } = useApiClient()
-  
   const {
     defaultFilters = {},
     defaultSort = 'created_at_desc',
@@ -117,217 +119,191 @@ export function useBaseDataTable<T = any>(
     afterFetch = (data: any) => data
   } = options
 
-  // State
-  const items = ref([]) as Ref<T[]>
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-  const pagination = ref<PaginationMeta>({
-    current_page: 1,
-    from: 0,
-    to: 0,
-    total: 0,
-    per_page: pageSize,
-    last_page: 1,
-    links: []
+  // Initialize composables
+  const dataFetching = useDataFetching<T>(endpoint, {
+    transformItem,
+    beforeSubmit,
+    afterFetch
   })
-  const filters = ref<Record<string, any>>({ ...defaultFilters })
 
-  const cache = new Map<string, CacheItem>()
+  // Flag to prevent duplicate fetchData calls
+  const isFetching = ref(false)
   let debounceTimer: NodeJS.Timeout | null = null
 
-  // URL sync setup (if enabled) - sẽ được setup sau khi fetchData được định nghĩa
+  const dataFiltering = useDataFiltering({
+    defaultFilters,
+    debounceTime,
+    resetPageOnFilter
+  })
+
+  const dataPagination = useDataPagination({
+    pageSize,
+    resetPageOnFilter,
+    resetPageOnSort
+  })
+
+  const dataCaching = useDataCaching<T>({
+    cacheEnabled,
+    defaultTTL: 5 * 60 * 1000
+  })
+
+  // URL sync setup (if enabled)
   let urlState: any = null
 
   // Computed properties
   const computedProps: BaseDataTableComputed = {
-    hasData: computed(() => items.value.length > 0),
-    isEmpty: computed(() => !loading.value && items.value.length === 0),
-    isFirstPage: computed(() => pagination.value.current_page === 1),
-    isLastPage: computed(() => pagination.value.current_page === pagination.value.last_page)
+    hasData: computed(() => dataFetching.items.value.length > 0),
+    isEmpty: computed(() => !dataFetching.loading.value && dataFetching.items.value.length === 0),
+    isFirstPage: computed(() => dataFetching.pagination.value.current_page === 1),
+    isLastPage: computed(() => dataFetching.pagination.value.current_page === dataFetching.pagination.value.last_page)
   }
 
-  // Cache key generator
-  const getCacheKey = (params: Record<string, any>): string => {
-    return JSON.stringify({ ...filters.value, ...params })
-  }
-
-  // Cache với TTL (Time To Live)
-  const setCacheWithTTL = (key: string, data: { data: T[]; meta: PaginationMeta }, ttl: number = 5 * 60 * 1000): void => {
-    cache.set(key, {
-      data,
-      meta: data.meta,
-      timestamp: Date.now(),
-      ttl
-    })
-  }
-
-  const getCacheWithTTL = (key: string): { data: T[]; meta: PaginationMeta } | null => {
-    const cached = cache.get(key)
-    if (!cached) return null
-    
-    const isExpired = Date.now() - cached.timestamp > cached.ttl
-    if (isExpired) {
-      cache.delete(key)
-      return null
-    }
-    
-    return { data: cached.data, meta: cached.meta }
-  }
-
-  // Debounced fetch function
-  const debouncedFetch = (params: Record<string, any> = {}): void => {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer)
-    }
-    
-    debounceTimer = setTimeout(() => {
-      fetchData(params)
-    }, debounceTime)
-  }
-
-  // Main fetch function
+  // Main fetch function that combines all composables
   const fetchData = async (params: Record<string, any> = {}): Promise<{ data: T[]; meta: PaginationMeta }> => {
     console.log('useBaseDataTable fetchData called with params:', params)
     console.log('endpoint:', endpoint)
     
     // Prevent multiple simultaneous API calls
-    if (loading.value) {
-      console.log('Already loading, returning current data')
-      return { data: items.value, meta: pagination.value }
+    if (isFetching.value || dataFetching.loading.value) {
+      console.log('Already fetching, returning current data')
+      return { data: dataFetching.items.value, meta: dataFetching.pagination.value }
     }
     
-    console.log('Starting fetch...')
-    loading.value = true
-    error.value = null
+    isFetching.value = true
+    
+    // Debounce rapid successive calls
+    if (debounceTimer) {
+      clearTimeout(debounceTimer)
+    }
+    
+    return new Promise((resolve, reject) => {
+      debounceTimer = setTimeout(async () => {
+        try {
+          const result = await performFetch(params)
+          resolve(result)
+        } catch (error) {
+          reject(error)
+        }
+      }, debounceTime)
+    })
+  }
+  
+  // Actual fetch logic separated to avoid duplication
+  const performFetch = async (params: Record<string, any> = {}): Promise<{ data: T[]; meta: PaginationMeta }> => {
     
     try {
       // Use URL state params if URL sync is enabled
       let requestParams = { 
-        ...filters.value, 
+        ...dataFiltering.filters.value, 
         ...params,
-        per_page: pagination.value.per_page
+        per_page: dataPagination.pagination.value.per_page
       }
       
       if (enableUrlSync && urlState) {
         const urlQuery = urlState.getCurrentQuery()
         // Merge URL query with local filters and params
         requestParams = {
-          ...filters.value,        // Local filters as base
+          ...dataFiltering.filters.value,        // Local filters as base
           ...urlQuery,             // URL query overrides
           ...params,               // Direct params override everything
-          per_page: pagination.value.per_page
+          per_page: dataPagination.pagination.value.per_page
         }
       }
       
-      const cacheKey = getCacheKey(requestParams)
+      const cacheKey = dataCaching.generateCacheKey(requestParams)
       
       // Check cache first
       if (cacheEnabled) {
-        const cachedData = getCacheWithTTL(cacheKey)
+        const cachedData = dataCaching.getCache(cacheKey)
         if (cachedData) {
-          items.value = cachedData.data
-          Object.assign(pagination.value, cachedData.meta)
-          loading.value = false
+          dataFetching.items.value = cachedData.data
+          Object.assign(dataFetching.pagination.value, cachedData.meta)
           return cachedData
         }
       }
       
-      // Fetch from server
-      console.log('Making API call to:', endpoint, 'with params:', requestParams)
+      // Fetch from server directly using apiClient to avoid duplicate calls
+      const { apiClient } = useGlobalApiClient()
       const response = await apiClient.get(endpoint, { params: requestParams })
-      console.log('API response:', response)
-      
       const { data, meta } = response.data
-      console.log('Response data:', data)
-      console.log('Response meta:', meta)
       
       // Transform items
       const transformedData = data.map(transformItem)
-      console.log('Transformed data:', transformedData)
       
       // Update state
-      items.value = transformedData
-      Object.assign(pagination.value, meta)
-      console.log('State updated. items:', items.value)
-      
-      // Cache result
-      if (cacheEnabled) {
-        setCacheWithTTL(cacheKey, { data: transformedData, meta })
-      }
+      dataFetching.items.value = transformedData
+      Object.assign(dataFetching.pagination.value, meta)
       
       // After fetch hook
       afterFetch(response.data)
       
-      return { data: transformedData, meta }
+      const result = { data: transformedData, meta }
+      
+      // Cache result
+      if (cacheEnabled) {
+        dataCaching.setCache(cacheKey, result)
+      }
+      
+      return result
     } catch (err: any) {
-      error.value = err.userMessage || 'Lỗi tải dữ liệu'
-      items.value = []
       throw err
     } finally {
-      loading.value = false
+      isFetching.value = false
     }
+  }
+
+  // Debounced fetch function
+  const debouncedFetch = (params: Record<string, any> = {}): void => {
+    dataFiltering.debouncedUpdateFilters(params)
   }
 
   // Filter functions
   const updateFilters = (newFilters: Record<string, any>): void => {
-    // Prevent infinite loops by checking if filters actually changed
-    const hasChanged = Object.keys(newFilters).some(key => filters.value[key] !== newFilters[key])
-    if (!hasChanged) return
-    
-    Object.assign(filters.value, newFilters)
+    dataFiltering.updateFilters(newFilters)
     
     // Use URL state if enabled
     if (enableUrlSync && urlState) {
       urlState.onUpdateFilters(newFilters)
-      // Also call fetchData directly to ensure immediate update
-      fetchData()
-    } else {
-      fetchData()
+      // Không gọi fetchData ở đây vì watcher sẽ tự động gọi
     }
+    // Không gọi fetchData() ở đây nữa vì watcher sẽ tự động gọi
   }
 
   const resetFilters = (): void => {
-    // Prevent infinite loops by checking if filters actually changed
-    const hasChanged = Object.keys(defaultFilters).some(key => filters.value[key] !== defaultFilters[key])
-    if (!hasChanged) return
-    
-    Object.assign(filters.value, defaultFilters)
+    dataFiltering.resetFilters()
     
     // Use URL state if enabled
     if (enableUrlSync && urlState) {
       urlState.onResetFilters()
-      // Also call fetchData directly to ensure immediate update
-      fetchData()
-    } else {
-      fetchData()
+      // Không gọi fetchData ở đây vì watcher sẽ tự động gọi
     }
+    // Không gọi fetchData() ở đây nữa vì watcher sẽ tự động gọi
   }
 
   // Pagination functions
   const changePage = (page: number): void => {
+    dataPagination.changePage(page)
+    
     if (enableUrlSync && urlState) {
       urlState.onPageChange(page)
-      // Also call fetchData directly to ensure immediate update
-      fetchData({ page, per_page: pagination.value.per_page })
-    } else {
-      fetchData({ page, per_page: pagination.value.per_page })
+      // Không gọi fetchData ở đây vì watcher sẽ tự động gọi
     }
+    // Không gọi fetchData() ở đây nữa vì watcher sẽ tự động gọi
   }
 
   const changePageSize = (size: number): void => {
-    pagination.value.per_page = size
+    dataPagination.changePageSize(size)
+    
     if (enableUrlSync && urlState) {
       urlState.onUpdatePerPage(size)
-      // Also call fetchData directly to ensure immediate update
-      fetchData({ page: 1, per_page: size })
-    } else {
-      fetchData({ page: 1, per_page: size })
+      // Không gọi fetchData ở đây vì watcher sẽ tự động gọi
     }
+    // Không gọi fetchData() ở đây nữa vì watcher sẽ tự động gọi
   }
 
   // Utility functions
   const clearCache = (): void => {
-    cache.clear()
+    dataCaching.clearCache()
   }
 
   const refresh = (): Promise<{ data: T[]; meta: PaginationMeta }> => {
@@ -336,7 +312,7 @@ export function useBaseDataTable<T = any>(
 
   // Setup URL sync sau khi fetchData đã được định nghĩa
   if (enableUrlSync) {
-    const urlFilters = ref({ ...filters.value })
+    const urlFilters = ref({ ...dataFiltering.filters.value })
     const urlPagination = ref({ currentPage: 1, perPage: pageSize })
     const urlSort = ref({})
     
@@ -358,27 +334,43 @@ export function useBaseDataTable<T = any>(
 
   // Watch URL state changes (if enabled)
   if (enableUrlSync && urlState) {
+    // Watch URL query changes (from browser navigation)
     watch(() => urlState.getCurrentQuery(), (newQuery) => {
       // Sync URL query to local filters
-      Object.assign(filters.value, newQuery)
+      Object.assign(dataFiltering.filters.value, newQuery)
+      // Không gọi fetchData ở đây vì useUrlSync chỉ xử lý URL
+      // fetchData sẽ được gọi từ watcher local state
+    }, { deep: true })
+    
+    // Watch local filters changes để gọi fetchData khi cần thiết
+    watch(() => dataFiltering.filters.value, () => {
+      if (!isFetching.value) {
+        fetchData()
+      }
+    }, { deep: true })
+    
+    // Watch pagination changes để gọi fetchData khi cần thiết
+    watch(() => dataPagination.pagination.value, () => {
+      if (!isFetching.value) {
+        fetchData()
+      }
     }, { deep: true })
   }
 
-  // Initialize - fetchData sẽ được gọi bởi useUrlState nếu enableUrlSync = true
-  // hoặc có thể gọi thủ công nếu cần
-  if (!enableUrlSync) {
-    onMounted(() => {
-      fetchData()
-    })
-  }
+  // Initialize - gọi fetchData để load dữ liệu ban đầu
+  onMounted(() => {
+    // Always call fetchData on mount to load initial data
+    // URL sync will handle subsequent updates
+    fetchData()
+  })
 
   return {
-    // State - return refs directly
-    items,
-    loading,
-    error,
-    pagination,
-    filters,
+    // State - return refs directly from composables
+    items: dataFetching.items,
+    loading: dataFetching.loading,
+    error: dataFetching.error,
+    pagination: dataFetching.pagination,
+    filters: dataFiltering.filters,
     
     // Computed
     ...computedProps,

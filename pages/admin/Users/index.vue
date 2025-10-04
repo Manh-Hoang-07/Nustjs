@@ -152,7 +152,7 @@ definePageMeta({
 })
 
 import { ref, onMounted, defineAsyncComponent } from 'vue'
-import { useApiClient } from '@/composables/api/useApiClient'
+import { useGlobalApiClient } from '@/composables/api'
 import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
@@ -217,7 +217,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const { apiClient } = useApiClient()
+const { apiClient } = useGlobalApiClient()
 
 // State
 const roleEnums = ref([])
@@ -231,21 +231,23 @@ const showAssignRoleModal = ref(false)
 // Use selectedItem from composable as selectedUser
 const selectedUser = selectedItem
 
+// Flag to prevent duplicate enum loading
+const enumsLoaded = ref(false)
+
 // Fetch data
 onMounted(async () => {
   console.log('onMounted called')
   console.log('items before fetch:', items)
   console.log('loading before fetch:', loading)
   
-  // Load enums from API
-  await loadEnums()
+  // Load enums from API only once
+  if (!enumsLoaded.value) {
+    await loadEnums()
+    enumsLoaded.value = true
+  }
   
-  // Fetch users
-  console.log('About to fetch data...')
-  const result = await fetchData()
-  console.log('Fetch result:', result)
-  console.log('items after fetch:', items)
-  console.log('loading after fetch:', loading)
+  // fetchData() will be called automatically by useCrudDataTable with URL sync
+  // No need to call it manually here
 })
 
 function handleFilterUpdate(newFilters) {

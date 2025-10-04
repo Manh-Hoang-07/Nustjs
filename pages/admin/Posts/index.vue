@@ -13,6 +13,7 @@
     <!-- Bộ lọc -->
     <PostFilter 
       :initial-filters="filters"
+      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
@@ -128,7 +129,7 @@ import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 import { adminEndpoints } from '@/api/endpoints'
-import { useApiClient } from '@/composables/api/useApiClient'
+import { useGlobalApiClient } from '@/composables/api'
 
 // Lazy load components
 const CreatePost = defineAsyncComponent(() => import('./create.vue'))
@@ -181,7 +182,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const { apiClient } = useApiClient()
+const { apiClient } = useGlobalApiClient()
 
 // State
 const statusEnums = ref([])
@@ -192,12 +193,18 @@ const tagEnums = ref([])
 const selectedPost = selectedItem
 
 // Fetch data
+// Flag to prevent duplicate enum loading
+const enumsLoaded = ref(false)
+
 onMounted(async () => {
-  // Load enums via API
-  await fetchEnums()
+  // Load enums via API only once
+  if (!enumsLoaded.value) {
+    await fetchEnums()
+    enumsLoaded.value = true
+  }
   
-  // Fetch posts
-  await fetchData()
+  // fetchData() will be called automatically by useCrudDataTable with URL sync
+  // No need to call it manually here
 })
 
 function handleFilterUpdate(newFilters) {

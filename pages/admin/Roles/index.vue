@@ -122,7 +122,7 @@ import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
-import { useApiClient } from '@/composables/api/useApiClient'
+import { useGlobalApiClient } from '@/composables/api'
 import { adminEndpoints } from '@/api/endpoints'
 
 // Lazy load components
@@ -175,7 +175,7 @@ const {
 })
 
 const { showSuccess, showError } = useToast()
-const { apiClient } = useApiClient()
+const { apiClient } = useGlobalApiClient()
 
 // State
 const statusEnums = ref([])
@@ -183,12 +183,19 @@ const statusEnums = ref([])
 // Use selectedItem from composable as selectedRole
 const selectedRole = selectedItem
 
+// Flag to prevent duplicate enum loading
+const enumsLoaded = ref(false)
+
 // Fetch data
 onMounted(async () => {
-  await Promise.all([
-    fetchData(),
-    fetchStatusEnums()
-  ])
+  // Load enums only once
+  if (!enumsLoaded.value) {
+    await fetchStatusEnums()
+    enumsLoaded.value = true
+  }
+  
+  // fetchData() will be called automatically by useCrudDataTable with URL sync
+  // No need to call it manually here
 })
 
 function handleFilterUpdate(newFilters) {

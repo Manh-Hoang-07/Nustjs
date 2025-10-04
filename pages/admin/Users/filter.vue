@@ -14,7 +14,7 @@
           v-model="filters.status"
           label="Trạng thái"
           placeholder="Tất cả trạng thái"
-          :api-endpoint="statusApi"
+          :options="statusEnums"
           label-field="label"
           value-field="value"
         />
@@ -50,7 +50,6 @@
 import { reactive, computed } from 'vue'
 import TextFilter from '@/components/Core/Filter/TextFilter.vue'
 import SelectFilter from '@/components/Core/Filter/SelectFilter.vue'
-import { adminEndpoints } from '@/api/endpoints'
 
 const props = defineProps({
   initialFilters: {
@@ -71,8 +70,6 @@ const filters = reactive({
   sort_by: props.initialFilters.sort_by || 'created_at:desc',
 })
 
-// API cho enum trạng thái người dùng
-const statusApi = adminEndpoints.enums('user_status')
 
 const sortOptions = [
   { value: 'created_at:desc', label: 'Mới nhất' },

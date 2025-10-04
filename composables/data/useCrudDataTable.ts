@@ -1,5 +1,5 @@
 import { ref, reactive, computed, type Ref, type ComputedRef } from 'vue'
-import { useApiClient } from '../api/useApiClient'
+import { useGlobalApiClient } from '../api/useApiClient'
 import { useBaseDataTable, type BaseDataTableOptions, type PaginationMeta } from './useBaseDataTable'
 
 // ===== TYPES =====
@@ -74,7 +74,7 @@ export interface CrudDataTableResult<T = any> extends ReturnType<typeof useBaseD
  * Dành cho các trang admin cần quản lý dữ liệu với các thao tác Create, Read, Update, Delete
  */
 export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): CrudDataTableResult<T> {
-  const { apiClient } = useApiClient()
+  const { apiClient } = useGlobalApiClient()
   
   const { 
     endpoints, 
