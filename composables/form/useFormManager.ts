@@ -1,79 +1,18 @@
-import { ref, reactive, computed, watch, type Ref, type ComputedRef } from 'vue'
-
-// ===== TYPES =====
-
-interface FormData {
-  [key: string]: any
-}
-
-interface FormErrors {
-  [key: string]: string
-}
-
-interface FormTouched {
-  [key: string]: boolean
-}
-
-interface FormValidator {
-  (data: FormData): FormErrors
-}
-
-interface FormSubmitHandler {
-  (data: FormData): Promise<any>
-}
-
-interface FormSuccessHandler {
-  (result: any): void
-}
-
-interface FormErrorHandler {
-  (error: any): void
-}
-
-interface FormManagerOptions {
-  validator?: FormValidator | null
-  onSubmit?: FormSubmitHandler | null
-  onSuccess?: FormSuccessHandler | null
-  onError?: FormErrorHandler | null
-  autoValidate?: boolean
-}
-
-interface FormManagerResult {
-  // State
-  formData: FormData
-  errors: FormErrors
-  touched: FormTouched
-  loading: Ref<boolean>
-  submitted: Ref<boolean>
-  
-  // Computed
-  isValid: ComputedRef<boolean>
-  hasChanges: ComputedRef<boolean>
-  hasErrors: ComputedRef<boolean>
-  isDirty: ComputedRef<boolean>
-  
-  // Methods
-  setField: (field: string, value: any) => void
-  setFields: (fields: Partial<FormData>) => void
-  getField: (field: string) => any
-  validateField: (field: string) => boolean
-  validateForm: () => boolean
-  setError: (field: string, message: string) => void
-  setErrors: (newErrors: FormErrors) => void
-  clearError: (field: string) => void
-  clearErrors: () => void
-  reset: () => void
-  resetTo: (newData: FormData) => void
-  submit: (customData?: FormData | null) => Promise<any>
-  handleSubmit: (event?: Event) => Promise<any>
-}
-
-// ===== COMPOSABLE =====
+import { reactive, computed, watch } from 'vue'
+import { useFormErrors } from './useFormErrors'
+import { useFormValidation } from './useFormValidation'
+import { useFormSubmission } from './useFormSubmission'
+import type { 
+  FormData, 
+  FormTouched, 
+  FormManagerOptions, 
+  FormManagerResult 
+} from './form.types'
 
 /**
- * Composable để quản lý form với validation, submission và state management
+ * Composable chính để quản lý form - kết hợp các composables chuyên biệt
  */
-export default function useFormManager(
+export function useFormManager(
   initialData: FormData = {}, 
   options: FormManagerOptions = {}
 ): FormManagerResult {
@@ -88,27 +27,23 @@ export default function useFormManager(
   // State
   const formData: FormData = reactive({ ...initialData })
   const originalData: FormData = { ...initialData }
-  const errors: FormErrors = reactive({})
   const touched: FormTouched = reactive({})
-  const loading: Ref<boolean> = ref(false)
-  const submitted: Ref<boolean> = ref(false)
+
+  // Sử dụng các composables chuyên biệt
+  const { errors, setError, setErrors, clearError, clearAll } = useFormErrors()
+  const { isValid, validateField: validateFieldFn, validateForm: validateFormFn } = useFormValidation(formData, validator)
+  const { loading, submitted, submit: submitFn, handleSubmit: handleSubmitFn, resetSubmission } = useFormSubmission(onSubmit, onSuccess, onError)
 
   // Computed
-  const isValid: ComputedRef<boolean> = computed(() => {
-    if (!validator) return true
-    const validation = validator(formData)
-    return Object.keys(validation).length === 0
-  })
-
-  const hasChanges: ComputedRef<boolean> = computed(() => {
+  const hasChanges = computed(() => {
     return JSON.stringify(formData) !== JSON.stringify(originalData)
   })
 
-  const hasErrors: ComputedRef<boolean> = computed(() => {
+  const hasErrors = computed(() => {
     return Object.keys(errors).length > 0
   })
 
-  const isDirty: ComputedRef<boolean> = computed(() => {
+  const isDirty = computed(() => {
     return Object.keys(touched).length > 0
   })
 
@@ -118,7 +53,12 @@ export default function useFormManager(
     touched[field] = true
     
     if (autoValidate && validator) {
-      validateField(field)
+      const fieldErrors = validateFieldFn(field)
+      if (fieldErrors[field]) {
+        setError(field, fieldErrors[field])
+      } else {
+        clearError(field)
+      }
     }
   }
 
@@ -127,7 +67,12 @@ export default function useFormManager(
     Object.keys(fields).forEach(field => {
       touched[field] = true
       if (autoValidate && validator) {
-        validateField(field)
+        const fieldErrors = validateFieldFn(field)
+        if (fieldErrors[field]) {
+          setError(field, fieldErrors[field])
+        } else {
+          clearError(field)
+        }
       }
     })
   }
@@ -137,136 +82,69 @@ export default function useFormManager(
   }
 
   const validateField = (field: string): boolean => {
-    if (!validator) return true
-    
-    const validation = validator(formData)
-    if (validation[field]) {
-      errors[field] = validation[field]
+    const fieldErrors = validateFieldFn(field)
+    if (fieldErrors[field]) {
+      setError(field, fieldErrors[field])
       return false
     } else {
-      delete errors[field]
+      clearError(field)
       return true
     }
   }
 
   const validateForm = (): boolean => {
-    if (!validator) return true
-    
-    const validation = validator(formData)
-    Object.assign(errors, validation)
-    
+    const validation = validateFormFn()
+    setErrors(validation)
     return Object.keys(validation).length === 0
-  }
-
-  const setError = (field: string, message: string): void => {
-    errors[field] = message
-  }
-
-  const setErrors = (newErrors: FormErrors): void => {
-    Object.assign(errors, newErrors)
-  }
-
-  const clearError = (field: string): void => {
-    delete errors[field]
-  }
-
-  const clearErrors = (): void => {
-    Object.keys(errors).forEach(key => delete errors[key])
   }
 
   const reset = (): void => {
     Object.assign(formData, originalData)
-    clearErrors()
+    clearAll()
     Object.keys(touched).forEach(key => delete touched[key])
-    submitted.value = false
-    loading.value = false
+    resetSubmission()
   }
 
   const resetTo = (newData: FormData): void => {
     Object.assign(formData, newData)
     Object.assign(originalData, newData)
-    clearErrors()
+    clearAll()
     Object.keys(touched).forEach(key => delete touched[key])
-    submitted.value = false
-    loading.value = false
+    resetSubmission()
   }
 
   const submit = async (customData: FormData | null = null): Promise<any> => {
-    if (!onSubmit) {
-      return
-    }
-
-    submitted.value = true
-    
-    // Validate form
     if (!validateForm()) {
-      if (onError) {
-        onError(errors)
-      }
+      if (onError) onError(errors)
       return false
     }
 
-    loading.value = true
-    clearErrors()
-
-    try {
-      const dataToSubmit = customData || formData
-      const result = await onSubmit(dataToSubmit)
-      
-      if (onSuccess) {
-        onSuccess(result)
-      }
-      
-      return result
-    } catch (error: any) {
-      // Handle API errors
-      if (error.response?.data?.errors) {
-        setErrors(error.response.data.errors)
-      } else {
-        setError('_general', error.message || 'Có lỗi xảy ra')
-      }
-      
-      if (onError) {
-        onError(error)
-      }
-      
-      throw error
-    } finally {
-      loading.value = false
-    }
+    clearAll()
+    return submitFn(formData, customData)
   }
 
   const handleSubmit = (event?: Event): Promise<any> => {
-    if (event) {
-      event.preventDefault()
-    }
+    if (event) event.preventDefault()
     return submit()
   }
 
   // Watch for form data changes
   if (autoValidate) {
     watch(formData, () => {
-      if (submitted.value) {
-        validateForm()
-      }
+      if (submitted.value) validateForm()
     }, { deep: true })
   }
 
   return {
-    // State
     formData,
     errors,
     touched,
     loading,
     submitted,
-    
-    // Computed
     isValid,
     hasChanges,
     hasErrors,
     isDirty,
-    
-    // Methods
     setField,
     setFields,
     getField,
@@ -275,7 +153,7 @@ export default function useFormManager(
     setError,
     setErrors,
     clearError,
-    clearErrors,
+    clearErrors: clearAll,
     reset,
     resetTo,
     submit,

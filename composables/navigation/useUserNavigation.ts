@@ -1,34 +1,14 @@
-import { ref, computed, type Ref, type ComputedRef } from 'vue'
-
-// ===== TYPES =====
-
-interface MenuItem {
-  name: string
-  path?: string
-  icon: string
-  status: 'active' | 'inactive'
-  children?: MenuItem[]
-}
-
-type MenuType = 'user' | 'cart' | 'search' | 'support' | 'default'
-
-interface UserNavigationResult {
-  menuItems: ComputedRef<MenuItem[]>
-  userMenuItems: ComputedRef<MenuItem[]>
-  cartMenuItems: ComputedRef<MenuItem[]>
-  searchMenuItems: ComputedRef<MenuItem[]>
-  supportMenuItems: ComputedRef<MenuItem[]>
-  currentPath: Ref<string>
-  getMenuItemsByType: (type: MenuType) => MenuItem[]
-  isActiveMenuItem: (item: MenuItem) => boolean
-  getBreadcrumb: () => MenuItem[]
-  searchInMenuItems: (query: string) => MenuItem[]
-}
+import { computed, type ComputedRef } from 'vue'
+import { useRoute } from 'vue-router'
+import type { MenuItem, UserNavigationResult, MenuType } from './types'
 
 // ===== COMPOSABLE =====
 
 export function useUserNavigation(): UserNavigationResult {
-  const currentPath: Ref<string> = ref('')
+  const route = useRoute()
+  
+  // Current path từ route
+  const currentPath = computed(() => route.path)
   
   // Menu items cho người dùng
   const menuItems: ComputedRef<MenuItem[]> = computed(() => [
@@ -38,19 +18,6 @@ export function useUserNavigation(): UserNavigationResult {
       icon: '🏠',
       status: 'active'
     },
-    // Sản phẩm và danh mục sẽ được thêm sau khi tạo các trang tương ứng
-    // {
-    //   name: 'Sản phẩm',
-    //   icon: '🛍️',
-    //   status: 'inactive',
-    //   children: []
-    // },
-    // {
-    //   name: 'Danh mục',
-    //   icon: '📂',
-    //   status: 'inactive',
-    //   children: []
-    // },
     {
       name: 'Tin tức',
       path: '/home/posts',
@@ -111,115 +78,17 @@ export function useUserNavigation(): UserNavigationResult {
     }
   ])
 
-  // Menu items cho giỏ hàng
-  const cartMenuItems: ComputedRef<MenuItem[]> = computed(() => [
-    {
-      name: 'Xem giỏ hàng',
-      path: '/cart',
-      icon: '🛒',
-      status: 'active'
-    },
-    {
-      name: 'Thanh toán',
-      path: '/checkout',
-      icon: '💳',
-      status: 'active'
-    }
-  ])
 
-  // Menu items cho tìm kiếm
-  const searchMenuItems: ComputedRef<MenuItem[]> = computed(() => [
-    {
-      name: 'Tìm kiếm nâng cao',
-      path: '/search/advanced',
-      icon: '🔍',
-      status: 'active'
-    },
-    {
-      name: 'Lịch sử tìm kiếm',
-      path: '/search/history',
-      icon: '📜',
-      status: 'active'
-    },
-    {
-      name: 'Sản phẩm đã xem',
-      path: '/user/recently-viewed',
-      icon: '👁️',
-      status: 'active'
-    }
-  ])
-
-  // Menu items cho hỗ trợ
-  const supportMenuItems: ComputedRef<MenuItem[]> = computed(() => [
-    {
-      name: 'Hướng dẫn mua hàng',
-      path: '/help/shopping-guide',
-      icon: '🛒',
-      status: 'active'
-    },
-    {
-      name: 'Chính sách đổi trả',
-      path: '/help/return-policy',
-      icon: '🔄',
-      status: 'active'
-    },
-    {
-      name: 'Vận chuyển',
-      path: '/help/shipping',
-      icon: '🚚',
-      status: 'active'
-    },
-    {
-      name: 'Thanh toán',
-      path: '/help/payment',
-      icon: '💳',
-      status: 'active'
-    },
-    {
-      name: 'Bảo hành',
-      path: '/help/warranty',
-      icon: '🛡️',
-      status: 'active'
-    },
-    {
-      name: 'FAQ',
-      path: '/help/faq',
-      icon: '❓',
-      status: 'active'
-    }
-  ])
-
-  // Hàm filter menu items theo status
-  const filterMenuItemsByStatus = (items: MenuItem[]): MenuItem[] => {
-    return items.filter(item => {
-      if (item.status !== 'active') return false
-      
-      if (item.children) {
-        const filteredChildren = filterMenuItemsByStatus(item.children)
-        if (filteredChildren.length === 0) return false
-        return {
-          ...item,
-          children: filteredChildren
-        } as MenuItem
-      }
-      return true
-    })
-  }
-
-  // Menu items đã được filter theo status
-  const filteredMenuItems: ComputedRef<MenuItem[]> = computed(() => filterMenuItemsByStatus(menuItems.value))
+  // Menu items đã được filter - đơn giản chỉ filter theo status
+  const filteredMenuItems: ComputedRef<MenuItem[]> = computed(() => {
+    return menuItems.value.filter(item => item.status === 'active')
+  })
 
   // Hàm để lấy menu items theo loại
   const getMenuItemsByType = (type: MenuType): MenuItem[] => {
     switch (type) {
       case 'user':
-        return filterMenuItemsByStatus(userMenuItems.value)
-      case 'cart':
-        return filterMenuItemsByStatus(cartMenuItems.value)
-      case 'search':
-        return filterMenuItemsByStatus(searchMenuItems.value)
-      case 'support':
-        return filterMenuItemsByStatus(supportMenuItems.value)
+        return userMenuItems.value.filter(item => item.status === 'active')
       default:
         return filteredMenuItems.value
     }
@@ -232,60 +101,11 @@ export function useUserNavigation(): UserNavigationResult {
            (item.children ? item.children.some(child => child.path === currentPath.value) : false)
   }
 
-  // Hàm để lấy breadcrumb
-  const getBreadcrumb = (): MenuItem[] => {
-    const breadcrumb: MenuItem[] = []
-    const findPath = (items: MenuItem[], targetPath: string): boolean => {
-      for (const item of items) {
-        if (item.path === targetPath) {
-          breadcrumb.push(item)
-          return true
-        }
-        if (item.children) {
-          breadcrumb.push(item)
-          if (findPath(item.children, targetPath)) {
-            return true
-          }
-          breadcrumb.pop()
-        }
-      }
-      return false
-    }
-    
-    findPath(menuItems.value, currentPath.value)
-    return breadcrumb
-  }
-
-  // Hàm để tìm kiếm menu items
-  const searchInMenuItems = (query: string): MenuItem[] => {
-    if (!query) return []
-    
-    const results: MenuItem[] = []
-    const searchInItems = (items: MenuItem[]): void => {
-      for (const item of items) {
-        if (item.name.toLowerCase().includes(query.toLowerCase())) {
-          results.push(item)
-        }
-        if (item.children) {
-          searchInItems(item.children)
-        }
-      }
-    }
-    
-    searchInItems(menuItems.value)
-    return results
-  }
-
   return {
     menuItems: filteredMenuItems,
     userMenuItems,
-    cartMenuItems,
-    searchMenuItems,
-    supportMenuItems,
     currentPath,
     getMenuItemsByType,
-    isActiveMenuItem,
-    getBreadcrumb,
-    searchInMenuItems
+    isActiveMenuItem
   }
 }

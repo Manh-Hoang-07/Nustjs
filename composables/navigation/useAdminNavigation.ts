@@ -1,26 +1,16 @@
-import { ref, computed, type Ref, type ComputedRef } from 'vue'
-
-// ===== TYPES =====
-
-interface MenuItem {
-  name: string
-  path?: string
-  icon: string
-  status: 'active' | 'inactive'
-  children?: MenuItem[]
-}
-
-interface AdminNavigationResult {
-  menuItems: ComputedRef<MenuItem[]>
-  currentPath: Ref<string>
-}
+import { computed, type ComputedRef } from 'vue'
+import { useRoute } from 'vue-router'
+import type { MenuItem, AdminNavigationResult } from './types'
 
 // ===== COMPOSABLE =====
 
 export function useAdminNavigation(): AdminNavigationResult {
-  const currentPath: Ref<string> = ref('')
+  const route = useRoute()
   
-  // Menu items - đơn giản hóa, không cần lazy loading
+  // Current path từ route
+  const currentPath = computed(() => route.path)
+  
+  // Menu items đơn giản - luôn hiển thị
   const menuItems: ComputedRef<MenuItem[]> = computed(() => [
     {
       name: 'Dashboard',
@@ -29,54 +19,40 @@ export function useAdminNavigation(): AdminNavigationResult {
       status: 'active'
     },
     {
-      name: 'Quản lý chung',
-      icon: '⚙️',
-      status: 'active',
-      children: [
-        {
-          name: 'Tài khoản',
-          path: '/admin/users',
-          icon: '👤',
-          status: 'active'
-        },
-        {
-          name: 'Quyền',
-          path: '/admin/permissions',
-          icon: '🔑',
-          status: 'active'
-        },
-        {
-          name: 'Vai trò',
-          path: '/admin/roles',
-          icon: '👑',
-          status: 'active'
-        }
-      ]
+      name: 'Tài khoản',
+      path: '/admin/users',
+      icon: '👤',
+      status: 'active'
+    },
+    {
+      name: 'Quyền',
+      path: '/admin/permissions',
+      icon: '🔑',
+      status: 'active'
+    },
+    {
+      name: 'Vai trò',
+      path: '/admin/roles',
+      icon: '👑',
+      status: 'active'
     },
     {
       name: 'Tin tức',
+      path: '/admin/posts',
       icon: '📰',
-      status: 'active',
-      children: [
-        {
-          name: 'Danh sách bài viết',
-          path: '/admin/posts',
-          icon: '📄',
-          status: 'active'
-        },
-        {
-          name: 'Danh mục bài viết',
-          path: '/admin/post-categories',
-          icon: '📁',
-          status: 'active'
-        },
-        {
-          name: 'Thẻ bài viết',
-          path: '/admin/post-tags',
-          icon: '🏷️',
-          status: 'active'
-        }
-      ]
+      status: 'active'
+    },
+    {
+      name: 'Danh mục bài viết',
+      path: '/admin/post-categories',
+      icon: '📁',
+      status: 'active'
+    },
+    {
+      name: 'Thẻ bài viết',
+      path: '/admin/post-tags',
+      icon: '🏷️',
+      status: 'active'
     },
     {
       name: 'Liên hệ',
@@ -86,26 +62,20 @@ export function useAdminNavigation(): AdminNavigationResult {
     }
   ])
 
-  // Hàm filter menu items theo status (trả về mảng đã lọc và giữ lại children hợp lệ)
-  const filterMenuItemsByStatus = (items: MenuItem[]): MenuItem[] => {
-    return (items || [])
-      .filter(item => item && item.status === 'active')
-      .map(item => {
-        if (Array.isArray(item.children) && item.children.length > 0) {
-          const filteredChildren = filterMenuItemsByStatus(item.children)
-          if (filteredChildren.length === 0) return null
-          return { ...item, children: filteredChildren }
-        }
-        return item
-      })
-      .filter((item): item is MenuItem => item !== null)
-  }
+  // Menu items đã được filter - đơn giản chỉ filter theo status
+  const filteredMenuItems: ComputedRef<MenuItem[]> = computed(() => {
+    return menuItems.value.filter(item => item.status === 'active')
+  })
 
-  // Menu items đã được filter theo status
-  const filteredMenuItems: ComputedRef<MenuItem[]> = computed(() => filterMenuItemsByStatus(menuItems.value))
+  // Hàm kiểm tra menu item có active không
+  const isActiveMenuItem = (item: MenuItem): boolean => {
+    if (!currentPath.value) return false
+    return currentPath.value === item.path
+  }
 
   return {
     menuItems: filteredMenuItems,
-    currentPath
+    currentPath,
+    isActiveMenuItem
   }
 }
