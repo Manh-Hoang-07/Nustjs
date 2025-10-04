@@ -88,7 +88,8 @@ export function useUrlSync(
   })
 
   // Watch for route changes (back/forward navigation)
-  watch(() => route.query, () => {
+  watch(() => route.query, (newQuery, oldQuery) => {
+    console.log('Route query changed:', newQuery)
     loadStateFromUrl()
     // Không gọi fetchData ở đây để tránh trùng lặp với useBaseDataTable
     // useBaseDataTable sẽ tự động gọi fetchData khi cần thiết
@@ -116,13 +117,17 @@ export function useUrlSync(
   }
 
   function loadStateFromUrl(): void {
+    console.log('loadStateFromUrl called with route.query:', route.query)
+    
     // Load pagination
     urlPagination.loadPaginationFromUrl()
     Object.assign(pagination.value, urlPagination.pagination.value)
+    console.log('Pagination loaded from URL:', pagination.value)
 
     // Load filters
     urlFilters.loadFiltersFromUrl()
     Object.assign(filters.value, urlFilters.filters.value)
+    console.log('Filters loaded from URL:', filters.value)
 
     // Load sort
     if (route.query.sort_by) {
@@ -131,6 +136,7 @@ export function useUrlSync(
     if (route.query.sort_order && ['asc', 'desc'].includes(route.query.sort_order as string)) {
       sort.value.sortOrder = route.query.sort_order as 'asc' | 'desc'
     }
+    console.log('Sort loaded from URL:', sort.value)
   }
 
   // Cập nhật URL với tất cả tham số
@@ -233,21 +239,25 @@ export function useUrlSync(
   }
 
   function getCurrentQuery(): Record<string, any> {
-    const query: Record<string, any> = {
-      page: pagination.value.currentPage,
-      per_page: pagination.value.perPage,
-      ...filters.value,
-      sort_by: sort.value.sortBy,
-      sort_order: sort.value.sortOrder
-    }
+    // Lấy query từ URL trực tiếp thay vì từ local state
+    const urlQuery = { ...route.query }
     
-    // Loại bỏ các giá trị undefined nhưng giữ lại 0 và false
-    Object.keys(query).forEach(key => {
-      if (query[key] === undefined || query[key] === null || query[key] === '') {
-        delete query[key]
+    // Chuyển đổi string values thành proper types
+    const query: Record<string, any> = {}
+    
+    Object.keys(urlQuery).forEach(key => {
+      const value = urlQuery[key]
+      if (value !== undefined && value !== null && value !== '') {
+        // Convert string numbers to numbers
+        if (key === 'page' || key === 'per_page') {
+          query[key] = parseInt(value as string, 10)
+        } else {
+          query[key] = value
+        }
       }
     })
     
+    console.log('getCurrentQuery returning:', query)
     return query
   }
 

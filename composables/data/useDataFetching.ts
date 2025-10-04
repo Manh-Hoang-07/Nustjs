@@ -85,10 +85,29 @@ export function useDataFetching<T = any>(
     try {
       // Transform params before sending
       const transformedParams = beforeSubmit(params)
+      console.log('Original params:', params)
+      console.log('Transformed params:', transformedParams)
+      console.log('beforeSubmit function:', beforeSubmit)
       
       // Fetch from server
       console.log('Making API call to:', endpoint, 'with params:', transformedParams)
-      const response = await apiClient.get(endpoint, { params: transformedParams })
+      console.log('API call config object:', { params: transformedParams })
+      
+      // Try different approaches to debug
+      console.log('Trying direct URL params approach...')
+      const urlParams = new URLSearchParams()
+      Object.keys(transformedParams).forEach(key => {
+        if (transformedParams[key] !== undefined && transformedParams[key] !== null && transformedParams[key] !== '') {
+          urlParams.append(key, transformedParams[key])
+        }
+      })
+      const queryString = urlParams.toString()
+      console.log('Query string:', queryString)
+      
+      // Try using URL directly instead of params
+      const fullUrl = queryString ? `${endpoint}?${queryString}` : endpoint
+      console.log('Full URL:', fullUrl)
+      const response = await apiClient.get(fullUrl)
       console.log('API response:', response)
       
       const { data, meta } = response.data

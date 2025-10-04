@@ -13,6 +13,7 @@
     <!-- Bộ lọc -->
     <UserFilter 
       :initial-filters="filters"
+      :status-enums="statusEnums"
       @update:filters="handleFilterUpdate" 
     />
 
@@ -176,6 +177,7 @@ const {
   filters, 
   fetchData, 
   updateFilters,
+  changePage,
   // CRUD operations
   createItem,
   updateItem,
@@ -384,7 +386,9 @@ async function deleteUser() {
 }
 
 function handlePageChange(page) {
-  fetchData({ page })
+  // Sử dụng changePage từ composable thay vì fetchData trực tiếp
+  // để đảm bảo URL sync hoạt động đúng
+  changePage(page)
 }
 
 // Helper functions

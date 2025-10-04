@@ -147,7 +147,7 @@ export function useBaseDataTable<T = any>(
     defaultTTL: 5 * 60 * 1000
   })
 
-  // URL sync setup (if enabled)
+  // URL sync setup (if enabled) - khởi tạo sớm
   let urlState: any = null
 
   // Computed properties
@@ -201,12 +201,17 @@ export function useBaseDataTable<T = any>(
       
       if (enableUrlSync && urlState) {
         const urlQuery = urlState.getCurrentQuery()
+        console.log('URL query from urlState:', urlQuery)
+        console.log('Local filters:', dataFiltering.filters.value)
+        console.log('Pagination:', dataPagination.pagination.value)
+        
         // Merge URL query with local filters and params
         requestParams = {
-          ...dataFiltering.filters.value,        // Local filters as base
-          ...urlQuery,             // URL query overrides
+          ...urlQuery,             // URL query as base (this is the main source)
+          ...dataFiltering.filters.value,        // Local filters as fallback
           ...params,               // Direct params override everything
-          per_page: dataPagination.pagination.value.per_page
+          // Don't override per_page from URL if it exists
+          ...(urlQuery.per_page ? {} : { per_page: dataPagination.pagination.value.per_page })
         }
       }
       
@@ -222,22 +227,11 @@ export function useBaseDataTable<T = any>(
         }
       }
       
-      // Fetch from server directly using apiClient to avoid duplicate calls
-      const { apiClient } = useGlobalApiClient()
-      const response = await apiClient.get(endpoint, { params: requestParams })
-      const { data, meta } = response.data
+      // Use dataFetching composable to make API call
+      console.log('Final requestParams being sent to API:', requestParams)
+      console.log('Using dataFetching.fetchData with params:', requestParams)
       
-      // Transform items
-      const transformedData = data.map(transformItem)
-      
-      // Update state
-      dataFetching.items.value = transformedData
-      Object.assign(dataFetching.pagination.value, meta)
-      
-      // After fetch hook
-      afterFetch(response.data)
-      
-      const result = { data: transformedData, meta }
+      const result = await dataFetching.fetchData(requestParams)
       
       // Cache result
       if (cacheEnabled) {
@@ -335,11 +329,14 @@ export function useBaseDataTable<T = any>(
   // Watch URL state changes (if enabled)
   if (enableUrlSync && urlState) {
     // Watch URL query changes (from browser navigation)
-    watch(() => urlState.getCurrentQuery(), (newQuery) => {
+    watch(() => urlState.getCurrentQuery(), (newQuery, oldQuery) => {
+      console.log('URL query changed:', newQuery)
       // Sync URL query to local filters
       Object.assign(dataFiltering.filters.value, newQuery)
-      // Không gọi fetchData ở đây vì useUrlSync chỉ xử lý URL
-      // fetchData sẽ được gọi từ watcher local state
+      // Gọi fetchData với tham số từ URL
+      if (!isFetching.value && JSON.stringify(newQuery) !== JSON.stringify(oldQuery)) {
+        fetchData()
+      }
     }, { deep: true })
     
     // Watch local filters changes để gọi fetchData khi cần thiết
