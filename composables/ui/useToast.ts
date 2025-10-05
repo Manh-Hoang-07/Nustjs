@@ -1,27 +1,6 @@
 import { ref, type Ref } from 'vue'
-
-// ===== TYPES =====
-
-type ToastType = 'success' | 'error' | 'warning' | 'info'
-
-interface Toast {
-  id: number
-  message: string
-  type: ToastType
-  duration: number
-  visible: boolean
-}
-
-interface ToastResult {
-  toasts: Ref<Toast[]>
-  showToast: (message: string, type?: ToastType, duration?: number) => number
-  showSuccess: (message: string, duration?: number) => number
-  showError: (message: string, duration?: number) => number
-  showWarning: (message: string, duration?: number) => number
-  showInfo: (message: string, duration?: number) => number
-  removeToast: (id: number) => void
-  clearAll: () => void
-}
+import type { ToastType, Toast, ToastResult, ToastOptions } from './ui.types'
+import { createToastOptions, generateToastId } from './ui.utils'
 
 // ===== GLOBAL STATE =====
 
@@ -31,13 +10,14 @@ let toastId = 0
 // ===== COMPOSABLE =====
 
 export function useToast(): ToastResult {
-  const showToast = (message: string, type: ToastType = 'info', duration: number = 3000): number => {
-    const id = ++toastId
+  const showToast = (message: string, type: ToastType = 'info', options: ToastOptions = {}): number => {
+    const toastOptions = createToastOptions(options)
+    const id = generateToastId()
     const toast: Toast = {
       id,
       message,
       type,
-      duration,
+      duration: toastOptions.duration!,
       visible: true
     }
     
@@ -46,7 +26,7 @@ export function useToast(): ToastResult {
     // Auto remove after duration
     setTimeout(() => {
       removeToast(id)
-    }, duration)
+    }, toastOptions.duration!)
     
     return id
   }
@@ -61,20 +41,20 @@ export function useToast(): ToastResult {
     }
   }
   
-  const showSuccess = (message: string, duration?: number): number => {
-    return showToast(message, 'success', duration)
+  const showSuccess = (message: string, options?: ToastOptions): number => {
+    return showToast(message, 'success', options)
   }
   
-  const showError = (message: string, duration?: number): number => {
-    return showToast(message, 'error', duration)
+  const showError = (message: string, options?: ToastOptions): number => {
+    return showToast(message, 'error', options)
   }
   
-  const showWarning = (message: string, duration?: number): number => {
-    return showToast(message, 'warning', duration)
+  const showWarning = (message: string, options?: ToastOptions): number => {
+    return showToast(message, 'warning', options)
   }
   
-  const showInfo = (message: string, duration?: number): number => {
-    return showToast(message, 'info', duration)
+  const showInfo = (message: string, options?: ToastOptions): number => {
+    return showToast(message, 'info', options)
   }
   
   const clearAll = (): void => {

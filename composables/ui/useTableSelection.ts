@@ -1,33 +1,12 @@
 import { ref, computed, type Ref, type ComputedRef } from 'vue'
-
-// ===== TYPES =====
-
-interface TableSelectionOptions<T = any> {
-  keyField?: string
-  multiSelect?: boolean
-  onSelectionChange?: (selectedItems: T[]) => void
-}
-
-interface TableSelectionResult<T = any> {
-  // State
-  selectedItems: Ref<T[]>
-  selectedKeys: Ref<Set<string | number>>
-  
-  // Computed
-  hasSelection: ComputedRef<boolean>
-  selectedCount: ComputedRef<number>
-  isAllSelected: ComputedRef<boolean>
-  isIndeterminate: ComputedRef<boolean>
-  
-  // Methods
-  selectItem: (item: T) => void
-  selectAll: () => void
-  clearSelection: () => void
-  isSelected: (item: T) => boolean
-  getSelectedKeys: () => (string | number)[]
-  selectByKeys: (keys: (string | number)[]) => void
-  removeFromSelection: (item: T) => void
-}
+import type { TableSelectionOptions, TableSelectionResult } from './ui.types'
+import { 
+  createTableSelectionOptions, 
+  getItemKey, 
+  isItemSelected, 
+  toggleItemSelection, 
+  selectAllItems 
+} from './ui.utils'
 
 // ===== COMPOSABLE =====
 
@@ -38,11 +17,12 @@ export default function useTableSelection<T = any>(
   items: Ref<T[]> = ref([]), 
   options: TableSelectionOptions<T> = {}
 ): TableSelectionResult<T> {
+  const selectionOptions = createTableSelectionOptions(options)
   const {
-    keyField = 'id',
-    multiSelect = true,
-    onSelectionChange = null
-  } = options
+    keyField,
+    multiSelect,
+    onSelectionChange
+  } = selectionOptions
 
   // State
   const selectedItems: Ref<T[]> = ref([])
@@ -61,24 +41,16 @@ export default function useTableSelection<T = any>(
 
   // Methods
   const selectItem = (item: T): void => {
-    const key = (item as any)[keyField]
+    const result = toggleItemSelection(
+      item, 
+      selectedItems.value, 
+      selectedKeys.value, 
+      keyField!, 
+      multiSelect!
+    )
     
-    if (!multiSelect) {
-      // Single select mode
-      selectedItems.value = [item]
-      selectedKeys.value = new Set([key])
-    } else {
-      // Multi select mode
-      if (selectedKeys.value.has(key)) {
-        // Deselect
-        selectedItems.value = selectedItems.value.filter(i => (i as any)[keyField] !== key)
-        selectedKeys.value.delete(key)
-      } else {
-        // Select
-        selectedItems.value.push(item)
-        selectedKeys.value.add(key)
-      }
-    }
+    selectedItems.value = result.selectedItems
+    selectedKeys.value = result.selectedKeys
 
     // Trigger callback
     if (onSelectionChange) {
@@ -87,15 +59,15 @@ export default function useTableSelection<T = any>(
   }
 
   const selectAll = (): void => {
-    if (isAllSelected.value) {
-      // Deselect all
-      selectedItems.value = []
-      selectedKeys.value.clear()
-    } else {
-      // Select all
-      selectedItems.value = [...items.value]
-      selectedKeys.value = new Set(items.value.map(item => (item as any)[keyField]))
-    }
+    const result = selectAllItems(
+      items.value, 
+      selectedItems.value, 
+      selectedKeys.value, 
+      keyField!
+    )
+    
+    selectedItems.value = result.selectedItems
+    selectedKeys.value = result.selectedKeys
 
     // Trigger callback
     if (onSelectionChange) {
@@ -114,7 +86,7 @@ export default function useTableSelection<T = any>(
   }
 
   const isSelected = (item: T): boolean => {
-    return selectedKeys.value.has((item as any)[keyField])
+    return isItemSelected(item, selectedKeys.value, keyField!)
   }
 
   const getSelectedKeys = (): (string | number)[] => {
@@ -122,7 +94,9 @@ export default function useTableSelection<T = any>(
   }
 
   const selectByKeys = (keys: (string | number)[]): void => {
-    const itemsToSelect = items.value.filter(item => keys.includes((item as any)[keyField]))
+    const itemsToSelect = items.value.filter(item => 
+      keys.includes(getItemKey(item, keyField!))
+    )
     selectedItems.value = itemsToSelect
     selectedKeys.value = new Set(keys)
     
@@ -133,8 +107,10 @@ export default function useTableSelection<T = any>(
   }
 
   const removeFromSelection = (item: T): void => {
-    const key = (item as any)[keyField]
-    selectedItems.value = selectedItems.value.filter(i => (i as any)[keyField] !== key)
+    const key = getItemKey(item, keyField!)
+    selectedItems.value = selectedItems.value.filter(i => 
+      getItemKey(i, keyField!) !== key
+    )
     selectedKeys.value.delete(key)
     
     // Trigger callback

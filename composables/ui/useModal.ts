@@ -1,34 +1,6 @@
 import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
-
-// ===== TYPES =====
-
-interface ModalOptions {
-  initialState?: boolean
-  closeOnEscape?: boolean
-  closeOnOverlay?: boolean
-  onOpen?: (data: any) => void
-  onClose?: (data: any) => void
-  beforeClose?: (data: any) => Promise<boolean> | boolean
-}
-
-interface ModalResult {
-  // State
-  isOpen: Ref<boolean>
-  isLoading: Ref<boolean>
-  data: Ref<any>
-  
-  // Computed
-  isClosed: ComputedRef<boolean>
-  
-  // Methods
-  open: (modalData?: any) => void
-  close: () => Promise<boolean>
-  toggle: () => void
-  setLoading: (loading: boolean) => void
-  setData: (newData: any) => void
-  reset: () => void
-  handleOverlayClick: (event: Event) => void
-}
+import type { ModalOptions, ModalResult } from './ui.types'
+import { createModalOptions, shouldCloseModal } from './ui.utils'
 
 // ===== COMPOSABLE =====
 
@@ -36,14 +8,15 @@ interface ModalResult {
  * Composable để quản lý modal với các tính năng nâng cao
  */
 export default function useModal(options: ModalOptions = {}): ModalResult {
+  const modalOptions = createModalOptions(options)
   const {
-    initialState = false,
-    closeOnEscape = true,
-    closeOnOverlay = true,
-    onOpen = null,
-    onClose = null,
-    beforeClose = null
-  } = options
+    initialState,
+    closeOnEscape,
+    closeOnOverlay,
+    onOpen,
+    onClose,
+    beforeClose
+  } = modalOptions
 
   // State
   const isOpen: Ref<boolean> = ref(initialState)
@@ -112,14 +85,14 @@ export default function useModal(options: ModalOptions = {}): ModalResult {
 
   // Keyboard event handler
   const handleKeydown = (event: KeyboardEvent): void => {
-    if (closeOnEscape && event.key === 'Escape' && isOpen.value) {
+    if (shouldCloseModal(event, modalOptions) && isOpen.value) {
       close()
     }
   }
 
   // Overlay click handler
   const handleOverlayClick = (event: Event): void => {
-    if (closeOnOverlay && event.target === event.currentTarget) {
+    if (shouldCloseModal(event, modalOptions)) {
       close()
     }
   }
