@@ -1,71 +1,21 @@
 import { ref, reactive, computed, type Ref, type ComputedRef } from 'vue'
 import { useGlobalApiClient } from '../api/useApiClient'
-import { useBaseDataTable, type BaseDataTableOptions, type PaginationMeta } from './useBaseDataTable'
-
-// ===== TYPES =====
-
-export interface CrudEndpoints {
-  list: string
-  create: string
-  update: (id: number) => string
-  delete: (id: number) => string
-}
-
-export interface CrudModals {
-  create: boolean
-  edit: boolean
-  delete: boolean
-  view: boolean
-}
-
-export interface CrudState<T = any> {
-  selectedItems: Ref<T[]>
-  selectedItem: Ref<T | null>
-  apiErrors: Ref<Record<string, string>>
-  modals: Ref<CrudModals>
-}
-
-export interface CrudComputedProps {
-  hasSelection: ComputedRef<boolean>
-  isAllSelected: ComputedRef<boolean>
-  selectedCount: ComputedRef<number>
-}
-
-export interface CrudDataTableOptions<T = any> extends Omit<BaseDataTableOptions, 'enableUrlSync'> {
-  endpoints: CrudEndpoints
-  resourceName?: string
-}
-
-export interface CrudDataTableResult<T = any> extends ReturnType<typeof useBaseDataTable<T>>, CrudComputedProps {
-  // CRUD state as refs
-  selectedItems: Ref<T[]>
-  selectedItem: Ref<T | null>
-  apiErrors: Ref<Record<string, string>>
-  modals: Ref<CrudModals>
-  // CRUD operations
-  createItem: (data: any) => Promise<any>
-  updateItem: (data: any) => Promise<any>
-  deleteItem: () => Promise<boolean>
-  deleteSelectedItems: () => Promise<boolean>
-  
-  // Selection handlers
-  toggleSelectAll: () => void
-  toggleSelectItem: (item: T) => void
-  
-  // Modal handlers
-  openCreateModal: () => void
-  closeCreateModal: () => void
-  openEditModal: (item: T) => void
-  closeEditModal: () => void
-  openDeleteModal: (item: T) => void
-  closeDeleteModal: () => void
-  openViewModal: (item: T) => void
-  closeViewModal: () => void
-  
-  // Error handlers
-  handleApiError: (error: any) => void
-  clearApiErrors: () => void
-}
+import { useBaseDataTable } from './useBaseDataTable'
+import type { 
+  BaseDataTableOptions, 
+  CrudEndpoints, 
+  CrudModals, 
+  CrudState, 
+  CrudComputedProps, 
+  CrudDataTableOptions, 
+  CrudDataTableResult 
+} from './data.types'
+import { 
+  extractValidationErrors, 
+  isAllSelected, 
+  toggleItemSelection, 
+  toggleAllSelection 
+} from './data.utils'
 
 // ===== COMPOSABLE =====
 
@@ -116,7 +66,7 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
   const crudComputed: CrudComputedProps = {
     hasSelection: computed(() => selectedItems.value.length > 0),
     isAllSelected: computed(() => 
-      baseDataTable.items.value.length > 0 && selectedItems.value.length === baseDataTable.items.value.length
+      isAllSelected(baseDataTable.items.value, selectedItems.value)
     ),
     selectedCount: computed(() => selectedItems.value.length)
   }
@@ -124,17 +74,8 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
   // API error handling
   const errorHandlers = {
     handleApiError(error: any): void {
-      if (error.response?.status === 422 && error.response?.data?.errors) {
-        const errors = error.response.data.errors
-        
-        for (const field in errors) {
-          if (Array.isArray(errors[field])) {
-            apiErrors.value[field] = errors[field][0]
-          } else {
-            apiErrors.value[field] = errors[field]
-          }
-        }
-      }
+      const validationErrors = extractValidationErrors(error)
+      Object.assign(apiErrors.value, validationErrors)
     },
 
     clearApiErrors(): void {
@@ -188,20 +129,11 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
   // Selection handlers
   const selectionHandlers = {
     toggleSelectAll(): void {
-      if (selectedItems.value.length === baseDataTable.items.value.length) {
-        selectedItems.value = []
-      } else {
-        selectedItems.value = [...baseDataTable.items.value]
-      }
+      selectedItems.value = toggleAllSelection(baseDataTable.items.value, selectedItems.value)
     },
 
     toggleSelectItem(item: T): void {
-      const index = selectedItems.value.findIndex(i => (i as any).id === (item as any).id)
-      if (index === -1) {
-        selectedItems.value.push(item)
-      } else {
-        selectedItems.value.splice(index, 1)
-      }
+      selectedItems.value = toggleItemSelection(item, selectedItems.value)
     }
   }
 

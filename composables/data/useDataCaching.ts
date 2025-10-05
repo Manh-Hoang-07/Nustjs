@@ -1,25 +1,5 @@
-import type { PaginationMeta } from './useDataFetching'
-
-// ===== TYPES =====
-
-export interface CacheItem {
-  data: any
-  meta: PaginationMeta
-  timestamp: number
-  ttl: number
-}
-
-export interface DataCachingOptions {
-  cacheEnabled?: boolean
-  defaultTTL?: number
-}
-
-export interface DataCachingResult<T = any> {
-  getCache: (key: string) => { data: T[]; meta: PaginationMeta } | null
-  setCache: (key: string, data: { data: T[]; meta: PaginationMeta }, ttl?: number) => void
-  clearCache: () => void
-  generateCacheKey: (params: Record<string, any>) => string
-}
+import type { PaginationMeta, CacheItem, DataCachingOptions, DataCachingResult } from './data.types'
+import { generateCacheKey, isCacheExpired } from './data.utils'
 
 // ===== COMPOSABLE =====
 
@@ -36,10 +16,8 @@ export function useDataCaching<T = any>(
 
   const cache = new Map<string, CacheItem>()
 
-  // Cache key generator
-  const generateCacheKey = (params: Record<string, any>): string => {
-    return JSON.stringify(params)
-  }
+  // Cache key generator (using utility function)
+  const generateCacheKeyLocal = generateCacheKey
 
   // Cache với TTL (Time To Live)
   const setCache = (key: string, data: { data: T[]; meta: PaginationMeta }, ttl: number = defaultTTL): void => {
@@ -59,8 +37,7 @@ export function useDataCaching<T = any>(
     const cached = cache.get(key)
     if (!cached) return null
     
-    const isExpired = Date.now() - cached.timestamp > cached.ttl
-    if (isExpired) {
+    if (isCacheExpired(cached.timestamp, cached.ttl)) {
       cache.delete(key)
       return null
     }
@@ -76,6 +53,6 @@ export function useDataCaching<T = any>(
     getCache,
     setCache,
     clearCache,
-    generateCacheKey
+    generateCacheKey: generateCacheKeyLocal
   }
 }

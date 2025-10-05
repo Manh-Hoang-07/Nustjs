@@ -1,20 +1,6 @@
 import { ref, type Ref } from 'vue'
-import type { PaginationMeta } from './useDataFetching'
-
-// ===== TYPES =====
-
-export interface DataPaginationOptions {
-  pageSize?: number
-  resetPageOnFilter?: boolean
-  resetPageOnSort?: boolean
-}
-
-export interface DataPaginationResult {
-  pagination: Ref<PaginationMeta>
-  changePage: (page: number) => void
-  changePageSize: (size: number) => void
-  resetToFirstPage: () => void
-}
+import type { PaginationMeta, DataPaginationOptions, DataPaginationResult } from './data.types'
+import { createDefaultPaginationMeta, isValidPage, isValidPageSize } from './data.utils'
 
 // ===== COMPOSABLE =====
 
@@ -31,25 +17,17 @@ export function useDataPagination(
   } = options
 
   // State
-  const pagination = ref<PaginationMeta>({
-    current_page: 1,
-    from: 0,
-    to: 0,
-    total: 0,
-    per_page: pageSize,
-    last_page: 1,
-    links: []
-  })
+  const pagination = ref<PaginationMeta>(createDefaultPaginationMeta(pageSize))
 
   // Pagination functions
   const changePage = (page: number): void => {
-    if (page > 0 && page <= pagination.value.last_page) {
+    if (isValidPage(page, pagination.value.last_page)) {
       pagination.value.current_page = page
     }
   }
 
   const changePageSize = (size: number): void => {
-    if (size > 0) {
+    if (isValidPageSize(size)) {
       pagination.value.per_page = size
       // Reset to first page when changing page size
       pagination.value.current_page = 1

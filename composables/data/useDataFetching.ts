@@ -1,36 +1,17 @@
 import { ref, type Ref } from 'vue'
 import { useGlobalApiClient } from '../api/useApiClient'
-
-// ===== TYPES =====
-
-export interface PaginationMeta {
-  current_page: number
-  from: number
-  to: number
-  total: number
-  per_page: number
-  last_page: number
-  links: Array<{
-    url: string | null
-    label: string
-    active: boolean
-  }>
-}
-
-export interface DataFetchingOptions {
-  transformItem?: (item: any) => any
-  beforeSubmit?: (data: any) => any
-  afterFetch?: (data: any) => any
-}
-
-export interface DataFetchingResult<T = any> {
-  items: Ref<T[]>
-  loading: Ref<boolean>
-  error: Ref<string | null>
-  pagination: Ref<PaginationMeta>
-  fetchData: (params?: Record<string, any>) => Promise<{ data: T[]; meta: PaginationMeta }>
-  refresh: () => Promise<{ data: T[]; meta: PaginationMeta }>
-}
+import type { 
+  PaginationMeta, 
+  DataFetchingOptions, 
+  DataFetchingResult 
+} from './data.types'
+import { 
+  buildFullUrl, 
+  defaultTransformItem, 
+  defaultBeforeSubmit, 
+  defaultAfterFetch, 
+  extractErrorMessage 
+} from './data.utils'
 
 // ===== COMPOSABLE =====
 
@@ -44,9 +25,9 @@ export function useDataFetching<T = any>(
   const { apiClient } = useGlobalApiClient()
   
   const {
-    transformItem = (item: any) => item,
-    beforeSubmit = (data: any) => data,
-    afterFetch = (data: any) => data
+    transformItem = defaultTransformItem,
+    beforeSubmit = defaultBeforeSubmit,
+    afterFetch = defaultAfterFetch
   } = options
 
   // State
@@ -81,17 +62,8 @@ export function useDataFetching<T = any>(
       // Transform params before sending
       const transformedParams = beforeSubmit(params)
       
-      // Try different approaches to debug
-      const urlParams = new URLSearchParams()
-      Object.keys(transformedParams).forEach(key => {
-        if (transformedParams[key] !== undefined && transformedParams[key] !== null && transformedParams[key] !== '') {
-          urlParams.append(key, transformedParams[key])
-        }
-      })
-      const queryString = urlParams.toString()
-      
-      // Try using URL directly instead of params
-      const fullUrl = queryString ? `${endpoint}?${queryString}` : endpoint
+      // Build full URL with query string
+      const fullUrl = buildFullUrl(endpoint, transformedParams)
       const response = await apiClient.get(fullUrl)
       
       const { data, meta } = response.data
@@ -108,7 +80,7 @@ export function useDataFetching<T = any>(
       
       return { data: transformedData, meta }
     } catch (err: any) {
-      error.value = err.userMessage || 'Lỗi tải dữ liệu'
+      error.value = extractErrorMessage(err)
       items.value = []
       throw err
     } finally {

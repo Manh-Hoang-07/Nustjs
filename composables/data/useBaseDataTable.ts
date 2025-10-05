@@ -5,89 +5,11 @@ import { useDataPagination } from './useDataPagination'
 import { useDataCaching } from './useDataCaching'
 import { useGlobalApiClient } from '../api/useApiClient'
 import useUrlState from '../utils/useUrlState'
-
-// ===== TYPES =====
-
-export interface PaginationMeta {
-  current_page: number
-  from: number
-  to: number
-  total: number
-  per_page: number
-  last_page: number
-  links: Array<{
-    url: string | null
-    label: string
-    active: boolean
-  }>
-}
-
-export interface BaseDataTableOptions {
-  defaultFilters?: Record<string, any>
-  defaultSort?: string
-  cacheEnabled?: boolean
-  debounceTime?: number
-  pageSize?: number
-  // URL sync options
-  enableUrlSync?: boolean
-  filterKeys?: string[]
-  sortKeys?: string[]
-  paginationKeys?: string[]
-  resetPageOnFilter?: boolean
-  resetPageOnSort?: boolean
-  resetOnRouteChange?: boolean
-  // Transform functions
-  transformItem?: (item: any) => any
-  beforeSubmit?: (data: any) => any
-  afterFetch?: (data: any) => any
-}
-
-export interface CacheItem {
-  data: any
-  meta: PaginationMeta
-  timestamp: number
-  ttl: number
-}
-
-export interface BaseDataTableState<T = any> {
-  items: Ref<T[]>
-  loading: Ref<boolean>
-  error: Ref<string | null>
-  pagination: Ref<PaginationMeta>
-  filters: Ref<Record<string, any>>
-}
-
-export interface BaseDataTableComputed {
-  hasData: ComputedRef<boolean>
-  isEmpty: ComputedRef<boolean>
-  isFirstPage: ComputedRef<boolean>
-  isLastPage: ComputedRef<boolean>
-}
-
-export interface BaseDataTableResult<T = any> extends BaseDataTableComputed {
-  // State as refs
-  items: Ref<T[]>
-  loading: Ref<boolean>
-  error: Ref<string | null>
-  pagination: Ref<PaginationMeta>
-  filters: Ref<Record<string, any>>
-  // Core methods
-  fetchData: (params?: Record<string, any>) => Promise<{ data: T[]; meta: PaginationMeta }>
-  debouncedFetch: (params?: Record<string, any>) => void
-  refresh: () => Promise<{ data: T[]; meta: PaginationMeta }>
-  
-  // Filter methods
-  updateFilters: (newFilters: Record<string, any>) => void
-  resetFilters: () => void
-  
-  // Pagination methods
-  changePage: (page: number) => void
-  changePageSize: (size: number) => void
-  
-  // Utility methods
-  clearCache: () => void
-  getCurrentQuery?: () => Record<string, any>
-}
+import type { 
+  PaginationMeta, 
+  BaseDataTableOptions, 
+  BaseDataTableResult 
+} from './data.types'
 
 // ===== COMPOSABLE =====
 

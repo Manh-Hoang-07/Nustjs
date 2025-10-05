@@ -66,9 +66,6 @@ function handleMenuClick() {
 // Sử dụng composable cho admin navigation
 const { menuItems, currentPath } = useAdminNavigation()
 
-// Cập nhật current path
-currentPath.value = route.path
-
 // Dynamic page title
 const pageTitle = computed(() => {
   // Tìm trong menu items chính
