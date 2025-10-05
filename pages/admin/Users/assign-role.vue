@@ -112,9 +112,9 @@ const defaultValues = computed(() => {
 const { apiErrors, submit } = useApiFormSubmit({
   endpoint: adminEndpoints.users.assignRoles(props.user?.id),
   emit,
-  onClose: props.onClose,
+  onClose: undefined, // Không truyền onClose vào useApiFormSubmit
   eventName: 'role-assigned',
-  method: 'post'
+  method: 'put'
 })
 
 const validationRules = computed(() => ({
@@ -131,16 +131,27 @@ const roleOptions = computed(() => {
 })
 
 async function handleSubmit(formData) {
-  // Chỉ gửi role_ids để cập nhật
-  const dataToSubmit = {
-    role_ids: Array.isArray(formData.role_ids) ? formData.role_ids : [formData.role_ids].filter(Boolean)
+  try {
+    // Chỉ gửi role_ids để cập nhật
+    const dataToSubmit = {
+      role_ids: Array.isArray(formData.role_ids) ? formData.role_ids : [formData.role_ids].filter(Boolean)
+    }
+    
+    await submit(dataToSubmit)
+    // Chỉ gọi onClose khi submit thành công
+    if (props.onClose) {
+      props.onClose()
+    }
+  } catch (error) {
+    // Không gọi onClose khi có lỗi
+    console.error('Error submitting form:', error)
   }
-  
-  await submit(dataToSubmit)
 }
 
 function onClose() {
-  emit('role-assigned')
+  if (props.onClose) {
+    props.onClose()
+  }
 }
 </script> 
 

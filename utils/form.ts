@@ -30,7 +30,7 @@ interface ApiFormSubmitOptions {
   emit: (event: string, ...args: any[]) => void
   onClose?: () => void
   eventName?: string
-  method?: 'post' | 'put' | 'patch'
+  method?: 'post' | 'put' | 'patch' | 'delete'
 }
 
 interface ApiErrors {
@@ -128,7 +128,7 @@ export function validateForm(form: FormObject, rules: ValidationRules): Record<s
       value = String(fieldValue).trim()
     }
     
-    for (const ruleObj of rules[field]) {
+    for (const ruleObj of rules[field] || []) {
       if (typeof ruleObj === 'string') {
         // Dạng ngắn, không custom message
         if (ruleObj === 'required' && !value) {
@@ -224,7 +224,22 @@ export function useApiFormSubmit({
         : formToFormData(form)
 
       const { apiClient } = useApiClient()
-      const response = await apiClient.post(endpoint, dataToSend)
+      
+      // Sử dụng method tương ứng thay vì luôn dùng post
+      let response
+      switch (method) {
+        case 'put':
+          response = await apiClient.put(endpoint, dataToSend)
+          break
+        case 'patch':
+          response = await apiClient.patch(endpoint, dataToSend)
+          break
+        case 'delete':
+          response = await apiClient.delete(endpoint, { data: dataToSend })
+          break
+        default:
+          response = await apiClient.post(endpoint, dataToSend)
+      }
       emit(eventName)
       if (onClose) onClose()
       return response
