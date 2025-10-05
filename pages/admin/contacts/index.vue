@@ -243,17 +243,7 @@ const {
     create: adminEndpoints.contacts.create,
     update: (id) => adminEndpoints.contacts.update(id),
     delete: (id) => adminEndpoints.contacts.delete(id)
-  },
-  resourceName: 'liên hệ',
-  defaultFilters: {
-    search: '',
-    status: '',
-    date_from: '',
-    date_to: '',
-    sort_by: 'created_at_desc'
-  },
-  filterKeys: ['search', 'status', 'date_from', 'date_to', 'sort_by'],
-  sortKeys: ['sort_by', 'sort_order']
+  }
 })
 
 const { showSuccess, showError } = useToast()

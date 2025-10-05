@@ -162,15 +162,7 @@ const {
     create: adminEndpoints.roles.create,
     update: (id) => adminEndpoints.roles.update(id),
     delete: (id) => adminEndpoints.roles.delete(id)
-  },
-  resourceName: 'vai trò',
-  defaultFilters: {
-    search: '',
-    status: '',
-    sort_by: 'created_at_desc'
-  },
-  filterKeys: ['search', 'status', 'sort_by'],
-  sortKeys: ['sort_by', 'sort_order']
+  }
 })
 
 const { showSuccess, showError } = useToast()

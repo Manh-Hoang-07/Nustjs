@@ -178,14 +178,7 @@ const {
     create: adminEndpoints.postTags.create,
     update: (id) => adminEndpoints.postTags.update(id),
     delete: (id) => adminEndpoints.postTags.delete(id)
-  },
-  resourceName: 'thẻ bài viết',
-  defaultFilters: {
-    search: '',
-    sort_by: 'created_at_desc'
-  },
-  filterKeys: ['search', 'sort_by'],
-  sortKeys: ['sort_by', 'sort_order']
+  }
 })
 
 const { showSuccess, showError } = useToast()

@@ -89,9 +89,11 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
     defaultFilters: {
       search: '',
       status: '',
+      date_from: '',
+      date_to: '',
       sort_by: 'created_at:desc'
     },
-    filterKeys: ['search', 'status', 'sort_by'],
+    filterKeys: ['search', 'status', 'date_from', 'date_to', 'sort_by'],
     sortKeys: ['sort_by', 'sort_order'],
     ...baseOptions
   }

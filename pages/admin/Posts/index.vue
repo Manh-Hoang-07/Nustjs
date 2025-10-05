@@ -168,16 +168,7 @@ const {
     create: adminEndpoints.posts.create,
     update: (id) => adminEndpoints.posts.update(id),
     delete: (id) => adminEndpoints.posts.delete(id)
-  },
-  resourceName: 'bài viết',
-  defaultFilters: {
-    search: '',
-    status: '',
-    category_id: '',
-    sort_by: 'created_at_desc'
-  },
-  filterKeys: ['search', 'status', 'category_id', 'sort_by'],
-  sortKeys: ['sort_by', 'sort_order']
+  }
 })
 
 const { showSuccess, showError } = useToast()

@@ -203,7 +203,6 @@ const {
     update: (id) => adminEndpoints.users.update(id),
     delete: (id) => adminEndpoints.users.delete(id)
   },
-  resourceName: 'người dùng',
   transformItem: (user) => ({
     ...user,
     fullName: `${user.first_name || ''} ${user.last_name || ''}`.trim()

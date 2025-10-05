@@ -166,15 +166,7 @@ const {
     create: adminEndpoints.permissions.create,
     update: (id) => adminEndpoints.permissions.update(id),
     delete: (id) => adminEndpoints.permissions.delete(id)
-  },
-  resourceName: 'quyền',
-  defaultFilters: {
-    search: '',
-    status: '',
-    sort_by: 'created_at_desc'
-  },
-  filterKeys: ['search', 'status', 'sort_by'],
-  sortKeys: ['sort_by', 'sort_order']
+  }
 })
 
 const { showSuccess, showError } = useToast()
