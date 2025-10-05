@@ -1,6 +1,7 @@
 import { computed, type ComputedRef } from 'vue'
 import { useRoute } from 'vue-router'
-import type { MenuItem, AdminNavigationResult } from './types'
+import type { MenuItem, AdminNavigationResult } from './navigation.types'
+import { filterByStatus, sortByOrder } from './navigation.utils'
 
 // ===== COMPOSABLE =====
 
@@ -72,7 +73,7 @@ export function useAdminNavigation(): AdminNavigationResult {
 
   // Menu items đã được filter - đơn giản chỉ filter theo status
   const filteredMenuItems: ComputedRef<MenuItem[]> = computed(() => {
-    return menuItems.value.filter(item => item.status === 'active')
+    return filterByStatus(menuItems.value, 'active')
   })
 
   // Hàm kiểm tra menu item có active không

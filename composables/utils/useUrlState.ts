@@ -1,42 +1,12 @@
 import { type Ref } from 'vue'
 import { useUrlSync } from './useUrlSync'
-
-// ===== TYPES =====
-
-interface PaginationState {
-  currentPage: number
-  perPage?: number
-  [key: string]: any
-}
-
-interface FiltersState {
-  [key: string]: any
-}
-
-interface SortState {
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-}
-
-interface SyncQueryPaginationOptions {
-  filterKeys?: string[]
-  sortKeys?: string[]
-  paginationKeys?: string[]
-  debounceMs?: number
-  resetPageOnFilter?: boolean
-  resetPageOnSort?: boolean
-  resetOnRouteChange?: boolean
-}
-
-interface SyncQueryPaginationResult {
-  onPageChange: (page: number) => void
-  onUpdateFilters: (newFilters: FiltersState) => void
-  onUpdateSort: (sort: SortState) => void
-  onUpdatePerPage: (perPage: number) => void
-  onResetFilters: () => void
-  onResetAll: () => void
-  getCurrentQuery: () => Record<string, any>
-}
+import type { 
+  PaginationState, 
+  FiltersState, 
+  SortState, 
+  SyncQueryPaginationOptions, 
+  SyncQueryPaginationResult 
+} from './utils.types'
 
 // ===== COMPOSABLE =====
 

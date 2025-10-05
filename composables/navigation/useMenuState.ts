@@ -1,11 +1,5 @@
 import { ref, type Ref } from 'vue'
-
-// ===== TYPES =====
-
-interface MenuStateResult {
-  isOpen: Ref<boolean>
-  toggleMenu: () => void
-}
+import type { MenuStateResult } from './navigation.types'
 
 // ===== COMPOSABLE =====
 
@@ -16,8 +10,18 @@ export function useMenuState(): MenuStateResult {
     isOpen.value = !isOpen.value
   }
 
+  const openMenu = (): void => {
+    isOpen.value = true
+  }
+
+  const closeMenu = (): void => {
+    isOpen.value = false
+  }
+
   return {
     isOpen,
-    toggleMenu
+    toggleMenu,
+    openMenu,
+    closeMenu
   }
 }

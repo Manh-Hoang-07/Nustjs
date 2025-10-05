@@ -3,44 +3,13 @@ import { useRoute } from 'vue-router'
 import { useUrlFilters } from './useUrlFilters'
 import { useUrlPagination } from './useUrlPagination'
 import { useNavigation } from '@/composables/navigation/useNavigation'
-
-// ===== TYPES =====
-
-interface FiltersState {
-  [key: string]: any
-}
-
-interface PaginationState {
-  currentPage: number
-  perPage?: number
-  [key: string]: any
-}
-
-interface SortState {
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
-}
-
-interface UrlSyncOptions {
-  filterKeys?: string[]
-  sortKeys?: string[]
-  paginationKeys?: string[]
-  debounceMs?: number
-  resetPageOnFilter?: boolean
-  resetPageOnSort?: boolean
-  resetOnRouteChange?: boolean
-  defaultPageSize?: number
-}
-
-interface UrlSyncResult {
-  onPageChange: (page: number) => void
-  onUpdateFilters: (newFilters: FiltersState) => void
-  onUpdateSort: (sort: SortState) => void
-  onUpdatePerPage: (perPage: number) => void
-  onResetFilters: () => void
-  onResetAll: () => void
-  getCurrentQuery: () => Record<string, any>
-}
+import type { 
+  FiltersState, 
+  PaginationState, 
+  SortState, 
+  UrlSyncOptions, 
+  UrlSyncResult 
+} from './utils.types'
 
 // ===== COMPOSABLE =====
 

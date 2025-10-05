@@ -1,20 +1,6 @@
 import { ref, onMounted, computed, type Ref, type ComputedRef } from 'vue'
 import { useAuthStore } from '../../stores/auth'
-
-// ===== TYPES =====
-
-interface AuthState {
-  isAuthenticated: boolean
-  isAdmin: boolean
-  isUser: boolean
-  user: any
-}
-
-interface AuthInitResult {
-  isClientReady: Ref<boolean>
-  shouldRenderAuthContent: ComputedRef<boolean>
-  safeAuthState: ComputedRef<AuthState>
-}
+import type { AuthState, AuthInitResult } from './utils.types'
 
 // ===== COMPOSABLE =====
 

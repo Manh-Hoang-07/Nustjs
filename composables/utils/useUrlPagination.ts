@@ -1,41 +1,8 @@
 import { ref, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useNavigation } from '@/composables/navigation/useNavigation'
-
-// ===== TYPES =====
-
-interface PaginationState {
-  currentPage: number
-  perPage?: number
-  [key: string]: any
-}
-
-interface UrlPaginationOptions {
-  paginationKeys?: string[]
-  debounceMs?: number
-  defaultPageSize?: number
-}
-
-interface UrlPaginationResult {
-  pagination: Ref<PaginationState>
-  loadPaginationFromUrl: () => void
-  updatePaginationInUrl: (pagination: PaginationState) => void
-  resetPaginationInUrl: () => void
-}
-
-// ===== UTILITIES =====
-
-function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
-  
-  return (...args: Parameters<T>) => {
-    if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(() => func(...args), wait)
-  }
-}
+import type { PaginationState, UrlPaginationOptions, UrlPaginationResult } from './utils.types'
+import { createDebouncedFunction } from './utils.utils'
 
 // ===== COMPOSABLE =====
 
@@ -103,7 +70,7 @@ export function useUrlPagination(
   }
 
   // Debounced update URL function
-  const debouncedUpdateUrl = debounce(updatePaginationInUrl, debounceMs)
+  const debouncedUpdateUrl = createDebouncedFunction(updatePaginationInUrl, { delay: debounceMs })
 
   // Reset pagination in URL
   const resetPaginationInUrl = (): void => {

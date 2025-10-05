@@ -1,38 +1,8 @@
 import { ref, type Ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useNavigation } from '@/composables/navigation/useNavigation'
-
-// ===== TYPES =====
-
-interface FiltersState {
-  [key: string]: any
-}
-
-interface UrlFiltersOptions {
-  filterKeys?: string[]
-  debounceMs?: number
-}
-
-interface UrlFiltersResult {
-  filters: Ref<FiltersState>
-  loadFiltersFromUrl: () => void
-  updateFiltersInUrl: (filters: FiltersState) => void
-  resetFiltersInUrl: () => void
-}
-
-// ===== UTILITIES =====
-
-function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
-  
-  return (...args: Parameters<T>) => {
-    if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(() => func(...args), wait)
-  }
-}
+import type { FiltersState, UrlFiltersOptions, UrlFiltersResult } from './utils.types'
+import { createDebouncedFunction } from './utils.utils'
 
 // ===== COMPOSABLE =====
 
@@ -95,7 +65,7 @@ export function useUrlFilters(
   }
 
   // Debounced update URL function
-  const debouncedUpdateUrl = debounce(updateFiltersInUrl, debounceMs)
+  const debouncedUpdateUrl = createDebouncedFunction(updateFiltersInUrl, { delay: debounceMs })
 
   // Reset filters in URL
   const resetFiltersInUrl = (): void => {

@@ -1,6 +1,7 @@
 import { computed, type ComputedRef } from 'vue'
 import { useRoute } from 'vue-router'
-import type { MenuItem, UserNavigationResult, MenuType } from './types'
+import type { MenuItem, UserNavigationResult, MenuType } from './navigation.types'
+import { filterByStatus, isMenuItemActive } from './navigation.utils'
 
 // ===== COMPOSABLE =====
 
@@ -91,14 +92,14 @@ export function useUserNavigation(): UserNavigationResult {
 
   // Menu items đã được filter - đơn giản chỉ filter theo status
   const filteredMenuItems: ComputedRef<MenuItem[]> = computed(() => {
-    return menuItems.value.filter(item => item.status === 'active')
+    return filterByStatus(menuItems.value, 'active')
   })
 
   // Hàm để lấy menu items theo loại
   const getMenuItemsByType = (type: MenuType): MenuItem[] => {
     switch (type) {
       case 'user':
-        return userMenuItems.value.filter(item => item.status === 'active')
+        return filterByStatus(userMenuItems.value, 'active')
       default:
         return filteredMenuItems.value
     }
@@ -106,9 +107,7 @@ export function useUserNavigation(): UserNavigationResult {
 
   // Hàm để kiểm tra menu item có active không
   const isActiveMenuItem = (item: MenuItem): boolean => {
-    if (!currentPath.value) return false
-    return currentPath.value === item.path || 
-           (item.children ? item.children.some(child => child.path === currentPath.value) : false)
+    return isMenuItemActive(item, currentPath.value)
   }
 
   return {

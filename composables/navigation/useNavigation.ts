@@ -1,8 +1,9 @@
 import { useRouter } from 'vue-router'
+import type { NavigationResult } from './navigation.types'
 
 // ===== COMPOSABLE =====
 
-export function useNavigation() {
+export function useNavigation(): NavigationResult {
   const router = useRouter()
 
   const navigateTo = (path: string) => {
