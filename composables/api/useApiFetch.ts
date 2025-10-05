@@ -1,19 +1,6 @@
 import { ref, watch, onMounted, type Ref } from 'vue'
 import { useApiClient } from './useApiClient'
-
-// ===== TYPES =====
-
-interface ApiFetchOptions {
-  immediate?: boolean
-  params?: Ref<Record<string, any>>
-}
-
-interface ApiFetchResult<T = any> {
-  data: Ref<T | null>
-  loading: Ref<boolean>
-  error: Ref<any>
-  fetchData: () => Promise<void>
-}
+import type { ApiFetchOptions, ApiFetchResult } from './api.types'
 
 // ===== COMPOSABLE =====
 

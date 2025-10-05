@@ -1,42 +1,27 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios'
 import { useRuntimeConfig } from '#app'
-
-// ===== TYPES =====
-
-interface ApiClientOptions {
-  retryAttempts?: number
-  retryDelay?: number
-  timeout?: number
-  enableRetry?: boolean
-  preventDuplicateCalls?: boolean
-}
-
-interface EnhancedError extends AxiosError {
-  method?: string
-  url?: string
-  timestamp?: string
-  userMessage?: string
-}
-
-interface ApiClientMethods {
-  get: <T = any>(url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>
-  post: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>
-  put: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>
-  delete: <T = any>(url: string, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>
-  patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => Promise<AxiosResponse<T>>
-  handleError: (error: AxiosError, method: string, url: string) => EnhancedError
-  getUserFriendlyMessage: (error: AxiosError) => string
-  clearActiveRequests: () => void
-}
-
-interface EnhancedApiClient extends Omit<AxiosInstance, 'get' | 'post' | 'put' | 'delete' | 'patch'>, ApiClientMethods {}
+import type { 
+  ApiClientOptions, 
+  EnhancedError, 
+  ApiClientMethods, 
+  EnhancedApiClient, 
+  ApiClientResult 
+} from './api.types'
+import { 
+  getTokenFromCookie, 
+  createRequestKey, 
+  createEnhancedError, 
+  getUserFriendlyMessage, 
+  createDefaultConfig,
+  createRequestTracker 
+} from './api.utils'
 
 // ===== COMPOSABLE =====
 
 /**
  * Composable để tạo và quản lý API client với các tính năng cơ bản
  */
-export function useApiClient(options: ApiClientOptions = {}) {
+export function useApiClient(options: ApiClientOptions = {}): ApiClientResult {
   const config = useRuntimeConfig()
   
   const {
@@ -48,40 +33,13 @@ export function useApiClient(options: ApiClientOptions = {}) {
   } = options
 
   // Track active requests to prevent duplicates
-  const activeRequests = new Map<string, Promise<AxiosResponse>>()
+  const activeRequests = createRequestTracker()
 
   // Tạo API client với base URL từ runtime config
-  const api: AxiosInstance = axios.create({
-    baseURL: config.public.apiBase,
-    withCredentials: true,
-    timeout,
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  })
+  const api: AxiosInstance = axios.create(createDefaultConfig(config.public.apiBase))
 
-  // Helper function để lấy token từ cookie
-  function getTokenFromCookie(): string | null {
-    if (process.client) {
-      const cookies = document.cookie.split(';')
-      
-      for (let cookie of cookies) {
-        const [name, value] = cookie.trim().split('=')
-        if (name === 'auth_token') {
-          const token = decodeURIComponent(value || '')
-          return token
-        }
-      }
-    }
-    return null
-  }
-
-  // Helper function để tạo request key
-  function createRequestKey(method: string, url: string, config?: AxiosRequestConfig): string {
-    const params = config?.params ? JSON.stringify(config.params) : ''
-    return `${method}:${url}${params ? `?${params}` : ''}`
-  }
+  // Helper function để lấy token từ cookie (using utility)
+  const getToken = () => getTokenFromCookie()
 
   // Helper function để xử lý request với duplicate prevention
   async function handleRequest<T>(
@@ -120,11 +78,11 @@ export function useApiClient(options: ApiClientOptions = {}) {
   api.interceptors.request.use(
     (config) => {
       // Tự động thêm token vào header nếu có trong cookie
-      const token = getTokenFromCookie()
+      const token = getToken()
       if (token) {
+        config.headers = config.headers || {}
         config.headers.Authorization = `Bearer ${token}`
       }
-      
       
       return config
     },
@@ -189,51 +147,11 @@ export function useApiClient(options: ApiClientOptions = {}) {
     },
 
     handleError(error: AxiosError, method: string, url: string): EnhancedError {
-      // Enhanced error object với thông tin chi tiết
-      const enhancedError: EnhancedError = {
-        ...error,
-        method,
-        url,
-        timestamp: new Date().toISOString(),
-        userMessage: this.getUserFriendlyMessage(error)
-      }
-
-      return enhancedError
+      return createEnhancedError(error, method, url)
     },
 
     getUserFriendlyMessage(error: AxiosError): string {
-      const status = error.response?.status
-      const data = error.response?.data as any
-
-      // Custom error messages from API
-      if (data?.message) {
-        return data.message
-      }
-
-      // Default messages based on status
-      const messages: Record<number, string> = {
-        400: 'Dữ liệu không hợp lệ',
-        401: 'Vui lòng đăng nhập lại',
-        403: 'Bạn không có quyền thực hiện hành động này',
-        404: 'Không tìm thấy dữ liệu',
-        422: 'Dữ liệu không hợp lệ',
-        429: 'Quá nhiều yêu cầu, vui lòng thử lại sau',
-        500: 'Lỗi server, vui lòng thử lại sau',
-        502: 'Lỗi kết nối server',
-        503: 'Server đang bảo trì',
-        504: 'Hết thời gian chờ kết nối'
-      }
-
-      // Network errors
-      if (error.code === 'ECONNABORTED') {
-        return 'Kết nối bị timeout, vui lòng thử lại'
-      }
-      
-      if (error.code === 'NETWORK_ERROR') {
-        return 'Không thể kết nối đến server'
-      }
-
-      return messages[status || 0] || 'Có lỗi xảy ra, vui lòng thử lại'
+      return getUserFriendlyMessage(error)
     },
 
     clearActiveRequests(): void {
