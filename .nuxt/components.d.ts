@@ -13,8 +13,8 @@ type HydrationStrategies = {
 type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }>)
 interface _GlobalComponents {
       'CoreActions': typeof import("../components/Core/Actions/Actions.vue")['default']
-    'CoreContentCKEditorUltimate': typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']
     'CoreContentHtmlContent': typeof import("../components/Core/Content/HtmlContent.vue")['default']
+    'CoreContentSimpleEditor': typeof import("../components/Core/Content/SimpleEditor.vue")['default']
     'CoreFeedbackToastContainer': typeof import("../components/Core/Feedback/ToastContainer.vue")['default']
     'CoreFilterDateRangeFilter': typeof import("../components/Core/Filter/DateRangeFilter.vue")['default']
     'CoreFilterMultiSelectFilter': typeof import("../components/Core/Filter/MultiSelectFilter.vue")['default']
@@ -65,8 +65,8 @@ interface _GlobalComponents {
     'NuxtIsland': typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
     'NuxtRouteAnnouncer': typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
       'LazyCoreActions': LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
-    'LazyCoreContentCKEditorUltimate': LazyComponent<typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']>
     'LazyCoreContentHtmlContent': LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
+    'LazyCoreContentSimpleEditor': LazyComponent<typeof import("../components/Core/Content/SimpleEditor.vue")['default']>
     'LazyCoreFeedbackToastContainer': LazyComponent<typeof import("../components/Core/Feedback/ToastContainer.vue")['default']>
     'LazyCoreFilterDateRangeFilter': LazyComponent<typeof import("../components/Core/Filter/DateRangeFilter.vue")['default']>
     'LazyCoreFilterMultiSelectFilter': LazyComponent<typeof import("../components/Core/Filter/MultiSelectFilter.vue")['default']>
@@ -123,8 +123,8 @@ declare module 'vue' {
 }
 
 export const CoreActions: typeof import("../components/Core/Actions/Actions.vue")['default']
-export const CoreContentCKEditorUltimate: typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']
 export const CoreContentHtmlContent: typeof import("../components/Core/Content/HtmlContent.vue")['default']
+export const CoreContentSimpleEditor: typeof import("../components/Core/Content/SimpleEditor.vue")['default']
 export const CoreFeedbackToastContainer: typeof import("../components/Core/Feedback/ToastContainer.vue")['default']
 export const CoreFilterDateRangeFilter: typeof import("../components/Core/Filter/DateRangeFilter.vue")['default']
 export const CoreFilterMultiSelectFilter: typeof import("../components/Core/Filter/MultiSelectFilter.vue")['default']
@@ -175,8 +175,8 @@ export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const NuxtRouteAnnouncer: typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
 export const LazyCoreActions: LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
-export const LazyCoreContentCKEditorUltimate: LazyComponent<typeof import("../components/Core/Content/CKEditorUltimate.vue")['default']>
 export const LazyCoreContentHtmlContent: LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
+export const LazyCoreContentSimpleEditor: LazyComponent<typeof import("../components/Core/Content/SimpleEditor.vue")['default']>
 export const LazyCoreFeedbackToastContainer: LazyComponent<typeof import("../components/Core/Feedback/ToastContainer.vue")['default']>
 export const LazyCoreFilterDateRangeFilter: LazyComponent<typeof import("../components/Core/Filter/DateRangeFilter.vue")['default']>
 export const LazyCoreFilterMultiSelectFilter: LazyComponent<typeof import("../components/Core/Filter/MultiSelectFilter.vue")['default']>

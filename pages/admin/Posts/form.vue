@@ -20,13 +20,14 @@
         <!-- Tóm tắt -->
       <div>
         <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-1">Tóm tắt</label>
-        <textarea
-          id="excerpt"
+        <SimpleEditor
           v-model="formData.excerpt"
-          rows="3"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          :class="{ 'border-red-500': validationErrors.excerpt || apiErrors.excerpt }"
-        ></textarea>
+          :height="'150px'"
+          :placeholder="'Nhập tóm tắt bài viết...'"
+          :toolbar="'basic'"
+          :size="'sm'"
+          class="w-full"
+        />
         <p v-if="validationErrors.excerpt" class="mt-1 text-sm text-red-600">{{ validationErrors.excerpt }}</p>
         <p v-else-if="apiErrors.excerpt" class="mt-1 text-sm text-red-600">{{ apiErrors.excerpt }}</p>
       </div>
@@ -34,13 +35,14 @@
         <!-- Nội dung -->
       <div>
         <label for="content" class="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
-        <textarea
-          id="content"
+        <SimpleEditor
           v-model="formData.content"
-          rows="6"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          :class="{ 'border-red-500': validationErrors.content || apiErrors.content }"
-        ></textarea>
+          :height="'400px'"
+          :placeholder="'Nhập nội dung bài viết...'"
+          :toolbar="'full'"
+          :size="'lg'"
+          class="w-full"
+        />
         <p v-if="validationErrors.content" class="mt-1 text-sm text-red-600">{{ validationErrors.content }}</p>
         <p v-else-if="apiErrors.content" class="mt-1 text-sm text-red-600">{{ apiErrors.content }}</p>
       </div>
@@ -225,6 +227,7 @@ import Modal from '@/components/Core/Modal/Modal.vue'
 import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
+import SimpleEditor from '@/components/Core/Content/SimpleEditor.vue'
 import { adminEndpoints } from '@/api/endpoints'
 
 
