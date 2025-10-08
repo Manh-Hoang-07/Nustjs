@@ -13,7 +13,7 @@ type HydrationStrategies = {
 type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }>)
 interface _GlobalComponents {
       'CoreActions': typeof import("../components/Core/Actions/Actions.vue")['default']
-    'CoreContentCKEditorSummary': typeof import("../components/Core/Content/CKEditorSummary.vue")['default']
+    'CoreContentCKEditor': typeof import("../components/Core/Content/CKEditor.vue")['default']
     'CoreContentHtmlContent': typeof import("../components/Core/Content/HtmlContent.vue")['default']
     'CoreContentSimpleEditor': typeof import("../components/Core/Content/SimpleEditor.vue")['default']
     'CoreFeedbackToastContainer': typeof import("../components/Core/Feedback/ToastContainer.vue")['default']
@@ -66,7 +66,7 @@ interface _GlobalComponents {
     'NuxtIsland': typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
     'NuxtRouteAnnouncer': typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
       'LazyCoreActions': LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
-    'LazyCoreContentCKEditorSummary': LazyComponent<typeof import("../components/Core/Content/CKEditorSummary.vue")['default']>
+    'LazyCoreContentCKEditor': LazyComponent<typeof import("../components/Core/Content/CKEditor.vue")['default']>
     'LazyCoreContentHtmlContent': LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
     'LazyCoreContentSimpleEditor': LazyComponent<typeof import("../components/Core/Content/SimpleEditor.vue")['default']>
     'LazyCoreFeedbackToastContainer': LazyComponent<typeof import("../components/Core/Feedback/ToastContainer.vue")['default']>
@@ -125,7 +125,7 @@ declare module 'vue' {
 }
 
 export const CoreActions: typeof import("../components/Core/Actions/Actions.vue")['default']
-export const CoreContentCKEditorSummary: typeof import("../components/Core/Content/CKEditorSummary.vue")['default']
+export const CoreContentCKEditor: typeof import("../components/Core/Content/CKEditor.vue")['default']
 export const CoreContentHtmlContent: typeof import("../components/Core/Content/HtmlContent.vue")['default']
 export const CoreContentSimpleEditor: typeof import("../components/Core/Content/SimpleEditor.vue")['default']
 export const CoreFeedbackToastContainer: typeof import("../components/Core/Feedback/ToastContainer.vue")['default']
@@ -178,7 +178,7 @@ export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const NuxtRouteAnnouncer: typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
 export const LazyCoreActions: LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
-export const LazyCoreContentCKEditorSummary: LazyComponent<typeof import("../components/Core/Content/CKEditorSummary.vue")['default']>
+export const LazyCoreContentCKEditor: LazyComponent<typeof import("../components/Core/Content/CKEditor.vue")['default']>
 export const LazyCoreContentHtmlContent: LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
 export const LazyCoreContentSimpleEditor: LazyComponent<typeof import("../components/Core/Content/SimpleEditor.vue")['default']>
 export const LazyCoreFeedbackToastContainer: LazyComponent<typeof import("../components/Core/Feedback/ToastContainer.vue")['default']>

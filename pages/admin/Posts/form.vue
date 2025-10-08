@@ -20,13 +20,23 @@
         <!-- Tóm tắt -->
       <div>
         <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-1">Tóm tắt</label>
-        <CKEditorSummary
+        <CKEditor
           v-model="formData.excerpt"
           :height="'200px'"
           :placeholder="'Nhập tóm tắt bài viết...'"
           :upload-url="'/api/upload/image'"
           :max-file-size="5242880"
           :allowed-image-types="['image/jpeg', 'image/png', 'image/gif', 'image/webp']"
+          :toolbar="[
+            'heading', '|',
+            'bold', 'italic', 'underline', '|',
+            'bulletedList', 'numberedList', '|',
+            'link', '|',
+            'imageUpload', '|',
+            'undo', 'redo'
+          ]"
+          :enable-full-screen="true"
+          :show-word-count="true"
           class="w-full"
         />
         <p v-if="validationErrors.excerpt" class="mt-1 text-sm text-red-600">{{ validationErrors.excerpt }}</p>
@@ -36,12 +46,19 @@
         <!-- Nội dung -->
       <div>
         <label for="content" class="block text-sm font-medium text-gray-700 mb-1">Nội dung</label>
-        <SimpleEditor
+        <CKEditor
           v-model="formData.content"
           :height="'400px'"
           :placeholder="'Nhập nội dung bài viết...'"
-          :toolbar="'full'"
-          :size="'lg'"
+          :upload-url="'/api/upload/image'"
+          :max-file-size="5242880"
+          :allowed-image-types="['image/jpeg', 'image/png', 'image/gif', 'image/webp']"
+          :show-word-count="true"
+          :max-word-count="10000"
+          :auto-save="true"
+          :auto-save-interval="10000"
+          :enable-full-screen="true"
+          :toolbar-mode="'full'"
           class="w-full"
         />
         <p v-if="validationErrors.content" class="mt-1 text-sm text-red-600">{{ validationErrors.content }}</p>
@@ -228,8 +245,7 @@ import Modal from '@/components/Core/Modal/Modal.vue'
 import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
-import SimpleEditor from '@/components/Core/Content/SimpleEditor.vue'
-import CKEditorSummary from '@/components/Core/Content/CKEditorSummary.vue'
+import CKEditor from '@/components/Core/Content/CKEditor.vue'
 import { adminEndpoints } from '@/api/endpoints'
 
 
