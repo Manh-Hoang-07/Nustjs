@@ -230,7 +230,7 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import { CONTACT_ENDPOINTS } from '@/api/endpoints'
+import { publicEndpoints } from '@/api/endpoints'
 import { useApiClient } from '@/composables/api/useApiClient'
 import { useToast } from '@/composables/ui/useToast'
 import FormWrapper from '@/components/Core/Form/FormWrapper.vue'
@@ -289,7 +289,7 @@ const validationRules = computed(() => ({
 const handleSubmit = async (formData) => {
   try {
     const { apiClient } = useApiClient()
-    const response = await apiClient.post(CONTACT_ENDPOINTS.PUBLIC_CONTACTS, {
+    const response = await apiClient.post(publicEndpoints.contacts.create, {
       name: formData.name?.trim() || null,
       email: formData.email.trim(),
       phone: formData.phone?.trim() || null,
