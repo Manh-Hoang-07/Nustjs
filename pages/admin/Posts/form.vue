@@ -20,12 +20,13 @@
         <!-- Tóm tắt -->
       <div>
         <label for="excerpt" class="block text-sm font-medium text-gray-700 mb-1">Tóm tắt</label>
-        <SimpleEditor
+        <CKEditorSummary
           v-model="formData.excerpt"
-          :height="'150px'"
+          :height="'200px'"
           :placeholder="'Nhập tóm tắt bài viết...'"
-          :toolbar="'basic'"
-          :size="'sm'"
+          :upload-url="'/api/upload/image'"
+          :max-file-size="5242880"
+          :allowed-image-types="['image/jpeg', 'image/png', 'image/gif', 'image/webp']"
           class="w-full"
         />
         <p v-if="validationErrors.excerpt" class="mt-1 text-sm text-red-600">{{ validationErrors.excerpt }}</p>
@@ -228,6 +229,7 @@ import ImageUploader from '@/components/Core/Image/ImageUploader.vue'
 import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
 import SimpleEditor from '@/components/Core/Content/SimpleEditor.vue'
+import CKEditorSummary from '@/components/Core/Content/CKEditorSummary.vue'
 import { adminEndpoints } from '@/api/endpoints'
 
 
