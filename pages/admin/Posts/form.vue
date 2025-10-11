@@ -247,6 +247,7 @@ import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
 import CKEditor from '@/components/Core/Content/CKEditor.vue'
 import { adminEndpoints } from '@/api/endpoints'
+import { useFormValidation } from '@/composables/utils/useFormValidation'
 
 
 const props = defineProps({
@@ -327,8 +328,17 @@ const formData = reactive({
 
 
 // Form state
-const validationErrors = reactive({})
 const isSubmitting = ref(false)
+
+// Validation rules
+const validationRules = computed(() => ({
+  name: [
+    { required: 'Tiêu đề là bắt buộc' }
+  ]
+}))
+
+// Use form validation composable
+const { validationErrors, clearErrors, validateForm } = useFormValidation(ref(formData), validationRules)
 
 // Watch post prop to update form data
 watch(() => props.post, async (newVal) => {
@@ -421,34 +431,6 @@ function formatDateTimeForInput(dateString) {
   const hours = String(date.getHours()).padStart(2, '0')
   const minutes = String(date.getMinutes()).padStart(2, '0')
   return `${year}-${month}-${day}T${hours}:${minutes}`
-}
-
-// Clear errors
-function clearErrors() {
-  Object.keys(validationErrors).forEach(key => delete validationErrors[key])
-}
-
-// Validation rules
-const validationRules = computed(() => ({
-  name: [
-    { required: 'Tiêu đề là bắt buộc' }
-  ]
-}))
-
-function validateForm() {
-  clearErrors()
-  let valid = true
-  const rules = validationRules.value
-  for (const field in rules) {
-    for (const rule of rules[field]) {
-      if (rule.required && !formData[field]) {
-        validationErrors[field] = rule.required
-        valid = false
-        break
-      }
-    }
-  }
-  return valid
 }
 
 // Validate and submit form

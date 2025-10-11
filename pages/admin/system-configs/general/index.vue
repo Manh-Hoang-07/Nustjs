@@ -50,7 +50,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="md:col-span-1">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Tên ứng dụng
+              Tên ứng dụng <span class="text-red-500">*</span>
             </label>
             <p class="text-sm text-gray-500">Tên hiển thị của ứng dụng</p>
           </div>
@@ -72,7 +72,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="md:col-span-1">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Phiên bản ứng dụng
+              Phiên bản ứng dụng <span class="text-red-500">*</span>
             </label>
             <p class="text-sm text-gray-500">Phiên bản hiện tại của ứng dụng</p>
           </div>
@@ -114,7 +114,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="md:col-span-1">
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Múi giờ hệ thống
+              Múi giờ hệ thống <span class="text-red-500">*</span>
             </label>
             <p class="text-sm text-gray-500">Múi giờ mặc định của hệ thống</p>
           </div>
@@ -154,6 +154,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useToast } from '@/composables/ui/useToast'
 import { useApiClient } from '@/composables/api/useApiClient'
 import { adminEndpoints } from '@/api/endpoints/admin'
+import { useFormValidation } from '@/composables/utils/useFormValidation'
 
 // Props - không cần thiết cho form tĩnh
 // const props = defineProps({
@@ -171,7 +172,6 @@ const { apiClient } = useApiClient()
 const saving = ref(false)
 const loading = ref(false)
 const error = ref(null)
-const validationErrors = ref({})
 
 // Form data - sẽ được load từ API
 const configs = ref({
@@ -194,39 +194,13 @@ const validationRules = computed(() => ({
   ]
 }))
 
-// Clear errors
-function clearErrors() {
-  Object.keys(validationErrors.value).forEach(key => delete validationErrors.value[key])
-}
-
-// Validate form
-function validateForm() {
-  clearErrors()
-  let valid = true
-  const rules = validationRules.value
-  
-  for (const field in rules) {
-    for (const rule of rules[field]) {
-      if (rule.required && !configs.value[field]) {
-        validationErrors.value[field] = rule.required
-        valid = false
-        break
-      }
-    }
-  }
-  
-  return valid
-}
+// Use form validation composable
+const { validationErrors, clearErrors, validateForm } = useFormValidation(configs, validationRules)
 
 // Methods
 const saveAllConfigs = async () => {
   // Validate form trước khi lưu
   if (!validateForm()) {
-    showToast({
-      type: 'error',
-      title: 'Lỗi validation',
-      message: 'Vui lòng kiểm tra lại các trường bắt buộc!'
-    })
     return
   }
 

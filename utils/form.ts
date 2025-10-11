@@ -9,18 +9,6 @@ interface FormDataOptions {
   exclude?: string[]
 }
 
-interface ValidationRule {
-  required?: string | boolean
-  email?: string | boolean
-  min?: [number, string] | number
-  match?: [string, string] | string
-  pattern?: [RegExp, string] | RegExp
-}
-
-interface ValidationRules {
-  [field: string]: (string | ValidationRule)[]
-}
-
 interface FormObject {
   [key: string]: any
 }
@@ -107,81 +95,7 @@ export function formToFormData(
 }
 
 // ===== FORM VALIDATION =====
-
-/**
- * Validate form with comprehensive type safety
- */
-export function validateForm(form: FormObject, rules: ValidationRules): Record<string, string> {
-  const newErrors: Record<string, string> = {}
-
-  for (const field in rules) {
-    // Đảm bảo form[field] không undefined và convert sang string an toàn
-    const fieldValue = form && form[field] !== undefined && form[field] !== null ? form[field] : ''
-    
-    // Xử lý khác nhau cho từng loại field
-    let value: string
-    if (field === 'password') {
-      // Password không nên trim
-      value = String(fieldValue)
-    } else {
-      // Các field khác có thể trim
-      value = String(fieldValue).trim()
-    }
-    
-    for (const ruleObj of rules[field] || []) {
-      if (typeof ruleObj === 'string') {
-        // Dạng ngắn, không custom message
-        if (ruleObj === 'required' && !value) {
-          newErrors[field] = 'Trường này là bắt buộc.'
-          break
-        }
-        if (ruleObj === 'email' && value && !/^\S+@\S+\.\S+$/.test(value)) {
-          newErrors[field] = 'Email không hợp lệ.'
-          break
-        }
-      } else if (typeof ruleObj === 'object') {
-        // Dạng object: { rule: message } hoặc { rule: [param, message] }
-        for (const rule in ruleObj) {
-          const msg = ruleObj[rule as keyof ValidationRule]
-          if (rule === 'required' && !value) {
-            newErrors[field] = typeof msg === 'string' ? msg : 'Trường này là bắt buộc.'
-            break
-          }
-          if (rule === 'email' && value && !/^\S+@\S+\.\S+$/.test(value)) {
-            newErrors[field] = typeof msg === 'string' ? msg : 'Email không hợp lệ.'
-            break
-          }
-          if (rule === 'min' && value) {
-            const [min, minMsg] = Array.isArray(msg) ? msg : [msg, `Tối thiểu ${msg} ký tự.`]
-            if (value.length < (min as number)) {
-              newErrors[field] = minMsg as string
-              break
-            }
-          }
-          if (rule === 'match' && value) {
-            const [otherField, matchMsg] = Array.isArray(msg) ? msg : [msg, 'Giá trị xác nhận không khớp.']
-            const otherValue = form && form[otherField as string] !== undefined && form[otherField as string] !== null ? form[otherField as string] : ''
-            const otherValueStr = otherField === 'password' ? String(otherValue) : String(otherValue).trim()
-            if (value !== otherValueStr) {
-              newErrors[field] = matchMsg as string
-              break
-            }
-          }
-          // Bổ sung xử lý pattern
-          if (rule === 'pattern' && value) {
-            const [regex, patternMsg] = Array.isArray(msg) ? msg : [msg, 'Định dạng không hợp lệ.']
-            if (!(regex as RegExp).test(value)) {
-              newErrors[field] = patternMsg as string
-              break
-            }
-          }
-        }
-      }
-    }
-  }
-
-  return newErrors
-}
+// Note: Validation logic has been moved to useFormValidation composable
 
 // ===== FORM DEFAULTS =====
 

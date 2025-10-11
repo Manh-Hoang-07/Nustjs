@@ -121,6 +121,7 @@ import SearchableSelect from '@/components/Core/Select/SearchableSelect.vue'
 import SearchableMultiSelect from '@/components/Core/Select/SearchableMultiSelect.vue'
 import { adminEndpoints } from '@/api/endpoints'
 import { useApiClient } from '@/composables/api/useApiClient'
+import { useFormValidation } from '@/composables/utils/useFormValidation'
 
 const { apiClient } = useApiClient()
 
@@ -180,8 +181,20 @@ const formData = reactive({
 })
 
 // Form state
-const validationErrors = reactive({})
 const isSubmitting = ref(false)
+
+// Validation rules
+const validationRules = computed(() => ({
+  name: [
+    { required: 'Tên vai trò là bắt buộc' }
+  ],
+  display_name: [
+    { required: 'Tên hiển thị là bắt buộc' }
+  ]
+}))
+
+// Use form validation composable
+const { validationErrors, clearErrors, validateForm } = useFormValidation(ref(formData), validationRules)
 
 // Watch role prop to update form data
 watch(() => props.role, (newVal) => {
@@ -222,36 +235,6 @@ function resetForm() {
   clearErrors()
 }
 
-// Clear errors
-function clearErrors() {
-  Object.keys(validationErrors).forEach(key => delete validationErrors[key])
-}
-
-// Validation rules
-const validationRules = computed(() => ({
-  name: [
-    { required: 'Tên vai trò là bắt buộc' }
-  ],
-  display_name: [
-    { required: 'Tên hiển thị là bắt buộc' }
-  ]
-}))
-
-function validateForm() {
-  clearErrors()
-  let valid = true
-  const rules = validationRules.value
-  for (const field in rules) {
-    for (const rule of rules[field]) {
-      if (rule.required && !formData[field]) {
-        validationErrors[field] = rule.required
-        valid = false
-        break
-      }
-    }
-  }
-  return valid
-}
 
 // Validate and submit form
 function validateAndSubmit() {

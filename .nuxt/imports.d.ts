@@ -30,7 +30,7 @@ export { requestIdleCallback, cancelIdleCallback } from '#app/compat/idle-callba
 export { setInterval } from '#app/compat/interval';
 export { defineLazyHydrationComponent } from '#app/composables/lazy-hydration';
 export { debounce, throttle } from '../utils/debounce';
-export { default as form, formToFormData, validateForm, useFormDefaults, useApiFormSubmit } from '../utils/form';
+export { default as form, formToFormData, useFormDefaults, useApiFormSubmit } from '../utils/form';
 export { default as formatters, formatCurrency, formatNumber, formatDate, formatDateTime, formatRelativeTime } from '../utils/formatters';
 export { lazyLoadImage, generateSrcSet, generateSizes, optimizeImageUrl, generatePlaceholder } from '../utils/image';
 export { useAuthStore } from '../stores/auth';

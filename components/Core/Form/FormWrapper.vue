@@ -39,7 +39,7 @@
 
 <script setup>
 import { computed, ref, reactive, watch } from 'vue'
-import { validateForm } from '@/utils/form'
+import { useFormValidation } from '@/composables/utils/useFormValidation'
 
 const props = defineProps({
   // Form data
@@ -88,8 +88,10 @@ const emit = defineEmits(['submit', 'cancel', 'error'])
 
 // Form state
 const form = reactive({ ...props.defaultValues })
-const localErrors = reactive({})
 const isSubmitting = ref(false)
+
+// Use form validation composable
+const { validationErrors, clearErrors, validateForm } = useFormValidation(ref(form), computed(() => props.rules))
 
 // Method để update form
 const updateForm = (newData) => {
@@ -102,7 +104,7 @@ const updateForm = (newData) => {
 
 // Kết hợp lỗi từ API và lỗi local
 const displayErrors = computed(() => {
-  return { ...localErrors, ...props.apiErrors }
+  return { ...validationErrors.value, ...props.apiErrors }
 })
 
 // Watch defaultValues để update form
@@ -127,12 +129,12 @@ watch(() => props.initialData, (newData) => {
 
 // Phương thức tiện ích để xóa lỗi
 function clearError(field) {
-  delete localErrors[field]
+  clearErrors()
 }
 
 // Phương thức xóa tất cả lỗi
 function clearAllErrors() {
-  Object.keys(localErrors).forEach(key => delete localErrors[key])
+  clearErrors()
 }
 
 // Phương thức validate form
@@ -143,11 +145,9 @@ function validate() {
     return true
   }
   
-  const errors = validateForm(form, props.rules)
-  if (Object.keys(errors).length > 0) {
-    // Cập nhật lỗi local
-    Object.assign(localErrors, errors)
-    emit('error', errors)
+  const isValid = validateForm()
+  if (!isValid) {
+    emit('error', validationErrors.value)
     return false
   }
   
@@ -177,6 +177,6 @@ function handleCancel() {
 defineExpose({
   updateForm,
   form,
-  validate: () => validateForm(form, props.rules)
+  validate: () => validateForm()
 })
 </script> 

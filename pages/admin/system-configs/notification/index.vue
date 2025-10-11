@@ -105,6 +105,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useToast } from '@/composables/ui/useToast'
 import { useApiClient } from '@/composables/api/useApiClient'
 import { adminEndpoints } from '@/api/endpoints/admin'
+import { useFormValidation } from '@/composables/utils/useFormValidation'
 
 // Composables
 const { showToast } = useToast()
@@ -114,7 +115,6 @@ const { apiClient } = useApiClient()
 const saving = ref(false)
 const loading = ref(false)
 const error = ref(null)
-const validationErrors = ref({})
 
 // Form data - sẽ được load từ API
 const configs = ref({
@@ -127,27 +127,13 @@ const validationRules = computed(() => ({
   // Không có validation rules cho notification vì chỉ có checkbox
 }))
 
-// Clear errors
-function clearErrors() {
-  Object.keys(validationErrors.value).forEach(key => delete validationErrors.value[key])
-}
-
-// Validate form
-function validateForm() {
-  clearErrors()
-  // Notification config không cần validation vì chỉ có checkbox
-  return true
-}
+// Use form validation composable
+const { validationErrors, clearErrors, validateForm } = useFormValidation(configs, validationRules)
 
 // Methods
 const saveAllConfigs = async () => {
   // Validate form trước khi lưu
   if (!validateForm()) {
-    showToast({
-      type: 'error',
-      title: 'Lỗi validation',
-      message: 'Vui lòng kiểm tra lại các trường bắt buộc!'
-    })
     return
   }
 
