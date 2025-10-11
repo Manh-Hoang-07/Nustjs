@@ -155,8 +155,6 @@ import { ref, onMounted, defineAsyncComponent, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCrudDataTable } from '@/composables/data'
 import { useToast } from '@/composables/ui/useToast'
-import { useAdminSystemConfig } from '@/composables/api/useAdminSystemConfig'
-import { useSystemConfigGroups } from '@/composables/api/useSystemConfigGroups'
 import SkeletonLoader from '@/components/Core/Loading/SkeletonLoader.vue'
 import ConfirmModal from '@/components/Core/Modal/ConfirmModal.vue'
 import Actions from '@/components/Core/Actions/Actions.vue'
@@ -206,8 +204,6 @@ const {
 
 const { showSuccess, showError } = useToast()
 const { apiClient } = useGlobalApiClient()
-const { clearCache: clearSystemCache } = useAdminSystemConfig()
-const { groups, groupLabels } = useSystemConfigGroups()
 const route = useRoute()
 
 // State
@@ -249,7 +245,7 @@ const currentGroup = computed(() => {
 // Computed để lấy title dựa trên group
 const pageTitle = computed(() => {
   if (currentGroup.value) {
-    const groupLabel = groupLabels.value[currentGroup.value] || currentGroup.value
+    const groupLabel = groupEnums.value.find(g => g.value === currentGroup.value)?.label || currentGroup.value
     return `Cấu hình ${groupLabel}`
   }
   return 'Quản lý cấu hình hệ thống'
@@ -310,7 +306,7 @@ async function deleteConfig() {
 
 async function clearCache() {
   try {
-    await clearSystemCache()
+    await apiClient.delete('/api/admin/system-configs/cache')
     showSuccess('Cache đã được xóa thành công')
   } catch (error) {
     showError('Không thể xóa cache')

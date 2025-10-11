@@ -235,7 +235,7 @@ definePageMeta({
 
 import { ref, computed } from 'vue'
 import { useToast } from '@/composables/ui/useToast'
-import { useAdminSystemConfig } from '@/composables/api/useAdminSystemConfig'
+import { useGlobalApiClient } from '@/composables/api'
 
 // Props - không cần thiết cho form tĩnh
 // const props = defineProps({
@@ -247,7 +247,7 @@ import { useAdminSystemConfig } from '@/composables/api/useAdminSystemConfig'
 
 // Composables
 const { showToast } = useToast()
-const { bulkUpdateConfigs } = useAdminSystemConfig()
+const { apiClient } = useGlobalApiClient()
 
 // Reactive data
 const saving = ref(false)
@@ -283,7 +283,7 @@ const saveAllConfigs = async () => {
     }
     
     // Gọi API bulk update
-    await bulkUpdateConfigs(bulkData)
+    await apiClient.put('/api/admin/system-configs/bulk-update', { configs: bulkData })
     
     showToast({
       type: 'success',
