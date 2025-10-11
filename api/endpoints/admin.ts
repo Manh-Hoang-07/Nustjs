@@ -177,6 +177,15 @@ export const adminEndpoints = {
     update: (id: Id) => `/api/admin/post-tags/${id}`,
     delete: (id: Id) => `/api/admin/post-tags/${id}`,
   },
+  systemConfigs: {
+    list: '/api/admin/system-configs',
+    create: '/api/admin/system-configs',
+    show: (id: Id) => `/api/admin/system-configs/${id}`,
+    update: (id: Id) => `/api/admin/system-configs/${id}`,
+    delete: (id: Id) => `/api/admin/system-configs/${id}`,
+    getByGroup: (group: string) => `/api/admin/system-configs/group/${group}`,
+    bulkUpdate: '/api/admin/system-configs/bulk-update',
+  },
 } as const;
 
 export type AdminEndpoints = typeof adminEndpoints;

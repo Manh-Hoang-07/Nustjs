@@ -11,6 +11,23 @@ export function useAdminNavigation(): AdminNavigationResult {
   // Current path từ route
   const currentPath = computed(() => route.path)
   
+  // Function để lấy icon cho từng nhóm
+  const getGroupIcon = (groupName: string): string => {
+    const iconMap: Record<string, string> = {
+      'general': '⚙️',
+      'email': '📧',
+      'database': '🗄️',
+      'storage': '💾',
+      'security': '🔒',
+      'api': '🔌',
+      'cache': '⚡',
+      'notification': '🔔',
+      'payment': '💳',
+      'custom': '🎨'
+    }
+    return iconMap[groupName] || '⚙️'
+  }
+  
   // Menu items đơn giản - luôn hiển thị
   const menuItems: ComputedRef<MenuItem[]> = computed(() => [
     {
@@ -68,6 +85,94 @@ export function useAdminNavigation(): AdminNavigationResult {
       api: 'api/admin/contacts',
       icon: '📞',
       status: 'active'
+    },
+    // Menu cấu hình hệ thống với 10 menu con
+    {
+      name: 'Cấu hình hệ thống',
+      path: '/admin/system-configs',
+      api: 'api/admin/system-configs',
+      icon: '⚙️',
+      status: 'active',
+      children: [
+        {
+          name: 'Tất cả cấu hình',
+          path: '/admin/system-configs',
+          api: 'api/admin/system-configs',
+          icon: '📋',
+          status: 'active'
+        },
+        // Menu con cho từng nhóm cấu hình (tĩnh)
+        {
+          name: 'Cài đặt chung',
+          path: '/admin/system-configs/general',
+          api: 'api/admin/system-configs/group?group=general',
+          icon: '⚙️',
+          status: 'active'
+        },
+        {
+          name: 'Cấu hình Email',
+          path: '/admin/system-configs/email',
+          api: 'api/admin/system-configs/group?group=email',
+          icon: '📧',
+          status: 'active'
+        },
+        {
+          name: 'Cài đặt Database',
+          path: '/admin/system-configs/database',
+          api: 'api/admin/system-configs/group?group=database',
+          icon: '🗄️',
+          status: 'active'
+        },
+        {
+          name: 'Cấu hình lưu trữ',
+          path: '/admin/system-configs/storage',
+          api: 'api/admin/system-configs/group?group=storage',
+          icon: '💾',
+          status: 'active'
+        },
+        {
+          name: 'Cài đặt bảo mật',
+          path: '/admin/system-configs/security',
+          api: 'api/admin/system-configs/group?group=security',
+          icon: '🔒',
+          status: 'active'
+        },
+        {
+          name: 'Cài đặt API',
+          path: '/admin/system-configs/api',
+          api: 'api/admin/system-configs/group?group=api',
+          icon: '🔌',
+          status: 'active'
+        },
+        {
+          name: 'Cài đặt Cache',
+          path: '/admin/system-configs/cache',
+          api: 'api/admin/system-configs/group?group=cache',
+          icon: '⚡',
+          status: 'active'
+        },
+        {
+          name: 'Cài đặt thông báo',
+          path: '/admin/system-configs/notification',
+          api: 'api/admin/system-configs/group?group=notification',
+          icon: '🔔',
+          status: 'active'
+        },
+        {
+          name: 'Cài đặt thanh toán',
+          path: '/admin/system-configs/payment',
+          api: 'api/admin/system-configs/group?group=payment',
+          icon: '💳',
+          status: 'active'
+        },
+        {
+          name: 'Cài đặt tùy chỉnh',
+          path: '/admin/system-configs/custom',
+          api: 'api/admin/system-configs/group?group=custom',
+          icon: '🎨',
+          status: 'active'
+        }
+      ]
     }
   ])
 

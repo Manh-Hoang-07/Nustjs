@@ -154,3 +154,11 @@ export interface ActiveRequest {
 export interface RequestMap {
   [key: string]: ActiveRequest
 }
+
+export interface ApiResponse<T = any> {
+  success: boolean
+  data: T
+  message: string
+  timestamp: string
+  errors?: Record<string, string[]>
+}
