@@ -16,13 +16,8 @@ export function useAdminNavigation(): AdminNavigationResult {
     const iconMap: Record<string, string> = {
       'general': '⚙️',
       'email': '📧',
-      'database': '🗄️',
-      'storage': '💾',
       'security': '🔒',
       'api': '🔌',
-      'cache': '⚡',
-      'notification': '🔔',
-      'payment': '💳',
       'custom': '🎨'
     }
     return iconMap[groupName] || '⚙️'
@@ -117,20 +112,6 @@ export function useAdminNavigation(): AdminNavigationResult {
           status: 'active'
         },
         {
-          name: 'Cài đặt Database',
-          path: '/admin/system-configs/database',
-          api: 'api/admin/system-configs/group?group=database',
-          icon: '🗄️',
-          status: 'active'
-        },
-        {
-          name: 'Cấu hình lưu trữ',
-          path: '/admin/system-configs/storage',
-          api: 'api/admin/system-configs/group?group=storage',
-          icon: '💾',
-          status: 'active'
-        },
-        {
           name: 'Cài đặt bảo mật',
           path: '/admin/system-configs/security',
           api: 'api/admin/system-configs/group?group=security',
@@ -142,27 +123,6 @@ export function useAdminNavigation(): AdminNavigationResult {
           path: '/admin/system-configs/api',
           api: 'api/admin/system-configs/group?group=api',
           icon: '🔌',
-          status: 'active'
-        },
-        {
-          name: 'Cài đặt Cache',
-          path: '/admin/system-configs/cache',
-          api: 'api/admin/system-configs/group?group=cache',
-          icon: '⚡',
-          status: 'active'
-        },
-        {
-          name: 'Cài đặt thông báo',
-          path: '/admin/system-configs/notification',
-          api: 'api/admin/system-configs/group?group=notification',
-          icon: '🔔',
-          status: 'active'
-        },
-        {
-          name: 'Cài đặt thanh toán',
-          path: '/admin/system-configs/payment',
-          api: 'api/admin/system-configs/group?group=payment',
-          icon: '💳',
           status: 'active'
         },
         {
