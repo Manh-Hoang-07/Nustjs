@@ -49,11 +49,11 @@ export function shouldCloseModal(
   options: ModalOptions
 ): boolean {
   if (event instanceof KeyboardEvent) {
-    return options.closeOnEscape && event.key === 'Escape'
+    return (options.closeOnEscape ?? true) && event.key === 'Escape'
   }
   
   if (event instanceof MouseEvent) {
-    return options.closeOnOverlay && event.target === event.currentTarget
+    return (options.closeOnOverlay ?? true) && event.target === event.currentTarget
   }
   
   return false
@@ -250,7 +250,7 @@ export function isItemSelected<T>(
 /**
  * Toggle item selection
  */
-export function toggleItemSelection<T>(
+export function toggleUiItemSelection<T>(
   item: T,
   selectedItems: T[],
   selectedKeys: Set<string | number>,

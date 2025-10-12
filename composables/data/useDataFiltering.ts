@@ -4,7 +4,7 @@ import {
   hasFiltersChanged, 
   hasFiltersChangedFromDefault, 
   mergeFilters, 
-  createDebouncedFunction 
+  createDataDebouncedFunction 
 } from './data.utils'
 
 // ===== COMPOSABLE =====
@@ -40,7 +40,7 @@ export function useDataFiltering(
   }
 
   // Debounced update filters function (defined after updateFilters)
-  const debouncedUpdateFilters = createDebouncedFunction(updateFilters, debounceTime)
+  const debouncedUpdateFilters = createDataDebouncedFunction(updateFilters, debounceTime)
 
   return {
     filters,

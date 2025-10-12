@@ -4,7 +4,7 @@ import {
   createTableSelectionOptions, 
   getItemKey, 
   isItemSelected, 
-  toggleItemSelection, 
+  toggleUiItemSelection, 
   selectAllItems 
 } from './ui.utils'
 
@@ -41,7 +41,7 @@ export default function useTableSelection<T = any>(
 
   // Methods
   const selectItem = (item: T): void => {
-    const result = toggleItemSelection(
+    const result = toggleUiItemSelection(
       item, 
       selectedItems.value, 
       selectedKeys.value, 

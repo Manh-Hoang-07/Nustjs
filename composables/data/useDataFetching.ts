@@ -6,7 +6,7 @@ import type {
   DataFetchingResult 
 } from './data.types'
 import { 
-  buildFullUrl, 
+  buildDataFullUrl, 
   defaultTransformItem, 
   defaultBeforeSubmit, 
   defaultAfterFetch, 
@@ -63,7 +63,7 @@ export function useDataFetching<T = any>(
       const transformedParams = beforeSubmit(params)
       
       // Build full URL with query string
-      const fullUrl = buildFullUrl(endpoint, transformedParams)
+      const fullUrl = buildDataFullUrl(endpoint, transformedParams)
       const response = await apiClient.get(fullUrl)
       
       const { data, meta } = response.data

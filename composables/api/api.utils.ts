@@ -189,14 +189,14 @@ export function isClientError(error: AxiosError): boolean {
 /**
  * Check if cache item is expired
  */
-export function isCacheExpired<T>(item: CacheItem<T>): boolean {
+export function isApiCacheExpired<T>(item: CacheItem<T>): boolean {
   return Date.now() - item.timestamp > item.ttl
 }
 
 /**
  * Create cache item
  */
-export function createCacheItem<T>(
+export function createApiCacheItem<T>(
   data: T, 
   ttl: number = 5 * 60 * 1000
 ): CacheItem<T> {
@@ -210,7 +210,7 @@ export function createCacheItem<T>(
 /**
  * Generate cache key from request
  */
-export function generateCacheKey(
+export function generateApiCacheKey(
   method: string,
   url: string,
   params?: Record<string, any>

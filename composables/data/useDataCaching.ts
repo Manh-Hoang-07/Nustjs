@@ -1,5 +1,5 @@
 import type { PaginationMeta, CacheItem, DataCachingOptions, DataCachingResult } from './data.types'
-import { generateCacheKey, isCacheExpired } from './data.utils'
+import { generateDataCacheKey, isDataCacheExpired } from './data.utils'
 
 // ===== COMPOSABLE =====
 
@@ -17,7 +17,7 @@ export function useDataCaching<T = any>(
   const cache = new Map<string, CacheItem>()
 
   // Cache key generator (using utility function)
-  const generateCacheKeyLocal = generateCacheKey
+  const generateCacheKeyLocal = generateDataCacheKey
 
   // Cache với TTL (Time To Live)
   const setCache = (key: string, data: { data: T[]; meta: PaginationMeta }, ttl: number = defaultTTL): void => {
@@ -37,7 +37,7 @@ export function useDataCaching<T = any>(
     const cached = cache.get(key)
     if (!cached) return null
     
-    if (isCacheExpired(cached.timestamp, cached.ttl)) {
+    if (isDataCacheExpired(cached.timestamp, cached.ttl)) {
       cache.delete(key)
       return null
     }

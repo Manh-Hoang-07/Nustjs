@@ -483,14 +483,14 @@ export function mergeMenuConfigs(
 /**
  * Check if cache is expired
  */
-export function isCacheExpired(timestamp: number, ttl: number): boolean {
+export function isNavigationCacheExpired(timestamp: number, ttl: number): boolean {
   return Date.now() - timestamp > ttl
 }
 
 /**
  * Generate cache key
  */
-export function generateCacheKey(
+export function generateNavigationCacheKey(
   type: MenuType,
   options: MenuFilterOptions
 ): string {

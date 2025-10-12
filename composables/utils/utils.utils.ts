@@ -64,7 +64,7 @@ export function createDebouncedFunction<T extends (...args: any[]) => any>(
       lastCallTime === 0 ||
       timeSinceLastCall >= delay ||
       timeSinceLastCall < 0 ||
-      (maxWait && timeSinceLastInvoke >= maxWait)
+      (maxWait !== undefined && timeSinceLastInvoke >= maxWait)
     )
   }
 
@@ -77,7 +77,7 @@ export function createDebouncedFunction<T extends (...args: any[]) => any>(
   }
 
   function trailingEdge(time: number): any {
-    timeoutId = undefined
+    timeoutId = null
 
     if (lastArgs) {
       return invokeFunc(time)
@@ -88,25 +88,25 @@ export function createDebouncedFunction<T extends (...args: any[]) => any>(
   }
 
   function cancel(): void {
-    if (timeoutId !== undefined) {
+    if (timeoutId !== null) {
       clearTimeout(timeoutId)
     }
-    if (maxTimeoutId !== undefined) {
+    if (maxTimeoutId !== null) {
       clearTimeout(maxTimeoutId)
     }
     lastInvokeTime = 0
     lastArgs = undefined
     lastThis = undefined
     lastCallTime = 0
-    timeoutId = undefined
-    maxTimeoutId = undefined
+    timeoutId = null
+    maxTimeoutId = null
   }
 
   function flush(): any {
-    return timeoutId === undefined ? result : trailingEdge(Date.now())
+    return timeoutId === null ? result : trailingEdge(Date.now())
   }
 
-  function debounced(...args: Parameters<T>): any {
+  function debounced(this: any, ...args: Parameters<T>): any {
     const time = Date.now()
     const isInvoking = shouldInvoke(time)
 
@@ -115,7 +115,7 @@ export function createDebouncedFunction<T extends (...args: any[]) => any>(
     lastCallTime = time
 
     if (isInvoking) {
-      if (timeoutId === undefined) {
+      if (timeoutId === null) {
         return leadingEdge(lastCallTime)
       }
       if (maxWait) {
@@ -123,7 +123,7 @@ export function createDebouncedFunction<T extends (...args: any[]) => any>(
         return invokeFunc(lastCallTime)
       }
     }
-    if (timeoutId === undefined) {
+    if (timeoutId === null) {
       timeoutId = setTimeout(timerExpired, delay)
     }
     return result
@@ -343,63 +343,7 @@ export function validateValue(
 }
 
 // ===== FORMAT UTILITIES =====
-
-/**
- * Format currency
- */
-export function formatCurrency(
-  amount: number, 
-  options: FormatOptions = {}
-): string {
-  const { locale = 'vi-VN', currency = 'VND' } = options
-  
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency
-  }).format(amount)
-}
-
-/**
- * Format date
- */
-export function formatDate(
-  date: Date | string, 
-  options: FormatOptions = {}
-): string {
-  const { locale = 'vi-VN', dateFormat = 'short' } = options
-  const dateObj = typeof date === 'string' ? new Date(date) : date
-  
-  return new Intl.DateTimeFormat(locale, {
-    dateStyle: dateFormat as any
-  }).format(dateObj)
-}
-
-/**
- * Format time
- */
-export function formatTime(
-  date: Date | string, 
-  options: FormatOptions = {}
-): string {
-  const { locale = 'vi-VN', timeFormat = 'short' } = options
-  const dateObj = typeof date === 'string' ? new Date(date) : date
-  
-  return new Intl.DateTimeFormat(locale, {
-    timeStyle: timeFormat as any
-  }).format(dateObj)
-}
-
-/**
- * Format number
- */
-export function formatNumber(
-  number: number, 
-  options: FormatOptions = {}
-): string {
-  const { locale = 'vi-VN', numberFormat } = options
-  
-  return new Intl.NumberFormat(locale, numberFormat).format(number)
-}
+// Note: Formatting functions are available in utils/formatters.ts
 
 /**
  * Format file size
@@ -505,7 +449,9 @@ export function shuffle<T>(array: T[]): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    const temp = shuffled[i]!
+    shuffled[i] = shuffled[j]!
+    shuffled[j] = temp
   }
   return shuffled
 }
@@ -547,8 +493,11 @@ export function union<T>(array1: T[], array2: T[]): T[] {
 export function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   const result = {} as Pick<T, K>
   keys.forEach(key => {
-    if (key in obj) {
-      result[key] = obj[key]
+    if (obj && typeof obj === 'object' && key in obj) {
+      const value = obj[key]
+      if (value !== undefined) {
+        (result as any)[key] = value
+      }
     }
   })
   return result
@@ -585,15 +534,15 @@ export function deepClone<T>(obj: T): T {
 /**
  * Deep merge objects
  */
-export function deepMerge<T>(target: T, ...sources: Partial<T>[]): T {
+export function deepMerge<T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T {
   if (!sources.length) return target
   const source = sources.shift()
   
-  if (isObject(target) && isObject(source)) {
+  if (isObject(target) && source && isObject(source)) {
     Object.keys(source).forEach(key => {
       if (isObject(source[key as keyof T])) {
         if (!target[key as keyof T]) Object.assign(target, { [key]: {} })
-        deepMerge(target[key as keyof T], source[key as keyof T])
+        deepMerge(target[key as keyof T] as Record<string, any>, source[key as keyof T] as Record<string, any>)
       } else {
         Object.assign(target, { [key]: source[key as keyof T] })
       }
@@ -606,7 +555,7 @@ export function deepMerge<T>(target: T, ...sources: Partial<T>[]): T {
 /**
  * Check if value is object
  */
-function isObject(item: any): boolean {
+function isObject(item: any): item is Record<string, any> {
   return item && typeof item === 'object' && !Array.isArray(item)
 }
 
@@ -725,7 +674,7 @@ export function escapeHtml(str: string): string {
     '"': '&quot;',
     "'": '&#39;'
   }
-  return str.replace(/[&<>"']/g, m => map[m])
+  return str.replace(/[&<>"']/g, m => map[m] || m)
 }
 
 /**
@@ -739,7 +688,7 @@ export function unescapeHtml(str: string): string {
     '&quot;': '"',
     '&#39;': "'"
   }
-  return str.replace(/&(amp|lt|gt|quot|#39);/g, m => map[m])
+  return str.replace(/&(amp|lt|gt|quot|#39);/g, m => map[m] || m)
 }
 
 /**
@@ -754,7 +703,7 @@ export function stripTags(str: string): string {
 /**
  * Create error with context
  */
-export function createError(
+export function createCustomError(
   message: string, 
   cause?: any, 
   context?: Record<string, any>

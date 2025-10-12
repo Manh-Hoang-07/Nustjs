@@ -5,14 +5,14 @@ import type { PaginationMeta } from './data.types'
 /**
  * Generate cache key from parameters
  */
-export function generateCacheKey(params: Record<string, any>): string {
+export function generateDataCacheKey(params: Record<string, any>): string {
   return JSON.stringify(params)
 }
 
 /**
  * Check if cache item is expired
  */
-export function isCacheExpired(timestamp: number, ttl: number): boolean {
+export function isDataCacheExpired(timestamp: number, ttl: number): boolean {
   return Date.now() - timestamp > ttl
 }
 
@@ -84,7 +84,7 @@ export function mergeFilters(
 /**
  * Build query string from parameters
  */
-export function buildQueryString(params: Record<string, any>): string {
+export function buildDataQueryString(params: Record<string, any>): string {
   const urlParams = new URLSearchParams()
   
   Object.keys(params).forEach(key => {
@@ -100,8 +100,8 @@ export function buildQueryString(params: Record<string, any>): string {
 /**
  * Build full URL with query string
  */
-export function buildFullUrl(endpoint: string, params: Record<string, any>): string {
-  const queryString = buildQueryString(params)
+export function buildDataFullUrl(endpoint: string, params: Record<string, any>): string {
+  const queryString = buildDataQueryString(params)
   return queryString ? `${endpoint}?${queryString}` : endpoint
 }
 
@@ -110,7 +110,7 @@ export function buildFullUrl(endpoint: string, params: Record<string, any>): str
 /**
  * Create debounced function
  */
-export function createDebouncedFunction<T extends (...args: any[]) => any>(
+export function createDataDebouncedFunction<T extends (...args: any[]) => any>(
   func: T,
   delay: number
 ): (...args: Parameters<T>) => void {
@@ -197,7 +197,7 @@ export function extractValidationErrors(error: any): Record<string, string> {
 /**
  * Check if all items are selected
  */
-export function isAllSelected<T>(
+export function isAllDataSelected<T>(
   items: T[], 
   selectedItems: T[], 
   getId: (item: T) => any = (item: any) => item.id
@@ -208,7 +208,7 @@ export function isAllSelected<T>(
 /**
  * Toggle item selection
  */
-export function toggleItemSelection<T>(
+export function toggleDataItemSelection<T>(
   item: T,
   selectedItems: T[],
   getId: (item: T) => any = (item: any) => item.id
@@ -225,7 +225,7 @@ export function toggleItemSelection<T>(
 /**
  * Toggle all items selection
  */
-export function toggleAllSelection<T>(
+export function toggleAllDataSelection<T>(
   items: T[],
   selectedItems: T[],
   getId: (item: T) => any = (item: any) => item.id

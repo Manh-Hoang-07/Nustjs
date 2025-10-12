@@ -12,9 +12,9 @@ import type {
 } from './data.types'
 import { 
   extractValidationErrors, 
-  isAllSelected, 
-  toggleItemSelection, 
-  toggleAllSelection 
+  isAllDataSelected, 
+  toggleDataItemSelection, 
+  toggleAllDataSelection 
 } from './data.utils'
 
 // ===== COMPOSABLE =====
@@ -66,7 +66,7 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
   const crudComputed: CrudComputedProps = {
     hasSelection: computed(() => selectedItems.value.length > 0),
     isAllSelected: computed(() => 
-      isAllSelected(baseDataTable.items.value, selectedItems.value)
+      isAllDataSelected(baseDataTable.items.value, selectedItems.value)
     ),
     selectedCount: computed(() => selectedItems.value.length)
   }
@@ -129,11 +129,11 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
   // Selection handlers
   const selectionHandlers = {
     toggleSelectAll(): void {
-      selectedItems.value = toggleAllSelection(baseDataTable.items.value, selectedItems.value)
+      selectedItems.value = toggleAllDataSelection(baseDataTable.items.value, selectedItems.value)
     },
 
     toggleSelectItem(item: T): void {
-      selectedItems.value = toggleItemSelection(item, selectedItems.value)
+      selectedItems.value = toggleDataItemSelection(item, selectedItems.value)
     }
   }
 
