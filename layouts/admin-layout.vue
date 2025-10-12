@@ -37,8 +37,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAdminNavigation } from '@/composables/navigation/useAdminNavigation'
+import { useGlobalSystemConfig } from '~/composables/system-config'
 import { defineAsyncComponent, ref, computed, onMounted } from 'vue';
 import ToastContainer from '@/components/Core/Feedback/ToastContainer.vue'
 
@@ -63,6 +64,9 @@ function handleMenuClick() {
   if (window.innerWidth < 1024) sidebarOpen.value = false;
 }
 
+// Sử dụng system config
+const { systemInfo } = useGlobalSystemConfig()
+
 // Sử dụng composable cho admin navigation
 const { menuItems, currentPath } = useAdminNavigation()
 
@@ -84,7 +88,7 @@ const pageTitle = computed(() => {
     }
   }
   
-  return 'Admin Panel';
+  return `${systemInfo.value.name || 'Admin Panel'} - Admin`;
 });
 
 const userName = computed(() => authStore.user?.name || 'Admin User');

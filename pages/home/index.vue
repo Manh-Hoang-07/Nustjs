@@ -19,7 +19,7 @@
         
         <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
           Chào mừng đến với
-          <span class="block text-yellow-300 animate-pulse">E-Commerce Platform</span>
+          <span class="block text-yellow-300 animate-pulse">{{ systemInfo.name || 'E-Commerce Platform' }}</span>
         </h1>
         <p class="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto">
           Nền tảng thương mại điện tử hiện đại với đầy đủ tính năng quản lý, báo cáo thông minh và trải nghiệm người dùng tuyệt vời
@@ -162,7 +162,11 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useUserNavigation } from '@/composables/navigation/useUserNavigation'
+import { useGlobalSystemConfig } from '~/composables/system-config'
 import NewsSection from './posts/components/NewsSection.vue'
+
+// Sử dụng system config
+const { systemInfo } = useGlobalSystemConfig()
 
 // Page meta
 definePageMeta({

@@ -4,15 +4,70 @@ declare global {
   const abortNavigation: typeof import('../../node_modules/nuxt/dist/app/composables/router')['abortNavigation']
   const acceptHMRUpdate: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['acceptHMRUpdate']
   const addRouteMiddleware: typeof import('../../node_modules/nuxt/dist/app/composables/router')['addRouteMiddleware']
+  const buildFullUrl: typeof import('../../composables/data/data.utils')['buildFullUrl']
+  const buildMenu: typeof import('../../composables/navigation/navigation.utils')['buildMenu']
+  const buildQueryString: typeof import('../../composables/utils/utils.utils')['buildQueryString']
+  const buildUrl: typeof import('../../composables/utils/utils.utils')['buildUrl']
+  const calculateCarouselTransform: typeof import('../../composables/ui/ui.utils')['calculateCarouselTransform']
+  const calculateDropdownPosition: typeof import('../../composables/ui/ui.utils')['calculateDropdownPosition']
+  const calculatePaginationInfo: typeof import('../../composables/ui/ui.utils')['calculatePaginationInfo']
+  const calculateRetryDelay: typeof import('../../composables/api/api.utils')['calculateRetryDelay']
+  const calculateTooltipPosition: typeof import('../../composables/ui/ui.utils')['calculateTooltipPosition']
   const callOnce: typeof import('../../node_modules/nuxt/dist/app/composables/once')['callOnce']
+  const camelCase: typeof import('../../composables/utils/utils.utils')['camelCase']
   const cancelIdleCallback: typeof import('../../node_modules/nuxt/dist/app/compat/idle-callback')['cancelIdleCallback']
+  const capitalize: typeof import('../../composables/utils/utils.utils')['capitalize']
+  const captureError: typeof import('../../composables/utils/utils.utils')['captureError']
+  const checkCircularReferences: typeof import('../../composables/navigation/navigation.utils')['checkCircularReferences']
+  const checkMenuItemAccess: typeof import('../../composables/navigation/navigation.utils')['checkMenuItemAccess']
+  const chunk: typeof import('../../composables/utils/utils.utils')['chunk']
   const clearError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['clearError']
   const clearNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['clearNuxtData']
   const clearNuxtState: typeof import('../../node_modules/nuxt/dist/app/composables/state')['clearNuxtState']
+  const clearTokenFromCookie: typeof import('../../composables/api/api.utils')['clearTokenFromCookie']
   const computed: typeof import('vue')['computed']
-  const createError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['createError']
+  const createAccordionOptions: typeof import('../../composables/ui/ui.utils')['createAccordionOptions']
+  const createAnimationOptions: typeof import('../../composables/ui/ui.utils')['createAnimationOptions']
+  const createAuthInterceptor: typeof import('../../composables/api/api.utils')['createAuthInterceptor']
+  const createCacheItem: typeof import('../../composables/api/api.utils')['createCacheItem']
+  const createCarouselOptions: typeof import('../../composables/ui/ui.utils')['createCarouselOptions']
+  const createConfirmationOptions: typeof import('../../composables/ui/ui.utils')['createConfirmationOptions']
+  const createDebouncedFunction: typeof import('../../composables/utils/utils.utils')['createDebouncedFunction']
+  const createDefaultConfig: typeof import('../../composables/api/api.utils')['createDefaultConfig']
+  const createDefaultMenuConfig: typeof import('../../composables/navigation/navigation.utils')['createDefaultMenuConfig']
+  const createDefaultPaginationMeta: typeof import('../../composables/data/data.utils')['createDefaultPaginationMeta']
+  const createDragDropOptions: typeof import('../../composables/ui/ui.utils')['createDragDropOptions']
+  const createDrawerOptions: typeof import('../../composables/ui/ui.utils')['createDrawerOptions']
+  const createDropdownOptions: typeof import('../../composables/ui/ui.utils')['createDropdownOptions']
+  const createEnhancedError: typeof import('../../composables/api/api.utils')['createEnhancedError']
+  const createError: typeof import('../../composables/utils/utils.utils')['createError']
+  const createErrorInterceptor: typeof import('../../composables/api/api.utils')['createErrorInterceptor']
+  const createFilterOptions: typeof import('../../composables/ui/ui.utils')['createFilterOptions']
+  const createFormOptions: typeof import('../../composables/ui/ui.utils')['createFormOptions']
+  const createLoadingOptions: typeof import('../../composables/ui/ui.utils')['createLoadingOptions']
+  const createMenuEvent: typeof import('../../composables/navigation/navigation.utils')['createMenuEvent']
+  const createModalOptions: typeof import('../../composables/ui/ui.utils')['createModalOptions']
+  const createNotificationOptions: typeof import('../../composables/ui/ui.utils')['createNotificationOptions']
+  const createPaginationOptions: typeof import('../../composables/ui/ui.utils')['createPaginationOptions']
+  const createPopoverOptions: typeof import('../../composables/ui/ui.utils')['createPopoverOptions']
+  const createRequestKey: typeof import('../../composables/api/api.utils')['createRequestKey']
+  const createRequestTracker: typeof import('../../composables/api/api.utils')['createRequestTracker']
+  const createResizeOptions: typeof import('../../composables/ui/ui.utils')['createResizeOptions']
+  const createScrollOptions: typeof import('../../composables/ui/ui.utils')['createScrollOptions']
+  const createSearchOptions: typeof import('../../composables/ui/ui.utils')['createSearchOptions']
+  const createSortOptions: typeof import('../../composables/ui/ui.utils')['createSortOptions']
+  const createTableSelectionOptions: typeof import('../../composables/ui/ui.utils')['createTableSelectionOptions']
+  const createTabsOptions: typeof import('../../composables/ui/ui.utils')['createTabsOptions']
+  const createToastOptions: typeof import('../../composables/ui/ui.utils')['createToastOptions']
+  const createTooltipOptions: typeof import('../../composables/ui/ui.utils')['createTooltipOptions']
   const customRef: typeof import('vue')['customRef']
   const debounce: typeof import('../../utils/debounce')['debounce']
+  const debounceSearch: typeof import('../../composables/ui/ui.utils')['debounceSearch']
+  const deepClone: typeof import('../../composables/utils/utils.utils')['deepClone']
+  const deepMerge: typeof import('../../composables/utils/utils.utils')['deepMerge']
+  const defaultAfterFetch: typeof import('../../composables/data/data.utils')['defaultAfterFetch']
+  const defaultBeforeSubmit: typeof import('../../composables/data/data.utils')['defaultBeforeSubmit']
+  const defaultTransformItem: typeof import('../../composables/data/data.utils')['defaultTransformItem']
   const defineAppConfig: typeof import('../../node_modules/nuxt/dist/app/nuxt')['defineAppConfig']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
@@ -26,42 +81,106 @@ declare global {
   const definePayloadReducer: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['definePayloadReducer']
   const definePayloadReviver: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['definePayloadReviver']
   const defineStore: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['defineStore']
+  const difference: typeof import('../../composables/utils/utils.utils')['difference']
   const effect: typeof import('vue')['effect']
   const effectScope: typeof import('vue')['effectScope']
+  const escapeHtml: typeof import('../../composables/utils/utils.utils')['escapeHtml']
+  const executeWithRetry: typeof import('../../composables/api/api.utils')['executeWithRetry']
+  const extractErrorMessage: typeof import('../../composables/data/data.utils')['extractErrorMessage']
+  const extractValidationErrors: typeof import('../../composables/data/data.utils')['extractValidationErrors']
+  const filterByAuthRequirement: typeof import('../../composables/navigation/navigation.utils')['filterByAuthRequirement']
+  const filterByPermissions: typeof import('../../composables/navigation/navigation.utils')['filterByPermissions']
+  const filterByRoles: typeof import('../../composables/navigation/navigation.utils')['filterByRoles']
+  const filterByStatus: typeof import('../../composables/navigation/navigation.utils')['filterByStatus']
+  const filterByType: typeof import('../../composables/navigation/navigation.utils')['filterByType']
+  const filterMenu: typeof import('../../composables/navigation/navigation.utils')['filterMenu']
+  const findMenuItem: typeof import('../../composables/navigation/navigation.utils')['findMenuItem']
+  const findMenuItemsByName: typeof import('../../composables/navigation/navigation.utils')['findMenuItemsByName']
+  const flatten: typeof import('../../composables/utils/utils.utils')['flatten']
+  const flattenMenu: typeof import('../../composables/navigation/navigation.utils')['flattenMenu']
   const form: typeof import('../../utils/form')['default']
   const formToFormData: typeof import('../../utils/form')['formToFormData']
   const formatCurrency: typeof import('../../utils/formatters')['formatCurrency']
   const formatDate: typeof import('../../utils/formatters')['formatDate']
   const formatDateTime: typeof import('../../utils/formatters')['formatDateTime']
+  const formatError: typeof import('../../composables/utils/utils.utils')['formatError']
+  const formatFileSize: typeof import('../../composables/utils/utils.utils')['formatFileSize']
   const formatNumber: typeof import('../../utils/formatters')['formatNumber']
+  const formatPhoneNumber: typeof import('../../composables/utils/utils.utils')['formatPhoneNumber']
   const formatRelativeTime: typeof import('../../utils/formatters')['formatRelativeTime']
+  const formatTime: typeof import('../../composables/utils/utils.utils')['formatTime']
   const formatters: typeof import('../../utils/formatters')['default']
+  const generateBreadcrumbs: typeof import('../../composables/navigation/navigation.utils')['generateBreadcrumbs']
+  const generateCacheKey: typeof import('../../composables/navigation/navigation.utils')['generateCacheKey']
+  const generateNotificationId: typeof import('../../composables/ui/ui.utils')['generateNotificationId']
+  const generatePageNumbers: typeof import('../../composables/ui/ui.utils')['generatePageNumbers']
   const generatePlaceholder: typeof import('../../utils/image')['generatePlaceholder']
   const generateSizes: typeof import('../../utils/image')['generateSizes']
   const generateSrcSet: typeof import('../../utils/image')['generateSrcSet']
+  const generateTabKey: typeof import('../../composables/ui/ui.utils')['generateTabKey']
+  const generateToastId: typeof import('../../composables/ui/ui.utils')['generateToastId']
+  const getAllMenuPaths: typeof import('../../composables/navigation/navigation.utils')['getAllMenuPaths']
+  const getAnimationCSS: typeof import('../../composables/ui/ui.utils')['getAnimationCSS']
   const getAppManifest: typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const getDrawerTransform: typeof import('../../composables/ui/ui.utils')['getDrawerTransform']
+  const getErrorInfo: typeof import('../../composables/utils/utils.utils')['getErrorInfo']
+  const getItemKey: typeof import('../../composables/ui/ui.utils')['getItemKey']
+  const getLoadingSpinnerHTML: typeof import('../../composables/ui/ui.utils')['getLoadingSpinnerHTML']
+  const getMenuDepth: typeof import('../../composables/navigation/navigation.utils')['getMenuDepth']
   const getRouteRules: typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getRouteRules']
+  const getToastIcon: typeof import('../../composables/ui/ui.utils')['getToastIcon']
+  const getToastStyles: typeof import('../../composables/ui/ui.utils')['getToastStyles']
+  const getTokenFromCookie: typeof import('../../composables/api/api.utils')['getTokenFromCookie']
+  const getUserFriendlyMessage: typeof import('../../composables/api/api.utils')['getUserFriendlyMessage']
+  const groupBy: typeof import('../../composables/utils/utils.utils')['groupBy']
   const h: typeof import('vue')['h']
+  const hasActiveFilters: typeof import('../../composables/ui/ui.utils')['hasActiveFilters']
+  const hasFiltersChanged: typeof import('../../composables/data/data.utils')['hasFiltersChanged']
+  const hasFiltersChangedFromDefault: typeof import('../../composables/data/data.utils')['hasFiltersChangedFromDefault']
   const hasInjectionContext: typeof import('vue')['hasInjectionContext']
+  const hasRequiredPermission: typeof import('../../composables/navigation/navigation.utils')['hasRequiredPermission']
+  const hasRequiredRole: typeof import('../../composables/navigation/navigation.utils')['hasRequiredRole']
   const inject: typeof import('vue')['inject']
   const injectHead: typeof import('../../node_modules/nuxt/dist/app/composables/head')['injectHead']
+  const intersection: typeof import('../../composables/utils/utils.utils')['intersection']
+  const isAllSelected: typeof import('../../composables/data/data.utils')['isAllSelected']
+  const isCacheExpired: typeof import('../../composables/navigation/navigation.utils')['isCacheExpired']
+  const isClientError: typeof import('../../composables/api/api.utils')['isClientError']
+  const isEmpty: typeof import('../../composables/utils/utils.utils')['isEmpty']
+  const isEqual: typeof import('../../composables/utils/utils.utils')['isEqual']
+  const isError: typeof import('../../composables/utils/utils.utils')['isError']
+  const isItemSelected: typeof import('../../composables/ui/ui.utils')['isItemSelected']
+  const isMenuItemActive: typeof import('../../composables/navigation/navigation.utils')['isMenuItemActive']
+  const isNetworkError: typeof import('../../composables/api/api.utils')['isNetworkError']
   const isNuxtError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['isNuxtError']
+  const isPathActive: typeof import('../../composables/navigation/navigation.utils')['isPathActive']
   const isPrerendered: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['isPrerendered']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
+  const isServerError: typeof import('../../composables/api/api.utils')['isServerError']
   const isShallow: typeof import('vue')['isShallow']
+  const isTimeoutError: typeof import('../../composables/api/api.utils')['isTimeoutError']
+  const isValidHttpMethod: typeof import('../../composables/api/api.utils')['isValidHttpMethod']
+  const isValidPage: typeof import('../../composables/data/data.utils')['isValidPage']
+  const isValidPageSize: typeof import('../../composables/data/data.utils')['isValidPageSize']
+  const isValidUrl: typeof import('../../composables/api/api.utils')['isValidUrl']
   const isVue2: typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue2']
   const isVue3: typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue3']
+  const kebabCase: typeof import('../../composables/utils/utils.utils')['kebabCase']
   const lazyLoadImage: typeof import('../../utils/image')['lazyLoadImage']
   const loadPayload: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['loadPayload']
   const markRaw: typeof import('vue')['markRaw']
+  const mergeConfigs: typeof import('../../composables/api/api.utils')['mergeConfigs']
+  const mergeFilters: typeof import('../../composables/data/data.utils')['mergeFilters']
+  const mergeMenuConfigs: typeof import('../../composables/navigation/navigation.utils')['mergeMenuConfigs']
   const mergeModels: typeof import('vue')['mergeModels']
   const navigateTo: typeof import('../../node_modules/nuxt/dist/app/composables/router')['navigateTo']
   const nextTick: typeof import('vue')['nextTick']
+  const omit: typeof import('../../composables/utils/utils.utils')['omit']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeRouteLeave: typeof import('../../node_modules/vue-router')['onBeforeRouteLeave']
@@ -81,6 +200,10 @@ declare global {
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
   const optimizeImageUrl: typeof import('../../utils/image')['optimizeImageUrl']
+  const parseQueryString: typeof import('../../composables/utils/utils.utils')['parseQueryString']
+  const parseUrl: typeof import('../../composables/utils/utils.utils')['parseUrl']
+  const pascalCase: typeof import('../../composables/utils/utils.utils')['pascalCase']
+  const pick: typeof import('../../composables/utils/utils.utils')['pick']
   const prefetchComponents: typeof import('../../node_modules/nuxt/dist/app/composables/preload')['prefetchComponents']
   const preloadComponents: typeof import('../../node_modules/nuxt/dist/app/composables/preload')['preloadComponents']
   const preloadPayload: typeof import('../../node_modules/nuxt/dist/app/composables/payload')['preloadPayload']
@@ -96,35 +219,70 @@ declare global {
   const reloadNuxtApp: typeof import('../../node_modules/nuxt/dist/app/composables/chunk')['reloadNuxtApp']
   const requestIdleCallback: typeof import('../../node_modules/nuxt/dist/app/compat/idle-callback')['requestIdleCallback']
   const resolveComponent: typeof import('vue')['resolveComponent']
+  const sample: typeof import('../../composables/utils/utils.utils')['sample']
+  const sanitizeUrl: typeof import('../../composables/api/api.utils')['sanitizeUrl']
+  const selectAllItems: typeof import('../../composables/ui/ui.utils')['selectAllItems']
   const setInterval: typeof import('../../node_modules/nuxt/dist/app/compat/interval')['setInterval']
   const setPageLayout: typeof import('../../node_modules/nuxt/dist/app/composables/router')['setPageLayout']
   const setResponseStatus: typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['setResponseStatus']
+  const setTokenToCookie: typeof import('../../composables/api/api.utils')['setTokenToCookie']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
+  const shouldCloseModal: typeof import('../../composables/ui/ui.utils')['shouldCloseModal']
+  const shouldRetryRequest: typeof import('../../composables/api/api.utils')['shouldRetryRequest']
   const showError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['showError']
+  const shuffle: typeof import('../../composables/utils/utils.utils')['shuffle']
+  const sleep: typeof import('../../composables/api/api.utils')['sleep']
+  const slugify: typeof import('../../composables/utils/utils.utils')['slugify']
+  const snakeCase: typeof import('../../composables/utils/utils.utils')['snakeCase']
+  const sortBy: typeof import('../../composables/utils/utils.utils')['sortBy']
+  const sortByName: typeof import('../../composables/navigation/navigation.utils')['sortByName']
+  const sortByOrder: typeof import('../../composables/navigation/navigation.utils')['sortByOrder']
+  const sortByPath: typeof import('../../composables/navigation/navigation.utils')['sortByPath']
   const storeToRefs: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['storeToRefs']
+  const stripTags: typeof import('../../composables/utils/utils.utils')['stripTags']
   const throttle: typeof import('../../utils/debounce')['throttle']
   const toRaw: typeof import('vue')['toRaw']
   const toRef: typeof import('vue')['toRef']
   const toRefs: typeof import('vue')['toRefs']
   const toValue: typeof import('vue')['toValue']
+  const toggleAllSelection: typeof import('../../composables/data/data.utils')['toggleAllSelection']
+  const toggleItemSelection: typeof import('../../composables/ui/ui.utils')['toggleItemSelection']
+  const toggleSortDirection: typeof import('../../composables/ui/ui.utils')['toggleSortDirection']
+  const trackMenuClick: typeof import('../../composables/navigation/navigation.utils')['trackMenuClick']
   const triggerRef: typeof import('vue')['triggerRef']
+  const truncate: typeof import('../../composables/utils/utils.utils')['truncate']
   const tryUseNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']
+  const unescapeHtml: typeof import('../../composables/utils/utils.utils')['unescapeHtml']
+  const union: typeof import('../../composables/utils/utils.utils')['union']
+  const unique: typeof import('../../composables/utils/utils.utils')['unique']
   const unref: typeof import('vue')['unref']
   const updateAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']
+  const useAdminNavigation: typeof import('../../composables/navigation/index')['useAdminNavigation']
+  const useApiClient: typeof import('../../composables/api/index')['useApiClient']
+  const useApiFetch: typeof import('../../composables/api/index')['useApiFetch']
   const useApiFormSubmit: typeof import('../../utils/form')['useApiFormSubmit']
   const useAppConfig: typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']
   const useAsyncData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']
   const useAttrs: typeof import('vue')['useAttrs']
+  const useAuthInit: typeof import('../../composables/utils/index')['useAuthInit']
   const useAuthStore: typeof import('../../stores/auth')['useAuthStore']
+  const useBaseDataTable: typeof import('../../composables/data/index')['useBaseDataTable']
   const useColorMode: typeof import('../../node_modules/@nuxtjs/color-mode/dist/runtime/composables')['useColorMode']
   const useCookie: typeof import('../../node_modules/nuxt/dist/app/composables/cookie')['useCookie']
+  const useCrudDataTable: typeof import('../../composables/data/index')['useCrudDataTable']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
+  const useDataCaching: typeof import('../../composables/data/index')['useDataCaching']
+  const useDataFetching: typeof import('../../composables/data/index')['useDataFetching']
+  const useDataFiltering: typeof import('../../composables/data/index')['useDataFiltering']
+  const useDataPagination: typeof import('../../composables/data/index')['useDataPagination']
   const useError: typeof import('../../node_modules/nuxt/dist/app/composables/error')['useError']
   const useFetch: typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useFetch']
   const useFormDefaults: typeof import('../../utils/form')['useFormDefaults']
+  const useGlobalApiClient: typeof import('../../composables/api/index')['useGlobalApiClient']
+  const useGlobalSystemConfig: typeof import('../../composables/system-config/useSystemConfig')['useGlobalSystemConfig']
   const useHead: typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHead']
   const useHeadSafe: typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHeadSafe']
   const useHydration: typeof import('../../node_modules/nuxt/dist/app/composables/hydrate')['useHydration']
@@ -133,9 +291,14 @@ declare global {
   const useLazyFetch: typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useLazyFetch']
   const useLink: typeof import('../../node_modules/vue-router')['useLink']
   const useLoadingIndicator: typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator')['useLoadingIndicator']
+  const useMenuState: typeof import('../../composables/navigation/index')['useMenuState']
+  const useModal: typeof import('../../composables/ui/index')['useModal']
   const useModel: typeof import('vue')['useModel']
+  const useNavigation: typeof import('../../composables/navigation/index')['useNavigation']
   const useNuxtApp: typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']
   const useNuxtData: typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']
+  const usePagination: typeof import('../../composables/ui/index')['usePagination']
+  const usePermissionGuards: typeof import('../../composables/navigation/index')['usePermissionGuards']
   const usePinia: typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['usePinia']
   const usePreviewMode: typeof import('../../node_modules/nuxt/dist/app/composables/preview')['usePreviewMode']
   const useRequestEvent: typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestEvent']
@@ -183,8 +346,20 @@ declare global {
   const useShadowRoot: typeof import('vue')['useShadowRoot']
   const useSlots: typeof import('vue')['useSlots']
   const useState: typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']
+  const useSystemConfig: typeof import('../../composables/system-config/useSystemConfig')['useSystemConfig']
+  const useTableSelection: typeof import('../../composables/ui/index')['useTableSelection']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
+  const useToast: typeof import('../../composables/ui/index')['useToast']
   const useTransitionState: typeof import('vue')['useTransitionState']
+  const useUrlFilters: typeof import('../../composables/utils/index')['useUrlFilters']
+  const useUrlPagination: typeof import('../../composables/utils/index')['useUrlPagination']
+  const useUrlState: typeof import('../../composables/utils/index')['useUrlState']
+  const useUrlSync: typeof import('../../composables/utils/index')['useUrlSync']
+  const useUserNavigation: typeof import('../../composables/navigation/index')['useUserNavigation']
+  const validateFormField: typeof import('../../composables/ui/ui.utils')['validateFormField']
+  const validateMenuItem: typeof import('../../composables/navigation/navigation.utils')['validateMenuItem']
+  const validateMenuStructure: typeof import('../../composables/navigation/navigation.utils')['validateMenuStructure']
+  const validateValue: typeof import('../../composables/utils/utils.utils')['validateValue']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
@@ -201,6 +376,9 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { SystemConfigItem, SystemConfigGeneral, SystemConfigCache, SystemConfigOptions, SystemConfigResult } from '../../composables/system-config/types'
+  import('../../composables/system-config/types')
 }
 // for vue template auto import
 import { UnwrapRef } from 'vue'
@@ -209,15 +387,70 @@ declare module 'vue' {
     readonly abortNavigation: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['abortNavigation']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['acceptHMRUpdate']>
     readonly addRouteMiddleware: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['addRouteMiddleware']>
+    readonly buildFullUrl: UnwrapRef<typeof import('../../composables/data/data.utils')['buildFullUrl']>
+    readonly buildMenu: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['buildMenu']>
+    readonly buildQueryString: UnwrapRef<typeof import('../../composables/utils/utils.utils')['buildQueryString']>
+    readonly buildUrl: UnwrapRef<typeof import('../../composables/utils/utils.utils')['buildUrl']>
+    readonly calculateCarouselTransform: UnwrapRef<typeof import('../../composables/ui/ui.utils')['calculateCarouselTransform']>
+    readonly calculateDropdownPosition: UnwrapRef<typeof import('../../composables/ui/ui.utils')['calculateDropdownPosition']>
+    readonly calculatePaginationInfo: UnwrapRef<typeof import('../../composables/ui/ui.utils')['calculatePaginationInfo']>
+    readonly calculateRetryDelay: UnwrapRef<typeof import('../../composables/api/api.utils')['calculateRetryDelay']>
+    readonly calculateTooltipPosition: UnwrapRef<typeof import('../../composables/ui/ui.utils')['calculateTooltipPosition']>
     readonly callOnce: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/once')['callOnce']>
+    readonly camelCase: UnwrapRef<typeof import('../../composables/utils/utils.utils')['camelCase']>
     readonly cancelIdleCallback: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/idle-callback')['cancelIdleCallback']>
+    readonly capitalize: UnwrapRef<typeof import('../../composables/utils/utils.utils')['capitalize']>
+    readonly captureError: UnwrapRef<typeof import('../../composables/utils/utils.utils')['captureError']>
+    readonly checkCircularReferences: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['checkCircularReferences']>
+    readonly checkMenuItemAccess: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['checkMenuItemAccess']>
+    readonly chunk: UnwrapRef<typeof import('../../composables/utils/utils.utils')['chunk']>
     readonly clearError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['clearError']>
     readonly clearNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['clearNuxtData']>
     readonly clearNuxtState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['clearNuxtState']>
+    readonly clearTokenFromCookie: UnwrapRef<typeof import('../../composables/api/api.utils')['clearTokenFromCookie']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
-    readonly createError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['createError']>
+    readonly createAccordionOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createAccordionOptions']>
+    readonly createAnimationOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createAnimationOptions']>
+    readonly createAuthInterceptor: UnwrapRef<typeof import('../../composables/api/api.utils')['createAuthInterceptor']>
+    readonly createCacheItem: UnwrapRef<typeof import('../../composables/api/api.utils')['createCacheItem']>
+    readonly createCarouselOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createCarouselOptions']>
+    readonly createConfirmationOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createConfirmationOptions']>
+    readonly createDebouncedFunction: UnwrapRef<typeof import('../../composables/utils/utils.utils')['createDebouncedFunction']>
+    readonly createDefaultConfig: UnwrapRef<typeof import('../../composables/api/api.utils')['createDefaultConfig']>
+    readonly createDefaultMenuConfig: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['createDefaultMenuConfig']>
+    readonly createDefaultPaginationMeta: UnwrapRef<typeof import('../../composables/data/data.utils')['createDefaultPaginationMeta']>
+    readonly createDragDropOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createDragDropOptions']>
+    readonly createDrawerOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createDrawerOptions']>
+    readonly createDropdownOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createDropdownOptions']>
+    readonly createEnhancedError: UnwrapRef<typeof import('../../composables/api/api.utils')['createEnhancedError']>
+    readonly createError: UnwrapRef<typeof import('../../composables/utils/utils.utils')['createError']>
+    readonly createErrorInterceptor: UnwrapRef<typeof import('../../composables/api/api.utils')['createErrorInterceptor']>
+    readonly createFilterOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createFilterOptions']>
+    readonly createFormOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createFormOptions']>
+    readonly createLoadingOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createLoadingOptions']>
+    readonly createMenuEvent: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['createMenuEvent']>
+    readonly createModalOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createModalOptions']>
+    readonly createNotificationOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createNotificationOptions']>
+    readonly createPaginationOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createPaginationOptions']>
+    readonly createPopoverOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createPopoverOptions']>
+    readonly createRequestKey: UnwrapRef<typeof import('../../composables/api/api.utils')['createRequestKey']>
+    readonly createRequestTracker: UnwrapRef<typeof import('../../composables/api/api.utils')['createRequestTracker']>
+    readonly createResizeOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createResizeOptions']>
+    readonly createScrollOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createScrollOptions']>
+    readonly createSearchOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createSearchOptions']>
+    readonly createSortOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createSortOptions']>
+    readonly createTableSelectionOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createTableSelectionOptions']>
+    readonly createTabsOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createTabsOptions']>
+    readonly createToastOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createToastOptions']>
+    readonly createTooltipOptions: UnwrapRef<typeof import('../../composables/ui/ui.utils')['createTooltipOptions']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly debounce: UnwrapRef<typeof import('../../utils/debounce')['debounce']>
+    readonly debounceSearch: UnwrapRef<typeof import('../../composables/ui/ui.utils')['debounceSearch']>
+    readonly deepClone: UnwrapRef<typeof import('../../composables/utils/utils.utils')['deepClone']>
+    readonly deepMerge: UnwrapRef<typeof import('../../composables/utils/utils.utils')['deepMerge']>
+    readonly defaultAfterFetch: UnwrapRef<typeof import('../../composables/data/data.utils')['defaultAfterFetch']>
+    readonly defaultBeforeSubmit: UnwrapRef<typeof import('../../composables/data/data.utils')['defaultBeforeSubmit']>
+    readonly defaultTransformItem: UnwrapRef<typeof import('../../composables/data/data.utils')['defaultTransformItem']>
     readonly defineAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['defineAppConfig']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
@@ -231,42 +464,106 @@ declare module 'vue' {
     readonly definePayloadReducer: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['definePayloadReducer']>
     readonly definePayloadReviver: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['definePayloadReviver']>
     readonly defineStore: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['defineStore']>
+    readonly difference: UnwrapRef<typeof import('../../composables/utils/utils.utils')['difference']>
     readonly effect: UnwrapRef<typeof import('vue')['effect']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly escapeHtml: UnwrapRef<typeof import('../../composables/utils/utils.utils')['escapeHtml']>
+    readonly executeWithRetry: UnwrapRef<typeof import('../../composables/api/api.utils')['executeWithRetry']>
+    readonly extractErrorMessage: UnwrapRef<typeof import('../../composables/data/data.utils')['extractErrorMessage']>
+    readonly extractValidationErrors: UnwrapRef<typeof import('../../composables/data/data.utils')['extractValidationErrors']>
+    readonly filterByAuthRequirement: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['filterByAuthRequirement']>
+    readonly filterByPermissions: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['filterByPermissions']>
+    readonly filterByRoles: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['filterByRoles']>
+    readonly filterByStatus: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['filterByStatus']>
+    readonly filterByType: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['filterByType']>
+    readonly filterMenu: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['filterMenu']>
+    readonly findMenuItem: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['findMenuItem']>
+    readonly findMenuItemsByName: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['findMenuItemsByName']>
+    readonly flatten: UnwrapRef<typeof import('../../composables/utils/utils.utils')['flatten']>
+    readonly flattenMenu: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['flattenMenu']>
     readonly form: UnwrapRef<typeof import('../../utils/form')['default']>
     readonly formToFormData: UnwrapRef<typeof import('../../utils/form')['formToFormData']>
     readonly formatCurrency: UnwrapRef<typeof import('../../utils/formatters')['formatCurrency']>
     readonly formatDate: UnwrapRef<typeof import('../../utils/formatters')['formatDate']>
     readonly formatDateTime: UnwrapRef<typeof import('../../utils/formatters')['formatDateTime']>
+    readonly formatError: UnwrapRef<typeof import('../../composables/utils/utils.utils')['formatError']>
+    readonly formatFileSize: UnwrapRef<typeof import('../../composables/utils/utils.utils')['formatFileSize']>
     readonly formatNumber: UnwrapRef<typeof import('../../utils/formatters')['formatNumber']>
+    readonly formatPhoneNumber: UnwrapRef<typeof import('../../composables/utils/utils.utils')['formatPhoneNumber']>
     readonly formatRelativeTime: UnwrapRef<typeof import('../../utils/formatters')['formatRelativeTime']>
+    readonly formatTime: UnwrapRef<typeof import('../../composables/utils/utils.utils')['formatTime']>
     readonly formatters: UnwrapRef<typeof import('../../utils/formatters')['default']>
+    readonly generateBreadcrumbs: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['generateBreadcrumbs']>
+    readonly generateCacheKey: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['generateCacheKey']>
+    readonly generateNotificationId: UnwrapRef<typeof import('../../composables/ui/ui.utils')['generateNotificationId']>
+    readonly generatePageNumbers: UnwrapRef<typeof import('../../composables/ui/ui.utils')['generatePageNumbers']>
     readonly generatePlaceholder: UnwrapRef<typeof import('../../utils/image')['generatePlaceholder']>
     readonly generateSizes: UnwrapRef<typeof import('../../utils/image')['generateSizes']>
     readonly generateSrcSet: UnwrapRef<typeof import('../../utils/image')['generateSrcSet']>
+    readonly generateTabKey: UnwrapRef<typeof import('../../composables/ui/ui.utils')['generateTabKey']>
+    readonly generateToastId: UnwrapRef<typeof import('../../composables/ui/ui.utils')['generateToastId']>
+    readonly getAllMenuPaths: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['getAllMenuPaths']>
+    readonly getAnimationCSS: UnwrapRef<typeof import('../../composables/ui/ui.utils')['getAnimationCSS']>
     readonly getAppManifest: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getAppManifest']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly getDrawerTransform: UnwrapRef<typeof import('../../composables/ui/ui.utils')['getDrawerTransform']>
+    readonly getErrorInfo: UnwrapRef<typeof import('../../composables/utils/utils.utils')['getErrorInfo']>
+    readonly getItemKey: UnwrapRef<typeof import('../../composables/ui/ui.utils')['getItemKey']>
+    readonly getLoadingSpinnerHTML: UnwrapRef<typeof import('../../composables/ui/ui.utils')['getLoadingSpinnerHTML']>
+    readonly getMenuDepth: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['getMenuDepth']>
     readonly getRouteRules: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/manifest')['getRouteRules']>
+    readonly getToastIcon: UnwrapRef<typeof import('../../composables/ui/ui.utils')['getToastIcon']>
+    readonly getToastStyles: UnwrapRef<typeof import('../../composables/ui/ui.utils')['getToastStyles']>
+    readonly getTokenFromCookie: UnwrapRef<typeof import('../../composables/api/api.utils')['getTokenFromCookie']>
+    readonly getUserFriendlyMessage: UnwrapRef<typeof import('../../composables/api/api.utils')['getUserFriendlyMessage']>
+    readonly groupBy: UnwrapRef<typeof import('../../composables/utils/utils.utils')['groupBy']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
+    readonly hasActiveFilters: UnwrapRef<typeof import('../../composables/ui/ui.utils')['hasActiveFilters']>
+    readonly hasFiltersChanged: UnwrapRef<typeof import('../../composables/data/data.utils')['hasFiltersChanged']>
+    readonly hasFiltersChangedFromDefault: UnwrapRef<typeof import('../../composables/data/data.utils')['hasFiltersChangedFromDefault']>
     readonly hasInjectionContext: UnwrapRef<typeof import('vue')['hasInjectionContext']>
+    readonly hasRequiredPermission: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['hasRequiredPermission']>
+    readonly hasRequiredRole: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['hasRequiredRole']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectHead: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/head')['injectHead']>
+    readonly intersection: UnwrapRef<typeof import('../../composables/utils/utils.utils')['intersection']>
+    readonly isAllSelected: UnwrapRef<typeof import('../../composables/data/data.utils')['isAllSelected']>
+    readonly isCacheExpired: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['isCacheExpired']>
+    readonly isClientError: UnwrapRef<typeof import('../../composables/api/api.utils')['isClientError']>
+    readonly isEmpty: UnwrapRef<typeof import('../../composables/utils/utils.utils')['isEmpty']>
+    readonly isEqual: UnwrapRef<typeof import('../../composables/utils/utils.utils')['isEqual']>
+    readonly isError: UnwrapRef<typeof import('../../composables/utils/utils.utils')['isError']>
+    readonly isItemSelected: UnwrapRef<typeof import('../../composables/ui/ui.utils')['isItemSelected']>
+    readonly isMenuItemActive: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['isMenuItemActive']>
+    readonly isNetworkError: UnwrapRef<typeof import('../../composables/api/api.utils')['isNetworkError']>
     readonly isNuxtError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['isNuxtError']>
+    readonly isPathActive: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['isPathActive']>
     readonly isPrerendered: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['isPrerendered']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
+    readonly isServerError: UnwrapRef<typeof import('../../composables/api/api.utils')['isServerError']>
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
+    readonly isTimeoutError: UnwrapRef<typeof import('../../composables/api/api.utils')['isTimeoutError']>
+    readonly isValidHttpMethod: UnwrapRef<typeof import('../../composables/api/api.utils')['isValidHttpMethod']>
+    readonly isValidPage: UnwrapRef<typeof import('../../composables/data/data.utils')['isValidPage']>
+    readonly isValidPageSize: UnwrapRef<typeof import('../../composables/data/data.utils')['isValidPageSize']>
+    readonly isValidUrl: UnwrapRef<typeof import('../../composables/api/api.utils')['isValidUrl']>
     readonly isVue2: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue2']>
     readonly isVue3: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/vue-demi')['isVue3']>
+    readonly kebabCase: UnwrapRef<typeof import('../../composables/utils/utils.utils')['kebabCase']>
     readonly lazyLoadImage: UnwrapRef<typeof import('../../utils/image')['lazyLoadImage']>
     readonly loadPayload: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['loadPayload']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
+    readonly mergeConfigs: UnwrapRef<typeof import('../../composables/api/api.utils')['mergeConfigs']>
+    readonly mergeFilters: UnwrapRef<typeof import('../../composables/data/data.utils')['mergeFilters']>
+    readonly mergeMenuConfigs: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['mergeMenuConfigs']>
     readonly mergeModels: UnwrapRef<typeof import('vue')['mergeModels']>
     readonly navigateTo: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['navigateTo']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
+    readonly omit: UnwrapRef<typeof import('../../composables/utils/utils.utils')['omit']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeRouteLeave: UnwrapRef<typeof import('../../node_modules/vue-router')['onBeforeRouteLeave']>
@@ -286,6 +583,10 @@ declare module 'vue' {
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
     readonly optimizeImageUrl: UnwrapRef<typeof import('../../utils/image')['optimizeImageUrl']>
+    readonly parseQueryString: UnwrapRef<typeof import('../../composables/utils/utils.utils')['parseQueryString']>
+    readonly parseUrl: UnwrapRef<typeof import('../../composables/utils/utils.utils')['parseUrl']>
+    readonly pascalCase: UnwrapRef<typeof import('../../composables/utils/utils.utils')['pascalCase']>
+    readonly pick: UnwrapRef<typeof import('../../composables/utils/utils.utils')['pick']>
     readonly prefetchComponents: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preload')['prefetchComponents']>
     readonly preloadComponents: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preload')['preloadComponents']>
     readonly preloadPayload: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/payload')['preloadPayload']>
@@ -301,35 +602,70 @@ declare module 'vue' {
     readonly reloadNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/chunk')['reloadNuxtApp']>
     readonly requestIdleCallback: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/idle-callback')['requestIdleCallback']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
+    readonly sample: UnwrapRef<typeof import('../../composables/utils/utils.utils')['sample']>
+    readonly sanitizeUrl: UnwrapRef<typeof import('../../composables/api/api.utils')['sanitizeUrl']>
+    readonly selectAllItems: UnwrapRef<typeof import('../../composables/ui/ui.utils')['selectAllItems']>
     readonly setInterval: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/compat/interval')['setInterval']>
     readonly setPageLayout: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/router')['setPageLayout']>
     readonly setResponseStatus: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['setResponseStatus']>
+    readonly setTokenToCookie: UnwrapRef<typeof import('../../composables/api/api.utils')['setTokenToCookie']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
+    readonly shouldCloseModal: UnwrapRef<typeof import('../../composables/ui/ui.utils')['shouldCloseModal']>
+    readonly shouldRetryRequest: UnwrapRef<typeof import('../../composables/api/api.utils')['shouldRetryRequest']>
     readonly showError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['showError']>
+    readonly shuffle: UnwrapRef<typeof import('../../composables/utils/utils.utils')['shuffle']>
+    readonly sleep: UnwrapRef<typeof import('../../composables/api/api.utils')['sleep']>
+    readonly slugify: UnwrapRef<typeof import('../../composables/utils/utils.utils')['slugify']>
+    readonly snakeCase: UnwrapRef<typeof import('../../composables/utils/utils.utils')['snakeCase']>
+    readonly sortBy: UnwrapRef<typeof import('../../composables/utils/utils.utils')['sortBy']>
+    readonly sortByName: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['sortByName']>
+    readonly sortByOrder: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['sortByOrder']>
+    readonly sortByPath: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['sortByPath']>
     readonly storeToRefs: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['storeToRefs']>
+    readonly stripTags: UnwrapRef<typeof import('../../composables/utils/utils.utils')['stripTags']>
     readonly throttle: UnwrapRef<typeof import('../../utils/debounce')['throttle']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
     readonly toRef: UnwrapRef<typeof import('vue')['toRef']>
     readonly toRefs: UnwrapRef<typeof import('vue')['toRefs']>
     readonly toValue: UnwrapRef<typeof import('vue')['toValue']>
+    readonly toggleAllSelection: UnwrapRef<typeof import('../../composables/data/data.utils')['toggleAllSelection']>
+    readonly toggleItemSelection: UnwrapRef<typeof import('../../composables/ui/ui.utils')['toggleItemSelection']>
+    readonly toggleSortDirection: UnwrapRef<typeof import('../../composables/ui/ui.utils')['toggleSortDirection']>
+    readonly trackMenuClick: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['trackMenuClick']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
+    readonly truncate: UnwrapRef<typeof import('../../composables/utils/utils.utils')['truncate']>
     readonly tryUseNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['tryUseNuxtApp']>
+    readonly unescapeHtml: UnwrapRef<typeof import('../../composables/utils/utils.utils')['unescapeHtml']>
+    readonly union: UnwrapRef<typeof import('../../composables/utils/utils.utils')['union']>
+    readonly unique: UnwrapRef<typeof import('../../composables/utils/utils.utils')['unique']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly updateAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['updateAppConfig']>
+    readonly useAdminNavigation: UnwrapRef<typeof import('../../composables/navigation/index')['useAdminNavigation']>
+    readonly useApiClient: UnwrapRef<typeof import('../../composables/api/index')['useApiClient']>
+    readonly useApiFetch: UnwrapRef<typeof import('../../composables/api/index')['useApiFetch']>
     readonly useApiFormSubmit: UnwrapRef<typeof import('../../utils/form')['useApiFormSubmit']>
     readonly useAppConfig: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/config')['useAppConfig']>
     readonly useAsyncData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useAsyncData']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useAuthInit: UnwrapRef<typeof import('../../composables/utils/index')['useAuthInit']>
     readonly useAuthStore: UnwrapRef<typeof import('../../stores/auth')['useAuthStore']>
+    readonly useBaseDataTable: UnwrapRef<typeof import('../../composables/data/index')['useBaseDataTable']>
     readonly useColorMode: UnwrapRef<typeof import('../../node_modules/@nuxtjs/color-mode/dist/runtime/composables')['useColorMode']>
     readonly useCookie: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/cookie')['useCookie']>
+    readonly useCrudDataTable: UnwrapRef<typeof import('../../composables/data/index')['useCrudDataTable']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
+    readonly useDataCaching: UnwrapRef<typeof import('../../composables/data/index')['useDataCaching']>
+    readonly useDataFetching: UnwrapRef<typeof import('../../composables/data/index')['useDataFetching']>
+    readonly useDataFiltering: UnwrapRef<typeof import('../../composables/data/index')['useDataFiltering']>
+    readonly useDataPagination: UnwrapRef<typeof import('../../composables/data/index')['useDataPagination']>
     readonly useError: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/error')['useError']>
     readonly useFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useFetch']>
     readonly useFormDefaults: UnwrapRef<typeof import('../../utils/form')['useFormDefaults']>
+    readonly useGlobalApiClient: UnwrapRef<typeof import('../../composables/api/index')['useGlobalApiClient']>
+    readonly useGlobalSystemConfig: UnwrapRef<typeof import('../../composables/system-config/useSystemConfig')['useGlobalSystemConfig']>
     readonly useHead: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHead']>
     readonly useHeadSafe: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/head')['useHeadSafe']>
     readonly useHydration: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/hydrate')['useHydration']>
@@ -338,9 +674,14 @@ declare module 'vue' {
     readonly useLazyFetch: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/fetch')['useLazyFetch']>
     readonly useLink: UnwrapRef<typeof import('../../node_modules/vue-router')['useLink']>
     readonly useLoadingIndicator: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/loading-indicator')['useLoadingIndicator']>
+    readonly useMenuState: UnwrapRef<typeof import('../../composables/navigation/index')['useMenuState']>
+    readonly useModal: UnwrapRef<typeof import('../../composables/ui/index')['useModal']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
+    readonly useNavigation: UnwrapRef<typeof import('../../composables/navigation/index')['useNavigation']>
     readonly useNuxtApp: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/nuxt')['useNuxtApp']>
     readonly useNuxtData: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/asyncData')['useNuxtData']>
+    readonly usePagination: UnwrapRef<typeof import('../../composables/ui/index')['usePagination']>
+    readonly usePermissionGuards: UnwrapRef<typeof import('../../composables/navigation/index')['usePermissionGuards']>
     readonly usePinia: UnwrapRef<typeof import('../../node_modules/@pinia/nuxt/dist/runtime/composables')['usePinia']>
     readonly usePreviewMode: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/preview')['usePreviewMode']>
     readonly useRequestEvent: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/ssr')['useRequestEvent']>
@@ -388,8 +729,20 @@ declare module 'vue' {
     readonly useShadowRoot: UnwrapRef<typeof import('vue')['useShadowRoot']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useState: UnwrapRef<typeof import('../../node_modules/nuxt/dist/app/composables/state')['useState']>
+    readonly useSystemConfig: UnwrapRef<typeof import('../../composables/system-config/useSystemConfig')['useSystemConfig']>
+    readonly useTableSelection: UnwrapRef<typeof import('../../composables/ui/index')['useTableSelection']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
+    readonly useToast: UnwrapRef<typeof import('../../composables/ui/index')['useToast']>
     readonly useTransitionState: UnwrapRef<typeof import('vue')['useTransitionState']>
+    readonly useUrlFilters: UnwrapRef<typeof import('../../composables/utils/index')['useUrlFilters']>
+    readonly useUrlPagination: UnwrapRef<typeof import('../../composables/utils/index')['useUrlPagination']>
+    readonly useUrlState: UnwrapRef<typeof import('../../composables/utils/index')['useUrlState']>
+    readonly useUrlSync: UnwrapRef<typeof import('../../composables/utils/index')['useUrlSync']>
+    readonly useUserNavigation: UnwrapRef<typeof import('../../composables/navigation/index')['useUserNavigation']>
+    readonly validateFormField: UnwrapRef<typeof import('../../composables/ui/ui.utils')['validateFormField']>
+    readonly validateMenuItem: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['validateMenuItem']>
+    readonly validateMenuStructure: UnwrapRef<typeof import('../../composables/navigation/navigation.utils')['validateMenuStructure']>
+    readonly validateValue: UnwrapRef<typeof import('../../composables/utils/utils.utils')['validateValue']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>

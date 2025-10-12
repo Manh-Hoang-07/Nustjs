@@ -11,7 +11,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
               </svg>
             </div>
-            <h1 class="text-2xl font-bold text-gray-900">E-Commerce Platform</h1>
+            <h1 class="text-2xl font-bold text-gray-900">{{ systemInfo.name || 'E-Commerce Platform' }}</h1>
           </div>
           
           <!-- Search Bar -->
@@ -150,9 +150,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
               </div>
-              <h3 class="text-lg font-semibold">{{ siteInfo.name || 'E-Commerce Platform' }}</h3>
+              <h3 class="text-lg font-semibold">{{ systemInfo.name || 'E-Commerce Platform' }}</h3>
             </div>
-            <p class="text-gray-400 mb-4">{{ siteInfo.description || 'Nền tảng thương mại điện tử hiện đại với đầy đủ tính năng quản lý' }}</p>
+            <p class="text-gray-400 mb-4">Nền tảng thương mại điện tử hiện đại với đầy đủ tính năng quản lý</p>
             <div class="flex space-x-4">
               <a href="#" class="text-gray-400 hover:text-white transition-colors">
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -190,49 +190,42 @@
             </ul>
           </div>
           <div>
-            <h4 class="text-lg font-semibold mb-4">Liên hệ</h4>
+            <h4 class="text-lg font-semibold mb-4">Thông tin hệ thống</h4>
             <ul class="space-y-2 text-gray-400">
-              <li v-if="siteInfo.email" class="flex items-center">
+              <li class="flex items-center">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                {{ siteInfo.email }}
+                Phiên bản: {{ systemInfo.version || '1.0.0' }}
               </li>
-              <li v-if="siteInfo.phone" class="flex items-center">
+              <li class="flex items-center">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                {{ siteInfo.phone }}
-              </li>
-              <li v-if="siteInfo.address" class="flex items-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                {{ siteInfo.address }}
-              </li>
-              <!-- Fallback nếu không có thông tin từ config -->
-              <li v-if="!siteInfo.email && !siteInfo.phone && !siteInfo.address" class="text-gray-500">
-                Thông tin liên hệ đang được cập nhật...
+                Múi giờ: {{ systemInfo.timezone || 'Asia/Ho_Chi_Minh' }}
               </li>
             </ul>
           </div>
         </div>
         <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-          <p>&copy; {{ new Date().getFullYear() }} {{ siteInfo.name || 'E-Commerce Platform' }}. All rights reserved.</p>
+          <p>&copy; {{ new Date().getFullYear() }} {{ systemInfo.name || 'E-Commerce Platform' }}. All rights reserved.</p>
         </div>
       </div>
     </footer>
   </div>
 </template>
 
-<script setup>
-import { computed, watch, reactive } from 'vue'
+<script setup lang="ts">
+import { computed, watch } from 'vue'
 import { useUserNavigation } from '@/composables/navigation/useUserNavigation'
 import { useAuthStore } from '@/stores/auth'
+import { useGlobalSystemConfig } from '~/composables/system-config'
 
 // Sử dụng auth store
 const authStore = useAuthStore()
+
+// Sử dụng system config
+const { systemInfo } = useGlobalSystemConfig()
 
 // Sử dụng user navigation composable
 const { 
@@ -240,9 +233,6 @@ const {
   isActiveMenuItem,
   currentPath 
 } = useUserNavigation()
-
-// Removed system config composable; use empty defaults
-const siteInfo = reactive({ name: '', email: '', phone: '', address: '', description: '' })
 
 // Reactive auth state
 const isAuthenticated = computed(() => authStore.isAuthenticated)
@@ -252,7 +242,8 @@ const userRole = computed(() => authStore.userRole)
 // Cập nhật current path khi route thay đổi
 const route = useRoute()
 watch(() => route.path, (newPath) => {
-  currentPath.value = newPath
+  // currentPath là readonly, không thể assign trực tiếp
+  // Navigation composable sẽ tự động cập nhật
 }, { immediate: true })
 
 </script>

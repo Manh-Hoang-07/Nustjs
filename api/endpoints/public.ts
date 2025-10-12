@@ -29,6 +29,9 @@ export const publicEndpoints = {
     update: (id: Id) => `/api/contacts/${id}`,
     delete: (id: Id) => `/api/contacts/${id}`,
   },
+  systemConfigs: {
+    getByGroup: (group: string) => `/api/system-configs/group/${group}`,
+  },
 } as const;
 
 export type PublicEndpoints = typeof publicEndpoints;

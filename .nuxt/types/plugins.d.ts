@@ -23,7 +23,8 @@ type NuxtAppInjections =
   InjectionType<typeof import("../../node_modules/nuxt/dist/app/plugins/check-if-layout-used.js")> &
   InjectionType<typeof import("../../plugins/auth.client")> &
   InjectionType<typeof import("../../plugins/lazy-multiselect.client")> &
-  InjectionType<typeof import("../../plugins/suppress-warnings.client")>
+  InjectionType<typeof import("../../plugins/suppress-warnings.client")> &
+  InjectionType<typeof import("../../plugins/system-config.client")>
 
 declare module '#app' {
   interface NuxtApp extends NuxtAppInjections { }

@@ -129,7 +129,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useApiClient } from '@/composables/api/useApiClient'
+import { useGlobalApiClient } from '@/composables/api/useApiClient'
 import { formatDate } from '@/utils/formatters'
 
 // Props
@@ -140,8 +140,8 @@ const props = defineProps({
   }
 })
 
-// Sử dụng API client
-const apiClient = useApiClient()
+// Sử dụng Global API client
+const { apiClient } = useGlobalApiClient()
 
 // State
 const posts = ref([])
