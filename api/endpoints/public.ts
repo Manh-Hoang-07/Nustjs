@@ -15,6 +15,13 @@ export const publicEndpoints = {
     update: (id: Id) => `/api/post-categories/${id}`,
     delete: (id: Id) => `/api/post-categories/${id}`,
   },
+  // Product Categories (public)
+  productCategories: {
+    list: '/api/product-categories',
+    show: (id: Id) => `/api/product-categories/${id}`,
+    tree: '/api/product-categories/tree',
+    products: (id: Id) => `/api/product-categories/products/${id}`,
+  },
   postTags: {
     list: '/api/post-tags',
     create: '/api/post-tags',

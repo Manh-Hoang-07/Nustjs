@@ -78,6 +78,15 @@ export const adminEndpoints = {
     update: (id: Id) => `/api/admin/roles/${id}`,
     delete: (id: Id) => `/api/admin/roles/${id}`,
   },
+  // Product Attributes (admin)
+  productAttributes: {
+    list: '/api/admin/product-attributes',
+    create: '/api/admin/product-attributes',
+    show: (id: Id) => `/api/admin/product-attributes/${id}`,
+    update: (id: Id) => `/api/admin/product-attributes/${id}`,
+    delete: (id: Id) => `/api/admin/product-attributes/${id}`,
+    updateStatus: (id: Id) => `/api/admin/product-attributes/status/${id}`,
+  },
   inventory: {
     list: '/api/admin/inventory',
     create: '/api/admin/inventory',
@@ -102,6 +111,7 @@ export const adminEndpoints = {
     bulkUpdateStatus: '/api/admin/contacts/bulk-update-status',
   },
   enums: (type: string) => `/api/enums/${type}`,
+  adminEnums: (type: string) => `/api/admin/enums/${type}`,
 
   // Shipping
   shippingApi: {
@@ -169,6 +179,16 @@ export const adminEndpoints = {
     show: (id: Id) => `/api/admin/post-categories/${id}`,
     update: (id: Id) => `/api/admin/post-categories/${id}`,
     delete: (id: Id) => `/api/admin/post-categories/${id}`,
+  },
+  // Product Categories (admin)
+  productCategories: {
+    list: '/api/admin/product-categories',
+    create: '/api/admin/product-categories',
+    show: (id: Id) => `/api/admin/product-categories/${id}`,
+    update: (id: Id) => `/api/admin/product-categories/${id}`,
+    delete: (id: Id) => `/api/admin/product-categories/${id}`,
+    tree: '/api/admin/product-categories/tree',
+    products: (id: Id) => `/api/admin/product-categories/products/${id}`,
   },
   postTags: {
     list: '/api/admin/post-tags',

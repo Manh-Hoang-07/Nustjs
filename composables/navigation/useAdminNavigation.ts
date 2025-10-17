@@ -68,6 +68,20 @@ export function useAdminNavigation(): AdminNavigationResult {
       status: 'active'
     },
     {
+      name: 'Danh mục sản phẩm',
+      path: '/admin/product-categories',
+      api: 'api/admin/product-categories',
+      icon: '🗂️',
+      status: 'active'
+    },
+    {
+      name: 'Thuộc tính sản phẩm',
+      path: '/admin/product-attributes',
+      api: 'api/admin/product-attributes',
+      icon: '🧩',
+      status: 'active'
+    },
+    {
       name: 'Thẻ bài viết',
       path: '/admin/post-tags',
       api: 'api/admin/post-tags',

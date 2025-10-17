@@ -28,6 +28,13 @@ export function useUserNavigation(): UserNavigationResult {
       status: 'active'
     },
     {
+      name: 'Danh mục sản phẩm',
+      path: '/home/categories',
+      api: 'api/product-categories',
+      icon: '🗂️',
+      status: 'active'
+    },
+    {
       name: 'Giới thiệu',
       path: '/home/about',
       api: 'api/about',
