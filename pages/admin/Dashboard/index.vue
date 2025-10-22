@@ -166,10 +166,11 @@ definePageMeta({
 })
 
 import { ref, onMounted } from 'vue'
-import { 
-  UsersIcon, 
-  ShoppingBagIcon, 
-  CurrencyDollarIcon, 
+import { formatCurrency } from '@/utils/formatters'
+import {
+  UsersIcon,
+  ShoppingBagIcon,
+  CurrencyDollarIcon,
   ChartBarIcon,
   PlusIcon,
   CogIcon,
@@ -252,13 +253,6 @@ const quickActions = ref([
   { title: 'Xem báo cáo', action: 'reports', icon: DocumentTextIcon }
 ])
 
-// Methods
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(amount)
-}
 
 const orderStatusClassMap = {
   'Đã hoàn thành': 'bg-green-100 text-green-800',

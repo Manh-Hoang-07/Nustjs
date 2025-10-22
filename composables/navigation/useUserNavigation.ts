@@ -7,10 +7,10 @@ import { filterByStatus, isMenuItemActive } from './navigation.utils'
 
 export function useUserNavigation(): UserNavigationResult {
   const route = useRoute()
-  
+
   // Current path từ route
   const currentPath = computed(() => route.path)
-  
+
   // Menu items cho người dùng
   const menuItems: ComputedRef<MenuItem[]> = computed(() => [
     {
@@ -21,18 +21,57 @@ export function useUserNavigation(): UserNavigationResult {
       status: 'active'
     },
     {
+      name: 'Sản phẩm',
+      path: '/home/products',
+      api: 'api/products',
+      icon: '📦',
+      status: 'active',
+      children: [
+        {
+          name: 'Tất cả sản phẩm',
+          path: '/home/products',
+          api: 'api/products',
+          icon: '📦',
+          status: 'active'
+        },
+        {
+          name: 'Danh mục sản phẩm',
+          path: '/home/categories',
+          api: 'api/product-categories',
+          icon: '🗂️',
+          status: 'active'
+        }
+      ]
+    },
+    {
       name: 'Tin tức',
       path: '/home/posts',
       api: 'api/posts',
       icon: '📰',
-      status: 'active'
-    },
-    {
-      name: 'Danh mục sản phẩm',
-      path: '/home/categories',
-      api: 'api/product-categories',
-      icon: '🗂️',
-      status: 'active'
+      status: 'active',
+      children: [
+        {
+          name: 'Tất cả tin tức',
+          path: '/home/posts',
+          api: 'api/posts',
+          icon: '📰',
+          status: 'active'
+        },
+        {
+          name: 'Danh mục tin tức',
+          path: '/home/posts/categories',
+          api: 'api/post-categories',
+          icon: '📁',
+          status: 'active'
+        },
+        {
+          name: 'Thẻ tin tức',
+          path: '/home/posts/tags',
+          api: 'api/post-tags',
+          icon: '🏷️',
+          status: 'active'
+        }
+      ]
     },
     {
       name: 'Giới thiệu',

@@ -22,6 +22,15 @@ export const publicEndpoints = {
     tree: '/api/product-categories/tree',
     products: (id: Id) => `/api/product-categories/products/${id}`,
   },
+  // Products (public)
+  products: {
+    list: '/api/products',
+    show: (id: Id) => `/api/products/${id}`,
+    featured: '/api/products/featured',
+    search: '/api/products/search',
+    byCategory: (categoryId: Id) => `/api/products/by-category/${categoryId}`,
+    variants: (productId: Id) => `/api/products/${productId}/variants`,
+  },
   postTags: {
     list: '/api/post-tags',
     create: '/api/post-tags',

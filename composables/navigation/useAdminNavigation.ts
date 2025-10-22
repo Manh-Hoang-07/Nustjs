@@ -7,10 +7,10 @@ import { filterByStatus, sortByOrder } from './navigation.utils'
 
 export function useAdminNavigation(): AdminNavigationResult {
   const route = useRoute()
-  
+
   // Current path từ route
   const currentPath = computed(() => route.path)
-  
+
   // Function để lấy icon cho từng nhóm
   const getGroupIcon = (groupName: string): string => {
     const iconMap: Record<string, string> = {
@@ -22,7 +22,7 @@ export function useAdminNavigation(): AdminNavigationResult {
     }
     return iconMap[groupName] || '⚙️'
   }
-  
+
   // Menu items đơn giản - luôn hiển thị
   const menuItems: ComputedRef<MenuItem[]> = computed(() => [
     {
@@ -54,32 +54,71 @@ export function useAdminNavigation(): AdminNavigationResult {
       status: 'active'
     },
     {
-      name: 'Tin tức',
+      name: 'Quản lý sản phẩm',
+      path: '/admin/products',
+      api: 'api/admin/products',
+      icon: '📦',
+      status: 'active',
+      children: [
+        {
+          name: 'Sản phẩm',
+          path: '/admin/products',
+          api: 'api/admin/products',
+          icon: '📦',
+          status: 'active'
+        },
+        {
+          name: 'Biến thể sản phẩm',
+          path: '/admin/product-variants',
+          api: 'api/admin/product-variants',
+          icon: '🔀',
+          status: 'active'
+        },
+        {
+          name: 'Danh mục sản phẩm',
+          path: '/admin/product-categories',
+          api: 'api/admin/product-categories',
+          icon: '🗂️',
+          status: 'active'
+        },
+        {
+          name: 'Thuộc tính sản phẩm',
+          path: '/admin/product-attributes',
+          api: 'api/admin/product-attributes',
+          icon: '🧩',
+          status: 'active'
+        }
+      ]
+    },
+    {
+      name: 'Quản lý nội dung',
       path: '/admin/posts',
       api: 'api/admin/posts',
       icon: '📰',
-      status: 'active'
-    },
-    {
-      name: 'Danh mục bài viết',
-      path: '/admin/post-categories',
-      api: 'api/admin/post-categories',
-      icon: '📁',
-      status: 'active'
-    },
-    {
-      name: 'Danh mục sản phẩm',
-      path: '/admin/product-categories',
-      api: 'api/admin/product-categories',
-      icon: '🗂️',
-      status: 'active'
-    },
-    {
-      name: 'Thuộc tính sản phẩm',
-      path: '/admin/product-attributes',
-      api: 'api/admin/product-attributes',
-      icon: '🧩',
-      status: 'active'
+      status: 'active',
+      children: [
+        {
+          name: 'Tin tức',
+          path: '/admin/posts',
+          api: 'api/admin/posts',
+          icon: '📰',
+          status: 'active'
+        },
+        {
+          name: 'Danh mục bài viết',
+          path: '/admin/post-categories',
+          api: 'api/admin/post-categories',
+          icon: '📁',
+          status: 'active'
+        },
+        {
+          name: 'Thẻ bài viết',
+          path: '/admin/post-tags',
+          api: 'api/admin/post-tags',
+          icon: '🏷️',
+          status: 'active'
+        }
+      ]
     },
     {
       name: 'Thẻ bài viết',

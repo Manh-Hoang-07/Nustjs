@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
-  
+
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
@@ -24,18 +24,18 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Application' }
       ],
       link: [
-        { 
-          rel: 'preconnect', 
-          href: 'https://fonts.googleapis.com' 
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.googleapis.com'
         },
-        { 
-          rel: 'preconnect', 
+        {
+          rel: 'preconnect',
           href: 'https://fonts.gstatic.com',
           crossorigin: 'anonymous'
         },
-        { 
-          rel: 'stylesheet', 
-          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap' 
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'
         }
       ]
     }
@@ -84,15 +84,15 @@ export default defineNuxtConfig({
     minify: true,
     compressPublicAssets: true,
     routeRules: {
-      '/admin/**': { 
-        headers: { 
-          'cache-control': 'no-cache' 
-        } 
+      '/admin/**': {
+        headers: {
+          'cache-control': 'no-cache'
+        }
       },
-      '/api/**': { 
-        headers: { 
-          'cache-control': 'no-cache' 
-        } 
+      '/api/**': {
+        headers: {
+          'cache-control': 'no-cache'
+        }
       }
     }
   },
@@ -101,6 +101,26 @@ export default defineNuxtConfig({
   vue: {
     compilerOptions: {
       hoistStatic: false
+    }
+  },
+
+  ssr: true,
+
+  experimental: {
+    payloadExtraction: false,
+    renderJsonPayloads: true
+  },
+
+  hooks: {
+    'render:route': (url: string, result: any, context: any) => {
+      // Ensure consistent hydration
+      if (process.server && result.html) {
+        // Add hydration marker to help debug
+        result.html = result.html.replace(
+          '<div id="__nuxt">',
+          '<div id="__nuxt" data-server-rendered="true">'
+        )
+      }
     }
   },
 

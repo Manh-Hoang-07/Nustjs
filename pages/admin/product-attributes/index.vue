@@ -52,11 +52,27 @@
 							</span>
 						</td>
 						<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-							<Actions 
-								:item="attr"
-								@edit="openEditModal"
-								@delete="confirmDelete"
-							/>
+							<ClientOnly>
+								<Actions
+									:item="attr"
+									@edit="openEditModal"
+									@delete="confirmDelete"
+									:additional-actions="[
+										{
+											label: attr.status === 'active' ? 'Ngừng hoạt động' : 'Kích hoạt',
+											action: () => toggleStatus(attr),
+											icon: attr.status === 'active' ? 'pause' : 'play'
+										}
+									]"
+								/>
+								<template #fallback>
+									<div class="flex space-x-1">
+										<div class="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+										<div class="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+										<div class="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+									</div>
+								</template>
+							</ClientOnly>
 						</td>
 					</tr>
 					<tr v-if="items.length === 0">
@@ -170,7 +186,7 @@ const {
 	}
 })
 
-const { showSuccess } = useToast()
+const { showSuccess, showError } = useToast()
 const { apiClient } = useGlobalApiClient()
 
 // State
@@ -192,16 +208,10 @@ onMounted(async () => {
 
 async function fetchStatusEnums() {
 	try {
-		const response = await apiClient.get(adminEndpoints.adminEnums('attribute_status'))
+		const response = await apiClient.get(adminEndpoints.enums('basic_status'))
 		statusEnums.value = response.data?.data || []
 	} catch (e) {
-		// fallback to basic_status
-		try {
-			const res2 = await apiClient.get(adminEndpoints.enums('basic_status'))
-			statusEnums.value = res2.data?.data || []
-		} catch (_) {
-			statusEnums.value = []
-		}
+		statusEnums.value = []
 	}
 }
 
@@ -257,6 +267,23 @@ async function handleUpdated(data) {
 async function deleteAttribute() {
 	await deleteItem()
 	showSuccess('Thuộc tính đã được xóa thành công')
+}
+
+async function toggleStatus(attr) {
+	try {
+		const newStatus = attr.status === 'active' ? 'inactive' : 'active'
+		const response = await apiClient.patch(adminEndpoints.productAttributes.updateStatus(attr.id), {
+			status: newStatus
+		})
+		if (response.data?.success) {
+			showSuccess(`Đã ${newStatus === 'active' ? 'kích hoạt' : 'ngừng hoạt động'} thuộc tính`)
+			fetchData() // Refresh data
+		} else {
+			showError('Không thể cập nhật trạng thái thuộc tính')
+		}
+	} catch (error) {
+		showError('Không thể cập nhật trạng thái thuộc tính')
+	}
 }
 
 function handlePageChange(page) {

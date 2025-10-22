@@ -22,6 +22,7 @@ type NuxtAppInjections =
   InjectionType<typeof import("../../node_modules/nuxt/dist/app/plugins/dev-server-logs.js")> &
   InjectionType<typeof import("../../node_modules/nuxt/dist/app/plugins/check-if-layout-used.js")> &
   InjectionType<typeof import("../../plugins/auth.client")> &
+  InjectionType<typeof import("../../plugins/hydration.client")> &
   InjectionType<typeof import("../../plugins/lazy-multiselect.client")> &
   InjectionType<typeof import("../../plugins/suppress-warnings.client")> &
   InjectionType<typeof import("../../plugins/system-config.client")>

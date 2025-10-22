@@ -1,14 +1,15 @@
 <template>
-  <div 
-    :id="editorId" 
-    class="ckeditor-wrapper" 
-    :class="{ 'fullscreen': isFullscreen }"
-  >
-    <div v-if="!isMounted" class="loading-editor">
-      <div class="loading-spinner"></div>
-      <p>Đang tải trình soạn thảo...</p>
-    </div>
-    <div v-else class="editor-wrapper">
+  <ClientOnly>
+    <div
+      :id="editorId"
+      class="ckeditor-wrapper"
+      :class="{ 'fullscreen': isFullscreen }"
+    >
+      <div v-if="!isMounted" class="loading-editor">
+        <div class="loading-spinner"></div>
+        <p>Đang tải trình soạn thảo...</p>
+      </div>
+      <div v-else class="editor-wrapper">
       <!-- Fullscreen toggle button -->
       <div class="editor-toolbar">
         <button
@@ -33,9 +34,18 @@
       </div>
       
       <div ref="editorContainer" class="editor-container"></div>
+      </div>
+      <div v-if="error" class="error-message">{{ error }}</div>
     </div>
-    <div v-if="error" class="error-message">{{ error }}</div>
-  </div>
+    <template #fallback>
+      <div class="ckeditor-wrapper">
+        <div class="loading-editor">
+          <div class="loading-spinner"></div>
+          <p>Đang tải trình soạn thảo...</p>
+        </div>
+      </div>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup>
@@ -1286,7 +1296,7 @@ const initEditor = async () => {
       editorInstance.enableReadOnlyMode('readonly')
     }
 
-    // Event listeners - use safer approach
+    // Event listeners - use safer approach with proper cleanup
     const handleDataChange = () => {
       try {
         const data = editorInstance.getData()
@@ -1313,15 +1323,29 @@ const initEditor = async () => {
       }
     }
 
-    // Add event listeners using safer method
+    // Add event listeners using safer method with proper cleanup
     try {
+      // Store references to listeners for cleanup
+      editorInstance._vueListeners = {
+        dataChange: handleDataChange,
+        focus: handleFocus,
+        blur: handleBlur
+      }
+      
       editorInstance.model.document.on('change:data', handleDataChange)
       editorInstance.editing.view.document.on('focus', handleFocus)
       editorInstance.editing.view.document.on('blur', handleBlur)
     } catch (err) {
       console.warn('Error adding event listeners:', err)
       // Fallback to basic event handling
-      editorInstance.model.document.on('change:data', handleDataChange)
+      try {
+        editorInstance.model.document.on('change:data', handleDataChange)
+        editorInstance._vueListeners = {
+          dataChange: handleDataChange
+        }
+      } catch (fallbackErr) {
+        console.warn('Fallback event handling also failed:', fallbackErr)
+      }
     }
 
     // Setup auto-save if enabled
@@ -1561,7 +1585,41 @@ onBeforeUnmount(() => {
   document.removeEventListener('MSFullscreenChange', handleFullscreenChange)
   
   if (editor.value) {
-    editor.value.destroy()
+    try {
+      // Clean up event listeners before destroying
+      if (editor.value._vueListeners) {
+        try {
+          if (editor.value._vueListeners.dataChange) {
+            editor.value.model.document.off('change:data', editor.value._vueListeners.dataChange)
+          }
+          if (editor.value._vueListeners.focus) {
+            editor.value.editing.view.document.off('focus', editor.value._vueListeners.focus)
+          }
+          if (editor.value._vueListeners.blur) {
+            editor.value.editing.view.document.off('blur', editor.value._vueListeners.blur)
+          }
+        } catch (err) {
+          console.warn('Error removing event listeners:', err)
+        }
+        delete editor.value._vueListeners
+      }
+      
+      // Destroy editor with timeout to prevent proxy errors
+      setTimeout(() => {
+        try {
+          if (editor.value) {
+            editor.value.destroy()
+            editor.value = null
+          }
+        } catch (err) {
+          console.warn('Error destroying editor:', err)
+          editor.value = null
+        }
+      }, 100)
+    } catch (err) {
+      console.warn('Error in cleanup:', err)
+      editor.value = null
+    }
   }
 })
 

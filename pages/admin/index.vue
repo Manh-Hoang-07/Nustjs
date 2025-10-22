@@ -201,6 +201,8 @@ definePageMeta({
   requiresAdmin: true
 })
 
+import { formatCurrency, formatDate } from '@/utils/formatters'
+
 // Loading state
 const isLoading = ref(true)
 
@@ -247,16 +249,7 @@ const recentUsers = ref([
 ])
 
 // Methods
-const formatPrice = (price) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND'
-  }).format(price)
-}
-
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('vi-VN')
-}
+const formatPrice = formatCurrency
 
 const getStatusText = (status) => {
   const statusMap = {

@@ -18,6 +18,8 @@ export const adminEndpoints = {
     update: (id: Id) => `/api/admin/products/${id}`,
     delete: (id: Id) => `/api/admin/products/${id}`,
     getForSelect: '/api/admin/products/select/list',
+    updateStatus: (id: Id) => `/api/admin/products/status/${id}`,
+    toggleFeatured: (id: Id) => `/api/admin/products/toggle-featured/${id}`,
   },
   orders: {
     list: '/api/admin/orders',
@@ -86,6 +88,16 @@ export const adminEndpoints = {
     update: (id: Id) => `/api/admin/product-attributes/${id}`,
     delete: (id: Id) => `/api/admin/product-attributes/${id}`,
     updateStatus: (id: Id) => `/api/admin/product-attributes/status/${id}`,
+  },
+  // Product Variants (admin)
+  productVariants: {
+    list: '/api/admin/product-variants',
+    create: '/api/admin/product-variants',
+    show: (id: Id) => `/api/admin/product-variants/${id}`,
+    update: (id: Id) => `/api/admin/product-variants/${id}`,
+    delete: (id: Id) => `/api/admin/product-variants/${id}`,
+    getByProduct: (productId: Id) => `/api/admin/product-variants/product/${productId}`,
+    updateStatus: (id: Id) => `/api/admin/product-variants/status/${id}`,
   },
   inventory: {
     list: '/api/admin/inventory',
