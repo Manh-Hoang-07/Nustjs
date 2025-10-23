@@ -81,9 +81,9 @@ onMounted(async () => {
 async function loadCategories() {
   loading.value = true
   try {
-    const response = await apiClient.get('/api/product-categories/tree')
+    const response = await apiClient.get('/api/product-categories')
     if (response.data?.success) {
-      categories.value = flattenCategories(response.data.data || [])
+      categories.value = response.data.data || []
     } else {
       categories.value = []
     }

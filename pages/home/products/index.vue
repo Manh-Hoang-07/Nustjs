@@ -405,7 +405,7 @@ async function loadProducts(page = 1) {
       params.append('max_price', maxPrice.value)
     }
 
-    const response = await apiClient.get(`/api/products/search?${params}`)
+    const response = await apiClient.get(`/api/products?${params}`)
     if (response.data?.success) {
       products.value = response.data.data || []
       pagination.value = response.data.meta || pagination.value
