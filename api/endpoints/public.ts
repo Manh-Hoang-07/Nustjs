@@ -19,8 +19,10 @@ export const publicEndpoints = {
   productCategories: {
     list: '/api/product-categories',
     show: (id: Id) => `/api/product-categories/${id}`,
+    showBySlug: (slug: string) => `/api/product-categories/slug/${slug}`,
     tree: '/api/product-categories/tree',
     products: (id: Id) => `/api/product-categories/products/${id}`,
+    productsBySlug: (slug: string) => `/api/product-categories/${slug}/products`,
   },
   // Products (public)
   products: {
