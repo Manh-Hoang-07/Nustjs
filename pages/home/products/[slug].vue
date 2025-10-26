@@ -384,6 +384,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useGlobalApiClient } from '@/composables/api'
 import { useToast } from '@/composables/ui/useToast'
 import { formatCurrency } from '@/utils/formatters'
+import { useCart } from '~/composables/cart/index'
 import LoadingSpinner from '@/components/Core/Loading/LoadingSpinner.vue'
 import HtmlContent from '@/components/Core/Content/HtmlContent.vue'
 
@@ -395,6 +396,7 @@ const route = useRoute()
 const router = useRouter()
 const { apiClient } = useGlobalApiClient()
 const { showSuccess, showError } = useToast()
+const cart = useCart({ immediate: true })
 
 // State
 const loading = ref(false)
@@ -502,12 +504,9 @@ async function addToCart() {
       price: selectedVariant.value?.sale_price || selectedVariant.value?.price || product.value.sale_price || product.value.price
     }
     
-    // TODO: Implement cart API call
-    console.log('Adding to cart:', cartItem)
-    
-    showSuccess('Đã thêm sản phẩm vào giỏ hàng')
+    await cart.addToCart(cartItem)
   } catch (error) {
-    showError('Không thể thêm sản phẩm vào giỏ hàng')
+    console.error('Error adding to cart:', error)
   }
 }
 
@@ -522,13 +521,13 @@ async function buyNow() {
       price: selectedVariant.value?.sale_price || selectedVariant.value?.price || product.value.sale_price || product.value.price
     }
     
-    // TODO: Implement buy now logic
-    console.log('Buy now:', cartItem)
+    // Add to cart first, then redirect to checkout
+    await cart.addToCart(cartItem)
     
     showSuccess('Đang chuyển đến trang thanh toán...')
-    // router.push('/home/checkout')
+    router.push('/home/checkout')
   } catch (error) {
-    showError('Không thể xử lý yêu cầu mua ngay')
+    console.error('Error with buy now:', error)
   }
 }
 
@@ -553,7 +552,6 @@ async function quickAddToCart(product) {
   if (product.stock_quantity === 0) return
   
   try {
-    // TODO: Implement cart API call
     const cartItem = {
       product_id: product.id,
       variant_id: null,
@@ -561,11 +559,9 @@ async function quickAddToCart(product) {
       price: product.sale_price || product.price
     }
     
-    console.log('Quick add to cart:', cartItem)
-    
-    showSuccess('Đã thêm sản phẩm vào giỏ hàng')
+    await cart.addToCart(cartItem)
   } catch (error) {
-    showError('Không thể thêm sản phẩm vào giỏ hàng')
+    console.error('Error with quick add to cart:', error)
   }
 }
 

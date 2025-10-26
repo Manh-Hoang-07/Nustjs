@@ -105,11 +105,13 @@ declare global {
   const formToFormData: typeof import('../../utils/form')['formToFormData']
   const formatCurrency: typeof import('../../utils/formatters')['formatCurrency']
   const formatDate: typeof import('../../utils/formatters')['formatDate']
+  const formatDateRange: typeof import('../../utils/formatters')['formatDateRange']
   const formatDateTime: typeof import('../../utils/formatters')['formatDateTime']
   const formatError: typeof import('../../composables/utils/utils.utils')['formatError']
-  const formatFileSize: typeof import('../../composables/utils/utils.utils')['formatFileSize']
+  const formatFileSize: typeof import('../../utils/formatters')['formatFileSize']
   const formatNumber: typeof import('../../utils/formatters')['formatNumber']
-  const formatPhoneNumber: typeof import('../../composables/utils/utils.utils')['formatPhoneNumber']
+  const formatPercentage: typeof import('../../utils/formatters')['formatPercentage']
+  const formatPhoneNumber: typeof import('../../utils/formatters')['formatPhoneNumber']
   const formatRelativeTime: typeof import('../../utils/formatters')['formatRelativeTime']
   const formatters: typeof import('../../utils/formatters')['default']
   const generateApiCacheKey: typeof import('../../composables/api/api.utils')['generateApiCacheKey']
@@ -495,11 +497,13 @@ declare module 'vue' {
     readonly formToFormData: UnwrapRef<typeof import('../../utils/form')['formToFormData']>
     readonly formatCurrency: UnwrapRef<typeof import('../../utils/formatters')['formatCurrency']>
     readonly formatDate: UnwrapRef<typeof import('../../utils/formatters')['formatDate']>
+    readonly formatDateRange: UnwrapRef<typeof import('../../utils/formatters')['formatDateRange']>
     readonly formatDateTime: UnwrapRef<typeof import('../../utils/formatters')['formatDateTime']>
     readonly formatError: UnwrapRef<typeof import('../../composables/utils/utils.utils')['formatError']>
-    readonly formatFileSize: UnwrapRef<typeof import('../../composables/utils/utils.utils')['formatFileSize']>
+    readonly formatFileSize: UnwrapRef<typeof import('../../utils/formatters')['formatFileSize']>
     readonly formatNumber: UnwrapRef<typeof import('../../utils/formatters')['formatNumber']>
-    readonly formatPhoneNumber: UnwrapRef<typeof import('../../composables/utils/utils.utils')['formatPhoneNumber']>
+    readonly formatPercentage: UnwrapRef<typeof import('../../utils/formatters')['formatPercentage']>
+    readonly formatPhoneNumber: UnwrapRef<typeof import('../../utils/formatters')['formatPhoneNumber']>
     readonly formatRelativeTime: UnwrapRef<typeof import('../../utils/formatters')['formatRelativeTime']>
     readonly formatters: UnwrapRef<typeof import('../../utils/formatters')['default']>
     readonly generateApiCacheKey: UnwrapRef<typeof import('../../composables/api/api.utils')['generateApiCacheKey']>

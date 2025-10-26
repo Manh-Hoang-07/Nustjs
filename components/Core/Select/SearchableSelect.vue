@@ -109,9 +109,16 @@ const isInteracting = ref(false)
 
 // Function to get label based on labelField prop
 const getLabel = (option) => {
+  // First try to use the specified labelField
+  if (props.labelField && option[props.labelField]) {
+    return option[props.labelField]
+  }
+  
+  // Fallback to common label fields
   if (props.labelField === 'display_name') {
     return option.display_name || option.name || option.title || option.label || 'Không có tên'
   }
+  
   return option.title || option.name || option.label || 'Không có tên'
 }
 

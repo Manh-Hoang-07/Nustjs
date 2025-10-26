@@ -231,6 +231,7 @@ const {
   endpoints: {
     list: adminEndpoints.products.list,
     create: adminEndpoints.products.create,
+    show: (id) => adminEndpoints.products.show(id),
     update: (id) => adminEndpoints.products.update(id),
     delete: (id) => adminEndpoints.products.delete(id)
   }

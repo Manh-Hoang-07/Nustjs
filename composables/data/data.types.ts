@@ -153,6 +153,7 @@ export interface DataCachingResult<T = any> {
 export interface CrudEndpoints {
   list: string
   create: string
+  show?: (id: number) => string  // Optional: fetch detail for edit
   update: (id: number) => string
   delete: (id: number) => string
 }
@@ -201,7 +202,7 @@ export interface CrudDataTableResult<T = any> extends ReturnType<typeof useBaseD
   // Modal handlers
   openCreateModal: () => void
   closeCreateModal: () => void
-  openEditModal: (item: T) => void
+  openEditModal: (item: T) => Promise<void>
   closeEditModal: () => void
   openDeleteModal: (item: T) => void
   closeDeleteModal: () => void

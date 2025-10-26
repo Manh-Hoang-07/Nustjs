@@ -128,6 +128,13 @@ export function useAdminNavigation(): AdminNavigationResult {
       status: 'active'
     },
     {
+      name: 'Đơn hàng',
+      path: '/admin/orders',
+      api: 'api/admin/orders',
+      icon: '📋',
+      status: 'active'
+    },
+    {
       name: 'Liên hệ',
       path: '/admin/contacts',
       api: 'api/admin/contacts',

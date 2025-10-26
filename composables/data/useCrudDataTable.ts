@@ -94,8 +94,27 @@ export function useCrudDataTable<T = any>(options: CrudDataTableOptions<T>): Cru
       errorHandlers.clearApiErrors()
     },
 
-    openEditModal(item: T): void {
+    async openEditModal(item: T): Promise<void> {
+      // Set item first (for loading state if needed)
       selectedItem.value = item
+      
+      // If show endpoint is provided, fetch full details
+      if (endpoints.show && (item as any).id) {
+        try {
+          baseDataTable.loading.value = true
+          const response = await apiClient.get(endpoints.show((item as any).id))
+          
+          if (response.data?.success && response.data?.data) {
+            selectedItem.value = response.data.data as T
+          }
+        } catch (error) {
+          console.error('Failed to fetch item details:', error)
+          // Keep the original item if fetch fails
+        } finally {
+          baseDataTable.loading.value = false
+        }
+      }
+      
       modals.value.edit = true
     },
 

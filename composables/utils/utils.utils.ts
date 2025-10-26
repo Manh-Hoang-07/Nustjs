@@ -1,7 +1,7 @@
-import type { 
-  DebounceOptions, 
-  DebouncedFunction, 
-  UrlParseResult, 
+import type {
+  DebounceOptions,
+  DebouncedFunction,
+  UrlParseResult,
   UrlBuildOptions,
   QueryStringOptions,
   ValidationRule,
@@ -22,7 +22,7 @@ export function createDebouncedFunction<T extends (...args: any[]) => any>(
   options: DebounceOptions = {}
 ): DebouncedFunction<T> {
   const { delay = 300, immediate = false, maxWait } = options
-  
+
   let timeoutId: NodeJS.Timeout | null = null
   let maxTimeoutId: NodeJS.Timeout | null = null
   let lastCallTime = 0
@@ -144,7 +144,7 @@ export function parseUrl(url: string): UrlParseResult {
   try {
     const urlObj = new URL(url)
     const query: Record<string, string> = {}
-    
+
     urlObj.searchParams.forEach((value, key) => {
       query[key] = value
     })
@@ -199,7 +199,7 @@ export function buildUrl(options: UrlBuildOptions): string {
  */
 export function buildQueryString(obj: Record<string, any>): string {
   const params = new URLSearchParams()
-  
+
   Object.entries(obj).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
       if (Array.isArray(value)) {
@@ -209,7 +209,7 @@ export function buildQueryString(obj: Record<string, any>): string {
       }
     }
   })
-  
+
   return params.toString()
 }
 
@@ -219,7 +219,7 @@ export function buildQueryString(obj: Record<string, any>): string {
 export function parseQueryString(str: string): Record<string, any> {
   const params = new URLSearchParams(str)
   const result: Record<string, any> = {}
-  
+
   params.forEach((value, key) => {
     if (result[key]) {
       if (Array.isArray(result[key])) {
@@ -231,7 +231,7 @@ export function parseQueryString(str: string): Record<string, any> {
       result[key] = value
     }
   })
-  
+
   return result
 }
 
@@ -241,13 +241,13 @@ export function parseQueryString(str: string): Record<string, any> {
  * Validate value against rules
  */
 export function validateValue(
-  value: any, 
-  rules: ValidationRule, 
+  value: any,
+  rules: ValidationRule,
   options: ValidationOptions = {}
 ): ValidationResult {
   const errors: Record<string, string> = {}
   const warnings: Record<string, string> = {}
-  
+
   const { stopOnFirstError = false, includeWarnings = true } = options
 
   // Required validation
@@ -345,41 +345,6 @@ export function validateValue(
 // ===== FORMAT UTILITIES =====
 // Note: Formatting functions are available in utils/formatters.ts
 
-/**
- * Format file size
- */
-export function formatFileSize(bytes: number): string {
-  const units = ['B', 'KB', 'MB', 'GB', 'TB']
-  let size = bytes
-  let unitIndex = 0
-  
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024
-    unitIndex++
-  }
-  
-  return `${size.toFixed(1)} ${units[unitIndex]}`
-}
-
-/**
- * Format phone number
- */
-export function formatPhoneNumber(phone: string): string {
-  // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, '')
-  
-  // Format Vietnamese phone numbers
-  if (cleaned.length === 10 && cleaned.startsWith('0')) {
-    return cleaned.replace(/(\d{4})(\d{3})(\d{3})/, '$1 $2 $3')
-  }
-  
-  if (cleaned.length === 11 && cleaned.startsWith('84')) {
-    return `+84 ${cleaned.slice(2, 5)} ${cleaned.slice(5, 8)} ${cleaned.slice(8)}`
-  }
-  
-  return phone
-}
-
 // ===== ARRAY UTILITIES =====
 
 /**
@@ -393,7 +358,7 @@ export function unique<T>(array: T[]): T[] {
  * Group array by key
  */
 export function groupBy<T>(
-  array: T[], 
+  array: T[],
   key: keyof T | ((item: T) => string)
 ): Record<string, T[]> {
   return array.reduce((groups, item) => {
@@ -410,14 +375,14 @@ export function groupBy<T>(
  * Sort array by key
  */
 export function sortBy<T>(
-  array: T[], 
-  key: keyof T | ((item: T) => any), 
+  array: T[],
+  key: keyof T | ((item: T) => any),
   order: 'asc' | 'desc' = 'asc'
 ): T[] {
   return [...array].sort((a, b) => {
     const aVal = typeof key === 'function' ? key(a) : a[key]
     const bVal = typeof key === 'function' ? key(b) : b[key]
-    
+
     if (aVal < bVal) return order === 'asc' ? -1 : 1
     if (aVal > bVal) return order === 'asc' ? 1 : -1
     return 0
@@ -537,7 +502,7 @@ export function deepClone<T>(obj: T): T {
 export function deepMerge<T extends Record<string, any>>(target: T, ...sources: Partial<T>[]): T {
   if (!sources.length) return target
   const source = sources.shift()
-  
+
   if (isObject(target) && source && isObject(source)) {
     Object.keys(source).forEach(key => {
       if (isObject(source[key as keyof T])) {
@@ -548,7 +513,7 @@ export function deepMerge<T extends Record<string, any>>(target: T, ...sources: 
       }
     })
   }
-  
+
   return deepMerge(target, ...sources)
 }
 
@@ -576,21 +541,21 @@ export function isEqual(obj1: any, obj2: any): boolean {
   if (obj1 === obj2) return true
   if (obj1 == null || obj2 == null) return false
   if (typeof obj1 !== typeof obj2) return false
-  
+
   if (typeof obj1 === 'object') {
     const keys1 = Object.keys(obj1)
     const keys2 = Object.keys(obj2)
-    
+
     if (keys1.length !== keys2.length) return false
-    
+
     for (const key of keys1) {
       if (!keys2.includes(key)) return false
       if (!isEqual(obj1[key], obj2[key])) return false
     }
-    
+
     return true
   }
-  
+
   return false
 }
 
@@ -704,8 +669,8 @@ export function stripTags(str: string): string {
  * Create error with context
  */
 export function createCustomError(
-  message: string, 
-  cause?: any, 
+  message: string,
+  cause?: any,
   context?: Record<string, any>
 ): Error {
   const error = new Error(message)
@@ -741,15 +706,15 @@ export function getErrorInfo(error: Error): ErrorInfo {
 export function formatError(error: Error): string {
   const info = getErrorInfo(error)
   let formatted = `${info.name}: ${info.message}`
-  
+
   if (info.context) {
     formatted += `\nContext: ${JSON.stringify(info.context, null, 2)}`
   }
-  
+
   if (info.stack) {
     formatted += `\nStack: ${info.stack}`
   }
-  
+
   return formatted
 }
 
@@ -757,7 +722,7 @@ export function formatError(error: Error): string {
  * Capture error with handler
  */
 export function captureError(
-  error: Error, 
+  error: Error,
   context?: Record<string, any>,
   handler?: ErrorHandler
 ): void {

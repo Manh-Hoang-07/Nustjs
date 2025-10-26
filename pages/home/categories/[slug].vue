@@ -347,6 +347,7 @@ import { useGlobalApiClient } from '@/composables/api'
 import { publicEndpoints } from '@/api/endpoints'
 import { useToast } from '@/composables/ui/useToast'
 import { formatCurrency } from '@/utils/formatters'
+import { useCart } from '~/composables/cart/index'
 import LoadingSpinner from '@/components/Core/Loading/LoadingSpinner.vue'
 import Pagination from '@/components/Core/Navigation/Pagination.vue'
 
@@ -358,6 +359,7 @@ const route = useRoute()
 const router = useRouter()
 const { apiClient } = useGlobalApiClient()
 const { showSuccess, showError } = useToast()
+const cart = useCart({ immediate: true })
 
 // State
 const loading = ref(false)
@@ -556,7 +558,6 @@ async function quickAddToCart(product) {
   if (product.stock_quantity === 0) return
   
   try {
-    // TODO: Implement cart API call
     const cartItem = {
       product_id: product.id,
       variant_id: null,
@@ -564,9 +565,7 @@ async function quickAddToCart(product) {
       price: Number(product.sale_price || product.price)
     }
     
-    console.log('Quick add to cart:', cartItem)
-    
-    showSuccess('Đã thêm sản phẩm vào giỏ hàng')
+    await cart.addToCart(cartItem)
   } catch (error) {
     showError('Không thể thêm sản phẩm vào giỏ hàng')
   }

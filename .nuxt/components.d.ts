@@ -12,7 +12,9 @@ type HydrationStrategies = {
 }
 type LazyComponent<T> = (T & DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }>)
 interface _GlobalComponents {
-      'CoreActions': typeof import("../components/Core/Actions/Actions.vue")['default']
+      'CartItemsCartItem': typeof import("../components/Cart/Items/CartItem.vue")['default']
+    'CoreActions': typeof import("../components/Core/Actions/Actions.vue")['default']
+    'CoreBadgesStatusBadge': typeof import("../components/Core/Badges/StatusBadge.vue")['default']
     'CoreContentCKEditor': typeof import("../components/Core/Content/CKEditor.vue")['default']
     'CoreContentHtmlContent': typeof import("../components/Core/Content/HtmlContent.vue")['default']
     'CoreContentSimpleEditor': typeof import("../components/Core/Content/SimpleEditor.vue")['default']
@@ -39,6 +41,10 @@ interface _GlobalComponents {
     'LayoutHeaderBar': typeof import("../components/Layout/Header/HeaderBar.vue")['default']
     'LayoutSectionsCustomSection': typeof import("../components/Layout/Sections/CustomSection.vue")['default']
     'LayoutSidebarMenu': typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']
+    'OrdersBadgesOrderStatusBadge': typeof import("../components/Orders/Badges/OrderStatusBadge.vue")['default']
+    'OrdersBadgesPaymentStatusBadge': typeof import("../components/Orders/Badges/PaymentStatusBadge.vue")['default']
+    'OrdersBadgesShippingStatusBadge': typeof import("../components/Orders/Badges/ShippingStatusBadge.vue")['default']
+    'SharedProductDisplay': typeof import("../components/Shared/ProductDisplay.vue")['default']
     'UserCardsUserCard': typeof import("../components/User/Cards/UserCard.vue")['default']
     'NuxtWelcome': typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
     'NuxtLayout': typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
@@ -65,7 +71,9 @@ interface _GlobalComponents {
     'Body': typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
     'NuxtIsland': typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
     'NuxtRouteAnnouncer': typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
-      'LazyCoreActions': LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
+      'LazyCartItemsCartItem': LazyComponent<typeof import("../components/Cart/Items/CartItem.vue")['default']>
+    'LazyCoreActions': LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
+    'LazyCoreBadgesStatusBadge': LazyComponent<typeof import("../components/Core/Badges/StatusBadge.vue")['default']>
     'LazyCoreContentCKEditor': LazyComponent<typeof import("../components/Core/Content/CKEditor.vue")['default']>
     'LazyCoreContentHtmlContent': LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
     'LazyCoreContentSimpleEditor': LazyComponent<typeof import("../components/Core/Content/SimpleEditor.vue")['default']>
@@ -92,6 +100,10 @@ interface _GlobalComponents {
     'LazyLayoutHeaderBar': LazyComponent<typeof import("../components/Layout/Header/HeaderBar.vue")['default']>
     'LazyLayoutSectionsCustomSection': LazyComponent<typeof import("../components/Layout/Sections/CustomSection.vue")['default']>
     'LazyLayoutSidebarMenu': LazyComponent<typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']>
+    'LazyOrdersBadgesOrderStatusBadge': LazyComponent<typeof import("../components/Orders/Badges/OrderStatusBadge.vue")['default']>
+    'LazyOrdersBadgesPaymentStatusBadge': LazyComponent<typeof import("../components/Orders/Badges/PaymentStatusBadge.vue")['default']>
+    'LazyOrdersBadgesShippingStatusBadge': LazyComponent<typeof import("../components/Orders/Badges/ShippingStatusBadge.vue")['default']>
+    'LazySharedProductDisplay': LazyComponent<typeof import("../components/Shared/ProductDisplay.vue")['default']>
     'LazyUserCardsUserCard': LazyComponent<typeof import("../components/User/Cards/UserCard.vue")['default']>
     'LazyNuxtWelcome': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
     'LazyNuxtLayout': LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
@@ -124,7 +136,9 @@ declare module 'vue' {
   export interface GlobalComponents extends _GlobalComponents { }
 }
 
+export const CartItemsCartItem: typeof import("../components/Cart/Items/CartItem.vue")['default']
 export const CoreActions: typeof import("../components/Core/Actions/Actions.vue")['default']
+export const CoreBadgesStatusBadge: typeof import("../components/Core/Badges/StatusBadge.vue")['default']
 export const CoreContentCKEditor: typeof import("../components/Core/Content/CKEditor.vue")['default']
 export const CoreContentHtmlContent: typeof import("../components/Core/Content/HtmlContent.vue")['default']
 export const CoreContentSimpleEditor: typeof import("../components/Core/Content/SimpleEditor.vue")['default']
@@ -151,6 +165,10 @@ export const LayoutFooterSystemFooter: typeof import("../components/Layout/Foote
 export const LayoutHeaderBar: typeof import("../components/Layout/Header/HeaderBar.vue")['default']
 export const LayoutSectionsCustomSection: typeof import("../components/Layout/Sections/CustomSection.vue")['default']
 export const LayoutSidebarMenu: typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']
+export const OrdersBadgesOrderStatusBadge: typeof import("../components/Orders/Badges/OrderStatusBadge.vue")['default']
+export const OrdersBadgesPaymentStatusBadge: typeof import("../components/Orders/Badges/PaymentStatusBadge.vue")['default']
+export const OrdersBadgesShippingStatusBadge: typeof import("../components/Orders/Badges/ShippingStatusBadge.vue")['default']
+export const SharedProductDisplay: typeof import("../components/Shared/ProductDisplay.vue")['default']
 export const UserCardsUserCard: typeof import("../components/User/Cards/UserCard.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
@@ -177,7 +195,9 @@ export const Html: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const NuxtRouteAnnouncer: typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']
+export const LazyCartItemsCartItem: LazyComponent<typeof import("../components/Cart/Items/CartItem.vue")['default']>
 export const LazyCoreActions: LazyComponent<typeof import("../components/Core/Actions/Actions.vue")['default']>
+export const LazyCoreBadgesStatusBadge: LazyComponent<typeof import("../components/Core/Badges/StatusBadge.vue")['default']>
 export const LazyCoreContentCKEditor: LazyComponent<typeof import("../components/Core/Content/CKEditor.vue")['default']>
 export const LazyCoreContentHtmlContent: LazyComponent<typeof import("../components/Core/Content/HtmlContent.vue")['default']>
 export const LazyCoreContentSimpleEditor: LazyComponent<typeof import("../components/Core/Content/SimpleEditor.vue")['default']>
@@ -204,6 +224,10 @@ export const LazyLayoutFooterSystemFooter: LazyComponent<typeof import("../compo
 export const LazyLayoutHeaderBar: LazyComponent<typeof import("../components/Layout/Header/HeaderBar.vue")['default']>
 export const LazyLayoutSectionsCustomSection: LazyComponent<typeof import("../components/Layout/Sections/CustomSection.vue")['default']>
 export const LazyLayoutSidebarMenu: LazyComponent<typeof import("../components/Layout/Sidebar/SidebarMenu.vue")['default']>
+export const LazyOrdersBadgesOrderStatusBadge: LazyComponent<typeof import("../components/Orders/Badges/OrderStatusBadge.vue")['default']>
+export const LazyOrdersBadgesPaymentStatusBadge: LazyComponent<typeof import("../components/Orders/Badges/PaymentStatusBadge.vue")['default']>
+export const LazyOrdersBadgesShippingStatusBadge: LazyComponent<typeof import("../components/Orders/Badges/ShippingStatusBadge.vue")['default']>
+export const LazySharedProductDisplay: LazyComponent<typeof import("../components/Shared/ProductDisplay.vue")['default']>
 export const LazyUserCardsUserCard: LazyComponent<typeof import("../components/User/Cards/UserCard.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>

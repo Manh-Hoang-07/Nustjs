@@ -213,6 +213,7 @@ const {
   endpoints: {
     list: adminEndpoints.productVariants.list,
     create: adminEndpoints.productVariants.create,
+    show: (id) => adminEndpoints.productVariants.show(id),
     update: (id) => adminEndpoints.productVariants.update(id),
     delete: (id) => adminEndpoints.productVariants.delete(id)
   }
@@ -348,7 +349,10 @@ function getAttributeNames(attributes) {
   if (!attributes || !Array.isArray(attributes) || attributes.length === 0) {
     return '—'
   }
-  return attributes.map(attr => `${attr.attribute.name}: ${attr.value.value}`).join(', ')
+  return attributes
+    .filter(attr => attr?.attribute?.name && attr?.value?.value)
+    .map(attr => `${attr.attribute.name}: ${attr.value.value}`)
+    .join(', ') || '—'
 }
 
 </script>
